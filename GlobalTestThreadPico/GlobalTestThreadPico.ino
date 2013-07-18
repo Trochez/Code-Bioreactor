@@ -41,7 +41,8 @@
 //#define THR_IRPIN        12
 #define THR_STEPPER     {OUT2, IO2}
 //#define THR_SERVO       IO4
-#define THR_WGHT         IO4
+//#define THR_WGHT         IO4
+#define THR_FLUX         I04  //control of gas flux, same Berta as for gas valves
 
 #define PARAM_RGB1      0
 #define PARAM_RGB2      1
@@ -50,8 +51,9 @@
 #define PARAM_WGHT      4
 #define PARAM_LVL_MAX   5
 #define PARAM_LVL_MIN   6
+#define PARAM_GAS_MIX   7  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), lookup table to be implemented by calibrating for each gas
 #define PARAM_IRCODE    10
-#define PARAM_RELAY_1   17// = 17 = R (elay)
+#define PARAM_RELAY_1   17 // = 17 = R (elay)
 #define PARAM_RELAY_2   18
 #define PARAM_TEMP1     20
 #define PARAM_WIRE      24 // contains the active wire devices

@@ -62,7 +62,11 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire2, NULL, waThreadOneWire2, sizeof(waT
 #endif
 
 #ifdef PARAM_WGHT
-NIL__THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight,sizeof(waThreadWeight));
+NIL__THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight,sizeof(waThreadWeight))
+#endif
+
+#ifdef PARAM_FLUX
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadFlux, NULL, waThreadFlux, sizeof(waThreadFlux)) 
 #endif
 
 #ifdef THR_MONITORING 
