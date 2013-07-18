@@ -41,7 +41,7 @@ void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, in
 
   while (TRUE) {
     // following instruction takes 2ms
-    sensors1.requestTemperatures(); // Send the coThreadOneWiremmand to get temperatures
+    sensor.requestTemperatures(); // Send the coThreadOneWiremmand to get temperatures
     // we should not forget that with 12 bits it takes over 600ms to get the result so in fact we
     // will get the result of the previous conversion ...
     // Following instruction takes 14ms
@@ -50,7 +50,8 @@ void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, in
   }
   
 }
-
+/*
+Does not work at the moment
 // function to print a device address
 void printOneWireAddress(DeviceAddress deviceAddress, Print* output)
 {
@@ -60,7 +61,8 @@ void printOneWireAddress(DeviceAddress deviceAddress, Print* output)
     output->print(deviceAddress[i], HEX);
   }
 }
-
+/*
+Does not work qat the moment
 void oneWireInfo(Print* output) {
   output->println("One wire");
   // Loop through each device, print out address
@@ -76,8 +78,7 @@ void oneWireInfo(Print* output) {
     }
   }
 }
-
-
+*/
 #endif
 
 
