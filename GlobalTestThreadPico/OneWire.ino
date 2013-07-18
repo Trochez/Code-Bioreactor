@@ -81,6 +81,4 @@ void oneWireInfo(Print* output) {
 #endif
 
 
-#endif
-
 
