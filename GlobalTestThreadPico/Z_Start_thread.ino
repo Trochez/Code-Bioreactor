@@ -54,11 +54,15 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadIRReceiver, NULL, waThreadIRReceiver, sizeof
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
 
 #ifdef ONE_WIRE_BUS1
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire, NULL, waThreadOneWire, sizeof(waThreadOneWire))
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire1, NULL, waThreadOneWire1, sizeof(waThreadOneWire1))
 #endif
 
 #ifdef ONE_WIRE_BUS2
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire2, NULL, waThreadOneWire2, sizeof(waThreadOneWire2))
+#endif
+
+#ifdef PARAM_WGHT
+NIL__THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight,sizeof(waThreadWeight));
 #endif
 
 #ifdef THR_MONITORING 

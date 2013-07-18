@@ -40,19 +40,23 @@
 #define THR_MONITORING   13  // INCOMPATIBLE WITH OUT3
 //#define THR_IRPIN        12
 #define THR_STEPPER     {OUT2, IO2}
-#define THR_SERVO        IO4
-
+//#define THR_SERVO       IO4
+#define THR_WGHT         IO4
 
 #define PARAM_RGB1      0
 #define PARAM_RGB2      1
 #define PARAM_SCAN      2
 #define PARAM_SERVO     3
+#define PARAM_WGHT      4
+#define PARAM_LVL_MAX   5
+#define PARAM_LVL_MIN   6
 #define PARAM_IRCODE    10
 #define PARAM_RELAY_1   17// = 17 = R (elay)
 #define PARAM_RELAY_2   18
 #define PARAM_TEMP1     20
 #define PARAM_WIRE      24 // contains the active wire devices
 #define PARAM_DISTANCE  25
+
 
 byte IO[]={
   IO1, IO2, IO3, IO4};

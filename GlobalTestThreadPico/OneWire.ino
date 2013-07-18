@@ -11,11 +11,11 @@
 #ifdef ONE_WIRE_BUS1
 OneWire oneWire1(ONE_WIRE_BUS1);
 DallasTemperature sensors1(&oneWire1);
-DeviceAddress oneWireAddress;
+DeviceAddress oneWireAddress1;
 
-NIL_WORKING_AREA(waThreadOneWire, 70);
-NIL_THREAD(ThreadOneWire, arg) {
-  getTemperature(sensors1, oneWireAddress, ONE_WIRE_BUS1, PARAM_TEMP1);
+NIL_WORKING_AREA(waThreadOneWire1, 70);
+NIL_THREAD(ThreadOneWire1, arg) {
+  getTemperature(sensors1, oneWireAddress1, ONE_WIRE_BUS1, PARAM_TEMP1);
 }
 #endif
 
