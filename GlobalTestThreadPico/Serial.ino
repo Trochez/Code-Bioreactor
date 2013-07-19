@@ -79,7 +79,7 @@ NIL_THREAD(ThreadSerial, arg) {
       } 
       #ifdef ONE_WIRE_BUS1
       else if (inChar=='o') { // show oneWire information
-        oneWireInfo(&Serial);
+        //oneWireInfo(&Serial);
         serialReset();
       } 
       #endif
