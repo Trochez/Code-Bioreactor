@@ -2,6 +2,7 @@
 //
 
 #include <NilRTOS.h>
+
 #include <Wire.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>o
@@ -11,8 +12,6 @@
 // And if we send a String for parameters it can not be understand ...
 // #include <NilSerial.h>
 // #define Serial NilSerial
-
-
 
 // http://www.arduino.cc/playground/Code/Time
 #include <Time.h>
@@ -34,13 +33,13 @@
 #define BLUE2   23
 
 
-#define ONE_WIRE_BUS1    IO1
-#define THR_DISTANCEPIN  IO3
+//#define ONE_WIRE_BUS1    IO1
+//#define THR_DISTANCEPIN  IO3
 #define THR_MONITORING   13  // INCOMPATIBLE WITH OUT3
 //#define THR_IRPIN        12
 #define THR_STEPPER     {OUT2, IO2}
 //#define THR_SERVO       IO4
-#define THR_WGHT         IO4
+//#define THR_WGHT         IO4
 //#define THR_FLUX         I04  //control of gas flux, same Berta as for gas valves
 
 #define PARAM_RGB1      0

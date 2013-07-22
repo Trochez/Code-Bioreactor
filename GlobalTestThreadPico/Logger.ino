@@ -16,8 +16,6 @@ We have the way to log some event.
 #define LOGGER_NOEVENT 0
 #define LOGGER_I2C_CAPACITY_EXCEEDED 1
 
-
-
 #define FLOAT_MIN_VALUE  -3.4028235E+38
 
 // Variable are defined in the main class !!!!

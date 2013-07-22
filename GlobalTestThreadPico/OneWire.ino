@@ -50,19 +50,16 @@ void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, in
   }
   
 }
-/*
-Does not work at the moment
+
+
 // function to print a device address
 void printOneWireAddress(DeviceAddress deviceAddress, Print* output)
 {
-  for (uint8_t i = 0; i < 8; i++)
-  {
-    if (deviceAddress[i] < 16) output->print("0");
-    output->print(deviceAddress[i], HEX);
-  }
+    if (*deviceAddress < 16) output->print("0");
+    else output->print(*deviceAddress, HEX);
 }
-/*
-Does not work qat the moment
+
+/*Does not work at the moment
 void oneWireInfo(Print* output) {
   output->println("One wire");
   // Loop through each device, print out address

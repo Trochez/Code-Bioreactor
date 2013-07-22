@@ -4,12 +4,9 @@ NIL_THREAD(ThreadIO, arg) {
   unsigned int IOEventStatus=0;
   unsigned int IOEventStatusCounter=0;
 
-
-
   for (int i=0; i<4; i++) {
     pinMode(IO[i], OUTPUT);    
   }
-
 
   while (TRUE) {
     IOEventStatusCounter++;
