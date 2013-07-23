@@ -2,7 +2,7 @@
 NIL_WORKING_AREA(waThreadMeasure, 0);
 NIL_THREAD(ThreadMeasure, arg) {
   while (TRUE) {   
-    setParameter(PARAM_DISTANCE,getDistance(THR_DISTANCEPIN));
+    setParameter(PARAM_DISTANCE, getDistance(THR_DISTANCEPIN));
     nilThdSleepMilliseconds(1000);
   }
 }
