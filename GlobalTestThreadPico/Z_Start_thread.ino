@@ -57,9 +57,9 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWir
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire1, NULL, waThreadOneWire1, sizeof(waThreadOneWire1))
 #endif
 
-#ifdef ONE_WIRE_BUS2
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire2, NULL, waThreadOneWire2, sizeof(waThreadOneWire2))
-#endif
+//#ifdef ONE_WIRE_BUS2
+//NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire2, NULL, waThreadOneWire2, sizeof(waThreadOneWire2))
+//#endif
 
 #ifdef THR_WGHT
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
@@ -74,5 +74,3 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadMonitoring, NULL, waThreadMonitoring, sizeof
 #endif
 
 NIL_THREADS_TABLE_END()
-
-

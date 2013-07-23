@@ -41,18 +41,3 @@ void analyzeIR(int value) {
 }
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
