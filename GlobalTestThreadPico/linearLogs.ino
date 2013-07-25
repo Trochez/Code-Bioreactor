@@ -1,5 +1,5 @@
-//#include <SST.h>
-//#include <SPI.h>
+#include <SST.h>
+#include <SPI.h>
 
 #define PARAMETER_SIZE 32
 //size of every new entry (4 bytes for the timestamp)
@@ -7,9 +7,8 @@
 
 
 //The address of the actual address for new entry in the memory
-//uint32_t entry = 0;
-//TODO :need also to start the SPI communication & init sst
-//SST sst = SST(4);
+uint32_t entry = 0;
+SST sst = SST(4);
 
 
 void setupMemory(){
@@ -19,8 +18,7 @@ void setupMemory(){
   sst.init();
 }
 
-
-//How many bits do we need for the addresss ?
+//24 bits needed for the address
 uint32_t getEntry(){
   return entry;
 }
@@ -81,7 +79,6 @@ uint8_t* readLast(uint8_t* result, uint8_t parameter, uint8_t n){
 uint32_t* readLastTimestamp(uint32_t* timestamp, uint8_t n){
     uint32_t address = getEntry();
    
-    
     for(int i=0; i<n; i++){
         //compute the address of the last entry
         address = address - ENTRY_SIZE;
