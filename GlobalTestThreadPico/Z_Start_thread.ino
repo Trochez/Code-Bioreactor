@@ -34,8 +34,10 @@ NIL_THREADS_TABLE_BEGIN()
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
 
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadIO, NULL, waThreadIO, sizeof(waThreadIO))
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadRGB1, NULL, waThreadRGB1, sizeof(waThreadRGB1))
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadRGB2, NULL, waThreadRGB2, sizeof(waThreadRGB2))
+//NIL_THREADS_TABLE_ENTRY(NULL, ThreadRGB1, NULL, waThreadRGB1, sizeof(waThreadRGB1))
+//NIL_THREADS_TABLE_ENTRY(NULL, ThreadRGB2, NULL, waThreadRGB2, sizeof(waThreadRGB2))
+
+NIL_THREAD_TABLE_ENTRY(NULL, ThreadSetup, NULL, waThreadSetup, sizeof(waThreadSetup))      //server connection, control the devices plugged, working mode and possible encountered error to send messages
 
 #ifdef THR_SERVO
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadServo, NULL, waThreadServo, sizeof(waThreadServo))
