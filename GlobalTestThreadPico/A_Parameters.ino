@@ -16,6 +16,10 @@ int getParameter(byte number) {
   return parameters[number];
 }
 
+int* getParametersTable(){
+   return parameters; 
+}
+
 void setParameter(byte number, int value) {
    parameters[number]=value;
 }
