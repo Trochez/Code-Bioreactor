@@ -4,6 +4,7 @@
 //size of every new entry (4 bytes for the timestamp)
 #define ENTRY_SIZE (MAX_PARAM+4)
 SST sst = SST(4);
+int entry = 0;
 
 NIL_WORKING_AREA(waThreadLog, 70);
 NIL_THREAD(ThreadLog, arg) {
@@ -12,16 +13,18 @@ NIL_THREAD(ThreadLog, arg) {
   uint32_t entry = 0;
 
   setupMemory();
-  entry = 0;
+  //entry = 0;
   
   //time NTP
   int start = now();
   
   while(true){
       int time = now();
+      //This function suppose that the thread is called very regularly
+      //We should find a better approach : maybe using interruptions ?
       if(start - time >0){
          writeLog(time, getParametersTable());
-         entry = updateEntry(entry);
+         entry = updateEntry();
       }
       start = time;
       nilThdSleepMilliseconds(200);
@@ -38,8 +41,12 @@ void setupMemory(){
 
 
 //Update the value of the actual entry
-int updateEntry(entry){
-  return entry + ENTRY_SIZE;
+int updateEntry(){
+  return (entry + ENTRY_SIZE);
+}
+
+int getEntry(){
+   return entry; 
 }
 
 //Write in the memory the data with a timestamp. The data has a predifined & invariable size
