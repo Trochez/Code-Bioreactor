@@ -68,7 +68,3 @@ int getMemoryAddress(int time, int type){
        break;
     }
 }
-
-
-
-
