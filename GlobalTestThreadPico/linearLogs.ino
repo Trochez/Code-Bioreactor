@@ -29,7 +29,6 @@ NIL_THREAD(ThreadLog, arg) {
       start = time;
       nilThdSleepMilliseconds(200);
   }
-
 }
 
 void setupMemory(){
@@ -65,7 +64,7 @@ void writeLog(uint32_t timestamp, int* data){
 
 //Read the last entry in the memory. It fills the table with all the parameters
 //Have to give a sufficiently large table to the function
-uint8_t* readLastEntry(uint8_t* result){
+uint8_t* readLastEntry(uint8_t* result) {
     uint32_t address = getEntry();
     //compute the address of the last row (4 byte for the timestamp)
     address = address - ENTRY_SIZE;
