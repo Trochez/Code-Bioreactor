@@ -33,46 +33,34 @@ NIL_THREADS_TABLE_BEGIN()
 
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
 
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadIO, NULL, waThreadIO, sizeof(waThreadIO))
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadRGB1, NULL, waThreadRGB1, sizeof(waThreadRGB1))
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadRGB2, NULL, waThreadRGB2, sizeof(waThreadRGB2))
+//NIL_THREAD_TABLE_ENTRY(NULL, ThreadSetup, NULL, waThreadSetup, sizeof(waThreadSetup));      //server connection, control the devices plugged, working mode and possible encountered error to send messages
 
-NIL_THREAD_TABLE_ENTRY(NULL, ThreadSetup, NULL, waThreadSetup, sizeof(waThreadSetup));      //server connection, control the devices plugged, working mode and possible encountered error to send messages
-
-#ifdef THR_SERVO
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadServo, NULL, waThreadServo, sizeof(waThreadServo))
-#endif
-
-#ifdef THR_DISTANCEPIN
+//#ifdef THR_DISTANCEPIN
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadMeasure, NULL, waThreadMeasure, sizeof(waThreadMeasure))
-#endif
+//#endif
 
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThreadSerial))
 
-#ifdef THR_IRPIN 
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadIRReceiver, NULL, waThreadIRReceiver, sizeof(waThreadIRReceiver))
-#endif
-
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
 
-#ifdef ONE_WIRE_BUS1
+//#ifdef ONE_WIRE_BUS1
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire1, NULL, waThreadOneWire1, sizeof(waThreadOneWire1))
-#endif
+//#endif
 
 //#ifdef ONE_WIRE_BUS2
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire2, NULL, waThreadOneWire2, sizeof(waThreadOneWire2))
 //#endif
 
-#ifdef THR_WGHT
+//#ifdef THR_WGHT
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
-#endif
+//#endif
 
-#ifdef THR_FLUX
+//#ifdef THR_FLUX
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadFlux, NULL, waThreadFlux, sizeof(waThreadFlux))
-#endif
+//#endif
 
-#ifdef THR_MONITORING 
+//#ifdef THR_MONITORING 
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadMonitoring, NULL, waThreadMonitoring, sizeof(waThreadMonitoring))
-#endif
+/#endif
 
 NIL_THREADS_TABLE_END()
