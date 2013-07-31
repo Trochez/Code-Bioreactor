@@ -3,7 +3,7 @@
 
 //size of every new entry (4 bytes for the timestamp)
 #define ENTRY_SIZE (MAX_PARAM+4)
-SST sst = SST(4);
+//SST sst = SST(4);
 int entry = 0;
 
 NIL_WORKING_AREA(waThreadLog, 70);
@@ -11,10 +11,10 @@ NIL_THREAD(ThreadLog, arg) {
   
   //The address of the actual address for new entry in the memory
   uint32_t entry = 0;
-
-  setupMemory();
+  SST sst = SST(4);
+  setupMemory(sst);
   //entry = 0;
-  
+
   //time NTP
   int start = now();
   
@@ -23,7 +23,7 @@ NIL_THREAD(ThreadLog, arg) {
       //This function suppose that the thread is called very regularly
       //We should find a better approach : maybe using interruptions ?
       if(start - time >0){
-         writeLog(time, getParametersTable());
+         writeLog(sst, time, getParametersTable());
          entry = updateEntry();
       }
       start = time;
@@ -31,7 +31,7 @@ NIL_THREAD(ThreadLog, arg) {
   }
 }
 
-void setupMemory(){
+void setupMemory(SST sst){
   SPI.begin();
   SPI.setDataMode(SPI_MODE0);
   SPI.setBitOrder(MSBFIRST);
@@ -49,7 +49,7 @@ int getEntry(){
 }
 
 //Write in the memory the data with a timestamp. The data has a predifined & invariable size
-void writeLog(uint32_t timestamp, int* data){
+void writeLog(SST sst, uint32_t timestamp, int* data){
      sst.flashWriteInit(getEntry());
      //Write timestamp
      for(int i=0; i<4; i++){
@@ -64,7 +64,7 @@ void writeLog(uint32_t timestamp, int* data){
 
 //Read the last entry in the memory. It fills the table with all the parameters
 //Have to give a sufficiently large table to the function
-uint8_t* readLastEntry(uint8_t* result) {
+uint8_t* readLastEntry(SST sst, uint8_t* result) {
     uint32_t address = getEntry();
     //compute the address of the last row (4 byte for the timestamp)
     address = address - ENTRY_SIZE;
@@ -77,7 +77,7 @@ uint8_t* readLastEntry(uint8_t* result) {
 }
 
 //Read the last n parameters of the desired value
-uint8_t* readLast(uint8_t* result, uint8_t parameter, uint8_t n){
+uint8_t* readLast(SST sst, uint8_t* result, uint8_t parameter, uint8_t n){
   
     uint32_t address = getEntry();
     //compute the address of the last row (4 byte for the timestamp)
@@ -95,7 +95,7 @@ uint8_t* readLast(uint8_t* result, uint8_t parameter, uint8_t n){
 }
 
 //Give the timestamp of the last n entry in the memory
-uint32_t* readLastTimestamp(uint32_t* timestamp, uint8_t n){
+uint32_t* readLastTimestamp(SST sst, uint32_t* timestamp, uint8_t n){
     uint32_t address = getEntry();
    
     for(int i=0; i<n; i++){
