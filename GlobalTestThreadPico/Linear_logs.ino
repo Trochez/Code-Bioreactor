@@ -1,16 +1,22 @@
+/*
+  This thread will take care of the logs and manage the time and its synchronisation 
+  The thread write the logs at a definite fixed interval of time in the SST25VF064 chip of the main boards
+  The time synchronization works through the NTP protocol and our server
+*/
+
+
 #include <SST.h>
 #include <SPI.h>
 
 //size of every new entry (4 bytes for the timestamp)
 #define ENTRY_SIZE (MAX_PARAM+4)
 //SST sst = SST(4);
-int entry = 0;
 
 NIL_WORKING_AREA(waThreadLog, 70);
 NIL_THREAD(ThreadLog, arg) {
   
   //The address of the actual address for new entry in the memory
-  uint32_t entry = 0;
+  uint32_t addr = 0;
   SST sst = SST(4);
   setupMemory(sst);
   //entry = 0;
@@ -23,14 +29,15 @@ NIL_THREAD(ThreadLog, arg) {
       //This function suppose that the thread is called very regularly
       //We should find a better approach : maybe using interruptions ?
       if(start - time >0){
-         writeLog(sst, time, getParametersTable());
-         entry = updateEntry();
+         writeLog(sst, &addr, time, getParametersTable());
       }
       start = time;
       nilThdSleepMilliseconds(200);
   }
 }
 
+//Setup the memory for future use
+//Need to be used only onced at startup
 void setupMemory(SST sst){
   SPI.begin();
   SPI.setDataMode(SPI_MODE0);
@@ -40,17 +47,14 @@ void setupMemory(SST sst){
 
 
 //Update the value of the actual entry
-int updateEntry(){
-  return (entry + ENTRY_SIZE);
+void updateAddr(uint32_t* addr){
+   *addr = (*addr + ENTRY_SIZE);
 }
 
-int getEntry(){
-   return entry; 
-}
 
 //Write in the memory the data with a timestamp. The data has a predifined & invariable size
-void writeLog(SST sst, uint32_t timestamp, int* data){
-     sst.flashWriteInit(getEntry());
+void writeLog(SST sst, uint32_t* addr, uint32_t timestamp, int* data){
+     sst.flashWriteInit(*addr);
      //Write timestamp
      for(int i=0; i<4; i++){
         //write the 4 bytes of the timestamp in the memory using a mask
@@ -60,14 +64,15 @@ void writeLog(SST sst, uint32_t timestamp, int* data){
         sst.flashWriteNext(data[i]);
     }
     sst.flashWriteFinish();
+    //Update Address of writing
+    updateAddr(addr);
 }
 
 //Read the last entry in the memory. It fills the table with all the parameters
 //Have to give a sufficiently large table to the function
-uint8_t* readLastEntry(SST sst, uint8_t* result) {
-    uint32_t address = getEntry();
+uint8_t* readLastEntry(SST sst, uint32_t* addr, uint8_t* result) {
     //compute the address of the last row (4 byte for the timestamp)
-    address = address - ENTRY_SIZE;
+    uint32_t address = *addr - ENTRY_SIZE;
     sst.flashReadInit(address);
     for(int i=0; i<ENTRY_SIZE; i++){
          result[i] = sst.flashReadNext();
@@ -77,11 +82,10 @@ uint8_t* readLastEntry(SST sst, uint8_t* result) {
 }
 
 //Read the last n parameters of the desired value
-uint8_t* readLast(SST sst, uint8_t* result, uint8_t parameter, uint8_t n){
+uint8_t* readLast(SST sst, uint32_t* addr, uint8_t* result, uint8_t parameter, uint8_t n){
   
-    uint32_t address = getEntry();
     //compute the address of the last row (4 byte for the timestamp)
-    address = address - (MAX_PARAM- parameter-1);
+    uint32_t address = *addr - (MAX_PARAM- parameter-1);
     
     for(int i=0; i<n; i++){
          sst.flashReadInit(address);
@@ -95,8 +99,8 @@ uint8_t* readLast(SST sst, uint8_t* result, uint8_t parameter, uint8_t n){
 }
 
 //Give the timestamp of the last n entry in the memory
-uint32_t* readLastTimestamp(SST sst, uint32_t* timestamp, uint8_t n){
-    uint32_t address = getEntry();
+uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_t n){
+    uint32_t address = *addr;
    
     for(int i=0; i<n; i++){
         //compute the address of the last entry

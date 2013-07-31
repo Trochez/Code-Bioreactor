@@ -1,3 +1,6 @@
+#include <SST.h>
+
+
 // This is a more complex example showing many simultaneous action
 //
 

@@ -1,6 +1,8 @@
 // Small demonstration of rgb1
 // RGB1 is NOT pulseWidth ModulatedThreadRGB1
 
+//This code is kept as example but is NOT used in the Bioreactor
+
 NIL_WORKING_AREA(waThreadRGB1, 0);
 NIL_THREAD(ThreadRGB1, arg) {
   int rgb1EventStatus=0;
