@@ -39,9 +39,7 @@
 //#define THR_IRPIN        12
 //#define THR_STEPPER      {OUT2, IO2}
 //#define THR_SERVO        IO4
-//#define THR_WGHT         IO4
 //#define THR_FLUX         IO4  //control of gas flux, same Berta as for gas valves
-//Global System Parameters
 
 /*Card configuration*/
 /*Word structure : 4 bits allocated to each connection port + option for I2C additionnal device
@@ -56,28 +54,28 @@
 
 /* related MASKS */
 
-#define DEF_PORT1     0b0000000000001111
-#define DEF_PORT2     0b0000000011110000
-#define DEF_PORT3     0b0000111100000000
-#define DEF_PORT4     0b1111000000000000
-#define DEF_PORT5     0b0000000000001111
-#define DEF_I2C_1     0b0000000011110000
-#define DEF_I2C_2     0b0000111100000000
-#define DEF_I2C_3     0b1111000000000000
-#define DEF_I2C_4     0b0000000000001111
+#define PORT1     0b0000000000001111
+#define PORT2     0b0000000011110000
+#define PORT3     0b0000111100000000
+#define PORT4     0b1111000000000000
+#define PORT5     0b0000000000001111
+#define I2C_1     0b0000000011110000
+#define I2C_2     0b0000111100000000
+#define I2C_3     0b1111000000000000
+#define I2C_4     0b0000000000001111
 
 
 /*related DEVICE definitions*/
 
-#define NO_DEVICE     0b1111
+#define NO_DEVICE 0b1111
 
-#define DEV_TEMP      0b0001
-#define DEV_WGHT      0b0010
-#define DEV_PH        0b0011
-#define DEV_FLUX      0b0100
-#define DEV_RELAY     0b0101
-#define DEV_GAS_TAP   0b0110
-#define DEV_STEPPER   0b0111
+#define TEMP      0b0001
+#define WGHT      0b0010
+#define PH        0b0011
+#define FLUX      0b0100
+#define RELAY     0b0101
+#define GAS_TAP   0b0110
+#define STEPPER   0b0111
 
 //add a new definition here for a new type of sensor + code the additionnal related thread.
 
@@ -96,15 +94,15 @@
 
 /*Port values*/     
 
-#define PORT1    6
-#define PORT2    7
-#define PORT3    8
-#define PORT4    9
-#define PORT5    10
-#define I2C_1    11
-#define I2C_2    12
-#define I2C_3    13
-#define I2C_4    14
+#define PARAM_PORT1    6
+#define PARAM_PORT2    7
+#define PARAM_PORT3    8
+#define PARAM_PORT4    9
+#define PARAM_PORT5    10
+#define PARAM_I2C_1    11
+#define PARAM_I2C_2    12
+#define PARAM_I2C_3    13
+#define PARAM_I2C_4    14
 
 /*hard coded parameters*/
 
