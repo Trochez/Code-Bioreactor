@@ -33,8 +33,6 @@ NIL_THREADS_TABLE_BEGIN()
 
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
 
-//NIL_THREAD_TABLE_ENTRY(NULL, ThreadSetup, NULL, waThreadSetup, sizeof(waThreadSetup));      //server connection, control the devices plugged, working mode and possible encountered error to send messages
-
 //#ifdef THR_DISTANCEPIN
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadMeasure, NULL, waThreadMeasure, sizeof(waThreadMeasure))
 //#endif

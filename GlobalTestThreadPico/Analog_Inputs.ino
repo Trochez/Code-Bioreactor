@@ -21,6 +21,7 @@ void getWeight()                                // on aimerait éviter de réeff
 int wght_port()                                //moyen d'éviter la répétition des tests conditionnels ?
 {
   int wght_port
+      
   if((getParameter(CONFIG1)&PORT1)==(WGHT<<0))
   {
       wght_port=IO1;

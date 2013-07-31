@@ -113,6 +113,7 @@
 #define PARAM_LVL_MIN      18  
 
 #define PARAM_PH_EQUIL     19
+#define PARAM_TEMP_EQUIL   20
 
 
 /*Setup*/
