@@ -1,3 +1,7 @@
+/*
+  This code should replace the Linear Logs thread in the future
+*/
+
 #include <SST.h>
 
 //ifndef SPI
