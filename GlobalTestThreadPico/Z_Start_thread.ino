@@ -50,7 +50,7 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadOneWire1, NULL, waThreadOneWire1, sizeof(waT
 //#endif
 
 //#ifdef THR_WGHT
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadSensor, NULL, waThreadSensor, sizeof(waThreadSensor))
 //#endif
 
 //#ifdef THR_FLUX
