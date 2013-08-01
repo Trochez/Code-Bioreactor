@@ -23,20 +23,21 @@
 #include <Time.h>
 
 
-#define OUT1    4
-#define OUT2    11
-#define OUT3    13
-#define OUT4    6
-#define IO1     8
-#define IO2     18
-#define IO3     20
-#define IO4     19
+#define PWM1    6//D6 OC4D
+#define PWM2    8//D8 PCINT4
+#define PWM3    9//D9 OC4B, OC1A, PCINT5
+#define PWM4    5//D6 OC4A  
+#define PWM5    11//D11 OC0A, OC1C, PCINT7
+#define IO1     20//A2
+#define IO2     21//A3
+#define IO3     22//A4
+#define IO4     19//A1
+#define IO5     23//A5
+
+//TBR
 #define RED1    5
 #define GREEN1  9
 #define BLUE1   10
-#define RED2    21
-#define GREEN2  22
-#define BLUE2   23
 
 
 
