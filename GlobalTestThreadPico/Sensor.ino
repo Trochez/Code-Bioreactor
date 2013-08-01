@@ -61,12 +61,9 @@ void getPh(char i){
 
 /*
 // we allow an array of devices
-// we need to specify 3 arrays
 // - the buses
 // - the devices
 // - the target variable
-
-// If there is more than one device on a bus we need to specify the devices address. Otherwise we may just scan
 */
 
 void getTemp(char i){

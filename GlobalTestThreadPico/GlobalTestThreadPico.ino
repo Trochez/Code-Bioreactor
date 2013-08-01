@@ -15,22 +15,16 @@
 
 /*define the IN/OUT ports of the card*/
 
-#define OUT1    4
-#define OUT2    11
-#define OUT3    13
-#define OUT4    6
-//#define OUT5
-#define IO1     8
-#define IO2     18
-#define IO3     20
-#define IO4     19
-//#define IO5
-#define RED1    5
-#define GREEN1  9
-#define BLUE1   10
-#define RED2    21
-#define GREEN2  22
-#define BLUE2   23
+#define PWM1    6//D6 OC4D
+#define PWM2    8//D8 PCINT4
+#define PWM3    9//D9 OC4B, OC1A, PCINT5
+#define PWM4    5//D6 OC4A  
+#define PWM5    11//D11 OC0A, OC1C, PCINT7
+#define IO1     20//A2
+#define IO2     21//A3
+#define IO3     22//A4
+#define IO4     19//A1
+#define IO5     23//A5
 
 
 // the THR define have to be replaced by dynamical variables (set by the server, not hard coded)
@@ -54,18 +48,9 @@
 #define CONFIG_2   1
 #define CONFIG_3   2
 
-/* related MASKS */
+/* related MASK */
 
-#define PORT1     0b0000000000001111
-#define PORT2     0b0000000011110000
-#define PORT3     0b0000111100000000
-#define PORT4     0b1111000000000000
-#define PORT5     0b0000000000001111
-#define I2C_1     0b0000000011110000
-#define I2C_2     0b0000111100000000
-#define I2C_3     0b1111000000000000
-#define I2C_4     0b0000000000001111
-
+#define PORT_MASK     0b0000000000001111
 
 /*related DEVICE definitions*/
 

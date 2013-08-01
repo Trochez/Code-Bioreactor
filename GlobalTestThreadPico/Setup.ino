@@ -26,7 +26,10 @@ void resetConfig(){
 }
 
 
+//Read the Card configuration
 //add conditionnal tests to avoid a bad setup (analog on I2C port or the contrary)
+
+
 void setConfig(){
   
   int config_table[]={getParameter(CONFIG1),getParameter(CONFIG2),getParameter(CONFIG3)};
@@ -51,77 +54,56 @@ void setConfig(){
         l++;
       }
     
-    /*!!!!!!!!!!!! DEVICE PORT IS SET WRONG FOR THE MOMENT --> PORT SHOULD BE CHOSEN TO BE IO# or OUT# depending on the device type !!!!!!!*/
-    
-     
-      switch (config_table[j]&(PORT1<<(4*i)))
+
+      Device[h].config_number=j;
+      Device[h].port=1+i+4*j;
+      Device[h].parameter=PARAM_PORT1+i+4*j; //  Memory slot allocated to port i
+      
+      switch (config_table[j]&(PORT_MASK<<(4*i)))
       {
         case  NO_DEVICE :
-          Device[h].config_number=j;
           Device[h].type=NO_DEVICE;
-          Device[h].port=(PORT1<<(4*i));
           Device[h].parameter=26;                 //  off the parameter table
           Device[h].state=0;
           break;
         
         case  WGHT :
-          Device[h].config_number=j;
           Device[h].type=WGHT;
-          Device[h].port=(PORT1<<(4*i));
-          Device[h].parameter=PARAM_PORT1+i+4*j; //  Memory slot allocated to port i
           Device[h].state=0;
           break;
       
         case  TEMP :
-          Device[h].config_number=j;
           Device[h].type=TEMP;
-          Device[h].port=(PORT1<<(4*i));
-          Device[h].parameter=PARAM_PORT1+i+4*j;
           Device[h].state=0;
           break;
       
         case  PH :
-          Device[h].config_number=j;
           Device[h].type=PH;
-          Device[h].port=(PORT1<<(4*i));
-          Device[h].parameter=PARAM_PORT1+i+4*j; 
           Device[h].state=0;
           break;
       
         case  STEPPER :
-          Device[h].config_number=j;
           Device[h].type=STEPPER;
-          Device[h].port=(PORT1<<(4*i));
-          Device[h].parameter=PARAM_PORT1+i+4*j; 
           Device[h].state=0;
           break;
         
         case  GAS_TAP :
-          Device[h].config_number=j;
           Device[h].type=GAS_TAP;
-          Device[h].port=(PORT1<<(4*i));
-          Device[h].parameter=PARAM_PORT1+i+4*j; 
           Device[h].state=0;
           break;
       
         case  RELAY :
-          Device[h].config_number=j;
           Device[h].type=RELAY;
-          Device[h].port=(PORT1<<(4*i));
-          Device[h].parameter=PARAM_PORT1+i+4*j; 
           Device[h].state=0;
           break;
           
         case  FLUX :
-          Device[h].config_number=j;
           Device[h].type=FLUX;
-          Device[h].port=(PORT1<<(4*i));
-          Device[h].parameter=PARAM_PORT1+i+4*j; 
           Device[h].state=0;
           break;   
        
       
-        case  default :
+        case  default :          // anything to do ?
           break;
       }
     }
