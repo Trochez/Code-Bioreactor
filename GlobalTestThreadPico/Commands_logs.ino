@@ -19,13 +19,14 @@
   event:  The event number to be logged
   value:  The value of the changes made if needed
 */
-void writeCommandLog(uint8_t event, uint16 value) {
+/*
+void writeCommandLog(uint8_t event, uint16_t value) {
   
   // take the time, need to be synchronized with the NTP server
   int time = now();
   
   // Initialized the flash memory
-  sst.flashWriteInit(getEntry());
+  sst.flashWriteInit();
   
   // Write the timestamp
   for(int i=0; i<4; i++){
@@ -38,4 +39,4 @@ void writeCommandLog(uint8_t event, uint16 value) {
   
   
   sst.flashWriteFinish();
-}
+}*/

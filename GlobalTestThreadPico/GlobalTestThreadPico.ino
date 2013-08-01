@@ -1,6 +1,9 @@
 #include <SST.h>
+#include <SPI.h>
 
-
+//Ethernet libraries
+#include <Ethernet.h>
+#include <EthernetUdp.h>
 // This is a more complex example showing many simultaneous action
 //
 
