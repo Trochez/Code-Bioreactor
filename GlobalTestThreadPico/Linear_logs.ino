@@ -14,24 +14,18 @@
 //size of every new entry (4 bytes for the timestamp)
 #define ENTRY_SIZE (MAX_PARAM+4)
 
-// Definition of all events to be logged
-#define PUMPING_START
-#define PUMPING_STOP
-#define MOTOR_START
-#define MOTOR_STOP
-#define PARAMETER_SET
-#define SENSORS_ERROR
-#define SET_MODE
-
 #define NTP_PACKET_SIZE (48)
 
-NIL_WORKING_AREA(waThreadLog, 70); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
+
+
+NIL_WORKING_AREA(waThreadLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
 NIL_THREAD(ThreadLog, arg) {
   
   /*----------------------------------
     Memory setup
   ----------------------------------*/
-  uint32_t addr = 0;
+  
+  uint32_t addr = findAddress();
   //The memory is on PORTD4
   SST sst = SST(4);
   setupMemory(sst);
@@ -49,9 +43,10 @@ NIL_THREAD(ThreadLog, arg) {
 
   // Boolean variable to test a t the first place several times the actuall
   // time of the arduino. Count 5 times the arduino time before synchronization
-  boolean start = true;int count = 0;
-  time_t time_now;
-
+  time_t time_now = 0;
+  time_t previousNTP = 0;
+  time_t previousLog = 0;
+  boolean waitPacket = false;
   // A UDP instance to let us send and receive packets over UDP
   EthernetUDP Udp;
   Ethernet.begin(mac, ip);
@@ -62,14 +57,41 @@ NIL_THREAD(ThreadLog, arg) {
     Thread Main Loop
   --------------------------------*/
   while(true){
-      int time = now();
-      //This function suppose that the thread is called very regularly
-      //We should find a better approach : maybe using interruptions ?
-      if(start - time >0){
-         writeLog(sst, &addr, time, getParametersTable());
+    
+      /****************************
+      THREAD LOG & TIME : structure     
+      - Update NTP all the 3600 seconds
+        Send packet
+        2sec later check if answer
+          answer -> update
+          no answer -> log in event + try again in 3600 seconds
+      - Log parameter all the 1 second
+      *****************************/
+      
+      time_now = now();
+      
+      if(waitPacket == false && time_now - previousNTP >= 3600){
+        sendPacket(Udp,timeServer, packetBuffer);
+        waitPacket = true;
+      } 
+      // 2 seconds later we checke if we have an answer from the server and update the time if possible
+      else if(waitPacket == true && time_now - previousNTP >= 3602){
+        boolean success = updateNTP(Udp,timeServer, packetBuffer);
+        if(!success){
+           //TODO :write it in the event log 
+        }
+        previousNTP = time_now;
+        waitPacket = false;
       }
-      start = time;
-      nilThdSleepMilliseconds(200);
+      
+      //This function suppose that the thread is called very regularly (at least 1 time every seconds)
+      if(time_now - previousLog > 1){
+        writeLog(sst, &addr, time_now, getParametersTable());
+        previousLog = time_now;
+      }
+      
+     
+      nilThdSleepMilliseconds(500);
   }
 }
 
@@ -158,15 +180,19 @@ uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_
     return timestamp;
 }
 
+//TODO: to be implemented
+uint32_t findAddress(){
+  return 0;
+}
 
 /*-----------------------
   NTP related functions
 -----------------------*/
-
-void updateNTP(EthernetUDP& Udp, IPAddress& timeServer, unsigned char packetBuffer[] ){
+void sendPacket(EthernetUDP& Udp, IPAddress& timeServer, unsigned char packetBuffer[] ){
    sendNTPpacket(Udp, timeServer, packetBuffer); // send an NTP packet to a time server 
-   nilThdSleepMilliseconds(2000); //TODO : We cannot wait 2000ms here !!!!
-   
+}
+
+boolean updateNTP(EthernetUDP& Udp, IPAddress& timeServer, unsigned char packetBuffer[] ){
    if ( Udp.parsePacket() ) {  
        // We've received a packet, read the data from it
       Udp.read(packetBuffer, (size_t) NTP_PACKET_SIZE);  // read the packet into the buffer
@@ -185,9 +211,10 @@ void updateNTP(EthernetUDP& Udp, IPAddress& timeServer, unsigned char packetBuff
       unsigned long epoch = secsSince1900 - seventyYears - 5 * 3600;  
       
       setTime(epoch);
-      
+      return true;
    } else {
       //TODO: What should we do here ? New update 
+      return false;
    }
    
 }
