@@ -59,13 +59,13 @@ NIL_THREAD(ThreadLog, arg) {
   while(true){
     
       /****************************
-      THREAD LOG & TIME : structure     
+      THREAD LOG & TIME : STRUCTURE    
       - Update NTP all the 3600 seconds
         Send packet
         2sec later check if answer
           answer -> update
           no answer -> log in event + try again in 3600 seconds
-      - Log parameter all the 1 second
+      - Log parameter every 1 second
       *****************************/
       
       time_now = now();
@@ -90,7 +90,6 @@ NIL_THREAD(ThreadLog, arg) {
         previousLog = time_now;
       }
       
-     
       nilThdSleepMilliseconds(500);
   }
 }
