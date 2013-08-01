@@ -3,27 +3,64 @@
   The thread write the logs at a definite fixed interval of time in the SST25VF064 chip of the main boards
   The time synchronization works through the NTP protocol and our server
 */
-
-
+//Memory libraries
 #include <SST.h>
 #include <SPI.h>
 
+//Ethernet libraries
+#include <Ethernet.h>
+#include <EthernetUdp.h>
+
 //size of every new entry (4 bytes for the timestamp)
 #define ENTRY_SIZE (MAX_PARAM+4)
-//SST sst = SST(4);
 
-NIL_WORKING_AREA(waThreadLog, 70);
+// Definition of all events to be logged
+#define PUMPING_START
+#define PUMPING_STOP
+#define MOTOR_START
+#define MOTOR_STOP
+#define PARAMETER_SET
+#define SENSORS_ERROR
+#define SET_MODE
+
+#define NTP_PACKET_SIZE (48)
+
+NIL_WORKING_AREA(waThreadLog, 70); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
 NIL_THREAD(ThreadLog, arg) {
   
-  //The address of the actual address for new entry in the memory
+  /*----------------------------------
+    Memory setup
+  ----------------------------------*/
   uint32_t addr = 0;
+  //The memory is on PORTD4
   SST sst = SST(4);
   setupMemory(sst);
   //entry = 0;
-
-  //time NTP
-  int start = now();
   
+  /*----------------------------------
+    ethernet & NTP Setup
+  ----------------------------------*/
+  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+  IPAddress ip(192,168,0,177);
+  unsigned int localPort = 8888;      // local port to listen for UDP packets
+  IPAddress timeServer(192, 168, 0, 170); // time-a.timefreq.bldrdoc.gov NTP server
+  //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
+  unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
+
+  // Boolean variable to test a t the first place several times the actuall
+  // time of the arduino. Count 5 times the arduino time before synchronization
+  boolean start = true;int count = 0;
+  time_t time_now;
+
+  // A UDP instance to let us send and receive packets over UDP
+  EthernetUDP Udp;
+  Ethernet.begin(mac, ip);
+  Udp.begin(localPort);
+  
+  
+  /*--------------------------------
+    Thread Main Loop
+  --------------------------------*/
   while(true){
       int time = now();
       //This function suppose that the thread is called very regularly
@@ -36,6 +73,11 @@ NIL_THREAD(ThreadLog, arg) {
   }
 }
 
+
+/*--------------------------
+  Memory related functions
+---------------------------*/
+
 //Setup the memory for future use
 //Need to be used only onced at startup
 void setupMemory(SST sst){
@@ -45,12 +87,10 @@ void setupMemory(SST sst){
   sst.init();
 }
 
-
 //Update the value of the actual entry
 void updateAddr(uint32_t* addr){
    *addr = (*addr + ENTRY_SIZE);
 }
-
 
 //Write in the memory the data with a timestamp. The data has a predifined & invariable size
 void writeLog(SST sst, uint32_t* addr, uint32_t timestamp, int* data){
@@ -117,3 +157,62 @@ uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_
     }
     return timestamp;
 }
+
+
+/*-----------------------
+  NTP related functions
+-----------------------*/
+
+void updateNTP(EthernetUDP& Udp, IPAddress& timeServer, unsigned char packetBuffer[] ){
+   sendNTPpacket(Udp, timeServer, packetBuffer); // send an NTP packet to a time server 
+   nilThdSleepMilliseconds(2000); //TODO : We cannot wait 2000ms here !!!!
+   
+   if ( Udp.parsePacket() ) {  
+       // We've received a packet, read the data from it
+      Udp.read(packetBuffer, (size_t) NTP_PACKET_SIZE);  // read the packet into the buffer
+  
+      //the timestamp starts at byte 40 of the received packet and is four bytes,
+      // or two words, long. First, esxtract the two words:
+      unsigned long highWord = word( packetBuffer[40], packetBuffer[41]);
+      unsigned long lowWord = word( packetBuffer[42],  packetBuffer[43]);  
+      // combine the four bytes (two words) into a long integer
+      // this is NTP time (seconds since Jan 1 1900):
+      unsigned long secsSince1900 = highWord << 16 | lowWord;  
+      
+      // now convert NTP time into everyday time:
+      const unsigned long seventyYears = 2208988800UL;     
+      // subtract seventy years, the hour in Colombia: -5 from GMT
+      unsigned long epoch = secsSince1900 - seventyYears - 5 * 3600;  
+      
+      setTime(epoch);
+      
+   } else {
+      //TODO: What should we do here ? New update 
+   }
+   
+}
+
+// send an NTP request to the time server at the given address 
+unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char packetBuffer[])
+{
+  // set all bytes in the buffer to 0
+  memset(packetBuffer, 0, NTP_PACKET_SIZE); 
+  // Initialize values needed to form NTP request
+  // (see URL above for details on the packets)
+  packetBuffer[0] = 0b11100011;   // LI, Version, Mode
+  packetBuffer[1] = 0;     // Stratum, or type of clock
+  packetBuffer[2] = 6;     // Polling Interval
+  packetBuffer[3] = 0xEC;  // Peer Clock Precision
+  // 8 bytes of zero for Root Delay & Root Dispersion
+  packetBuffer[12]  = 49; 
+  packetBuffer[13]  = 0x4E;
+  packetBuffer[14]  = 49;
+  packetBuffer[15]  = 52;
+
+  // all NTP fields have been given values, now
+  // you can send a packet requesting a timestamp:         
+  Udp.beginPacket(address, 123); //NTP requests are to port 123
+  Udp.write(packetBuffer,NTP_PACKET_SIZE);
+  Udp.endPacket(); 
+}
+
