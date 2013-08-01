@@ -68,9 +68,6 @@ void getPh(char i){
 
 void getTemp(char i){
   
-  OneWire oneWire1(Device[i].port);
-  DallasTemperature sensors1(&oneWire1);
-  DeviceAddress oneWireAddress1;
   getTemperature(sensors1, oneWireAddress1, Device[i].port, Device[i].parameter);
   
 }

@@ -54,9 +54,9 @@ void setConfig(){
         l++;
       }
     
-
+ // checkstate for each device
       Device[h].config_number=j;
-      Device[h].port=1+i+4*j;
+      Device[h].port=1+i+4*j;                //  Allocated PORT
       Device[h].parameter=PARAM_PORT1+i+4*j; //  Memory slot allocated to port i
       
       switch (config_table[j]&(PORT_MASK<<(4*i)))
@@ -73,9 +73,8 @@ void setConfig(){
           break;
       
         case  TEMP :
-          Device[h].type=TEMP;
-          Device[h].state=0;
-          break;
+           ((Temp)Device[h]).initTemp();
+           break;
       
         case  PH :
           Device[h].type=PH;
