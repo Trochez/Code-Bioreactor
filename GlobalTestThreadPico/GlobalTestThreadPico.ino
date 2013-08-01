@@ -122,7 +122,18 @@
 #define FLAG_VECTOR     25
 
 /*related masks*/
-// take back from previous commit
+
+#define FLAG_MOTOR_OFF     (1<<0)   //motor turned off
+#define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
+#define ERROR_SERVER_DWN   (1<<2)   //set the condition for individual data control (alert useless here)
+#define ERROR_TEMP         (1<<3)   //set the condition to stop temperature control + alert message
+#define ERROR_PH           (1<<4)   //set the condition to disable ph control       + alert message
+#define ERROR_WEIGHT       (1<<5)   //set the condition to disable pumping control  + alert message
+#define ERROR_MEMORY       (1<<6)   //set the condition to disable 
+
+#define MODE_STDBY   (1<<13)   //motor and temperature PID On only
+#define MODE_MANUAL  (1<<14)   //everything is set manually
+#define MODE_AUTO    (1<<15)   //reactor working by itself, log can be performed
 
 
 /*Setup*/

@@ -60,7 +60,7 @@ void setConfig(){
           Device[h].config_number=j;
           Device[h].type=NO_DEVICE;
           Device[h].port=(PORT1<<(4*i));
-          Device[h].parameter=26;         //  off the parameter table
+          Device[h].parameter=26;                 //  off the parameter table
           Device[h].state=0;
           break;
         

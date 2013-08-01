@@ -57,6 +57,18 @@ void getPh(char i){
   
 }
 
+
+
+/*
+// we allow an array of devices
+// we need to specify 3 arrays
+// - the buses
+// - the devices
+// - the target variable
+
+// If there is more than one device on a bus we need to specify the devices address. Otherwise we may just scan
+*/
+
 void getTemp(char i){
   
   OneWire oneWire1(Device[i].port);
@@ -70,31 +82,6 @@ void getFlux(char i){
   
 }
 
-
-
-
-
-
-
-/*
-// we allow an array of devices
-// we need to specify 3 arrays
-// - the buses
-// - the devices
-// - the target variable
-
-// If there is more than one device on a bus we need to specify the devices address. Otherwise we may just scan
-
-#ifdef ONE_WIRE_BUS2
-OneWire oneWire2(ONE_WIRE_BUS2);
-DallasTemperature sensors2(&oneWire2);
-DeviceAddress oneWireAddress2;
-
-NIL_WORKING_AREA(waThreadOneWire2, 70);
-NIL_THREAD(ThreadOneWire2, arg) {
-  getTemperature(sensors2, oneWireAddress2, ONE_WIRE_BUS2, PARAM_TEMP2);
-}
-#endif
 
 
 void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, int parameter){
@@ -112,11 +99,24 @@ void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, in
     // will get the result of the previous conversion ...
     // Following instruction takes 14ms
     setParameter(parameter,(int)(sensor.getTempC(address)*100));
-    nilThdSleepMilliseconds(1000);
   }
   
 }
 
+
+
+
+/*
+#ifdef ONE_WIRE_BUS2
+OneWire oneWire2(ONE_WIRE_BUS2);
+DallasTemperature sensors2(&oneWire2);
+DeviceAddress oneWireAddress2;
+
+NIL_WORKING_AREA(waThreadOneWire2, 70);
+NIL_THREAD(ThreadOneWire2, arg) {
+  getTemperature(sensors2, oneWireAddress2, ONE_WIRE_BUS2, PARAM_TEMP2);
+}
+#endif
 
 // function to print a device address
 void printOneWireAddress(DeviceAddress deviceAddress, Print* output)
