@@ -50,6 +50,9 @@ void setConfig(){
       
         l++;
       }
+    
+    /*!!!!!!!!!!!! DEVICE PORT IS SET WRONG FOR THE MOMENT --> PORT SHOULD BE CHOSEN TO BE IO# or OUT# depending on the device type !!!!!!!*/
+    
      
       switch (config_table[j]&(PORT1<<(4*i)))
       {

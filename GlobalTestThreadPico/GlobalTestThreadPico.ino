@@ -19,10 +19,12 @@
 #define OUT2    11
 #define OUT3    13
 #define OUT4    6
+//#define OUT5
 #define IO1     8
 #define IO2     18
 #define IO3     20
 #define IO4     19
+//#define IO5
 #define RED1    5
 #define GREEN1  9
 #define BLUE1   10
@@ -80,7 +82,7 @@
 //add a new definition here for a new type of sensor + code the additionnal related thread.
 
 
-/* System State Vectors */
+/* Local State Vectors */
 /*Word structure : 4 bits allocated to each connection port + option for I2C additionnal device
   DEV_PORT1/DEV_PORT2/DEV_PORT3/DEV_PORT4  (word1)
   DEV_PORT5/DEV_I2C_1/DEV_I2C_2/DEV_I2C_3  (word2)
@@ -114,6 +116,13 @@
 
 #define PARAM_PH_EQUIL     19
 #define PARAM_TEMP_EQUIL   20
+
+/*State FlagVector*/
+
+#define FLAG_VECTOR     25
+
+/*related masks*/
+// take back from previous commit
 
 
 /*Setup*/

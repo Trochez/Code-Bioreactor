@@ -1,5 +1,82 @@
 
+// weight cell sensor with 12V supply and analog output 0-5V
+// min and max value to be defined for the thresholds
+// If there is more than one device on a bus we need to specify the devices address. Otherwise we may just scan
+/* pumping control, linked to weight thread */
 
+
+NIL_WORKING_AREA(waThreadSensor, 70);      //check for memory allocation ?
+NIL_THREAD(ThreadSensor, arg) 
+{
+  while(TRUE)    
+  {
+    getSensor();
+    nilSleepMilliseconds(500);  //refresh every 500ms
+  }
+}
+
+
+// weight cell reading
+void getSensor() {
+  
+    for(char i=0;i<9;i++)
+    {
+      switch(Device[i].type)
+      {
+        case WGHT :
+          getWeight(i);
+          break;
+        case PH :
+          getPh(i);
+          break;
+        case TEMP :        //gestion du ONE_WIRE
+          getTemp(i);
+          break;
+        case FLUX :       // case FLUX eventuellement ailleurs si trop lourd
+          getFlux(i);
+          break;
+        case default :
+          break;
+      }
+    }
+}
+ 
+ 
+void getWeight(char i){
+  
+  int weight= analogRead(Device[i].port);          
+  setParameter(Device[i].parameter,weight);
+  if(weight>getParameter(PARAM_LVL_MAX){
+// test and modification of the local state vector, and global state vector if event
+//    Device[i].state=;
+  }
+  
+}  
+
+void getPh(char i){
+  
+}
+
+void getTemp(char i){
+  
+  OneWire oneWire1(Device[i].port);
+  DallasTemperature sensors1(&oneWire1);
+  DeviceAddress oneWireAddress1;
+  getTemperature(sensors1, oneWireAddress1, Device[i].port, Device[i].parameter);
+  
+}
+
+void getFlux(char i){
+  
+}
+
+
+
+
+
+
+
+/*
 // we allow an array of devices
 // we need to specify 3 arrays
 // - the buses
@@ -7,18 +84,6 @@
 // - the target variable
 
 // If there is more than one device on a bus we need to specify the devices address. Otherwise we may just scan
-#ifdef ONE_WIRE_BUS1 || ONE_WIRE_BUS2
-
-#ifdef ONE_WIRE_BUS1
-OneWire oneWire1(ONE_WIRE_BUS1);
-DallasTemperature sensors1(&oneWire1);
-DeviceAddress oneWireAddress1;
-
-NIL_WORKING_AREA(waThreadOneWire1, 70);
-NIL_THREAD(ThreadOneWire1, arg) {
-  getTemperature(sensors1, oneWireAddress1, ONE_WIRE_BUS1, PARAM_TEMP1);
-}
-#endif
 
 #ifdef ONE_WIRE_BUS2
 OneWire oneWire2(ONE_WIRE_BUS2);
@@ -77,6 +142,5 @@ void oneWireInfo(Print* output) {
   }
 }
 */
-#endif
 
 
