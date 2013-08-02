@@ -5,6 +5,8 @@ This thread will take care of the Ethernet communications
 -Answer to request from the server (get logs, get parameters)
 -Get state updates from the server / other modules
 
+!! Need to set the flag for CONFIG_MODIF in FLAG_VECTOR
+
 --------------------------------*/
 #ifdef THR_ETHERNET
 
@@ -33,6 +35,10 @@ EthernetClient client;
 unsigned int localPort = 8888;      // local port to listen for UDP packets
 IPAddress server(10,0,0,2); // local NTP server 
 
+/*---------------------------
+  Ethernet Thread
+---------------------------*/
+
 NIL_WORKING_AREA(waThreadEthernet, 50); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   while (TRUE) {
@@ -41,6 +47,9 @@ NIL_THREAD(ThreadEthernet, arg) {
   }
 }
 
+/*----------------------------
+  Ethernet related functions
+----------------------------*/
 
 void ethernetSetup() {
   // the ethernet pin has been initialized in the main setup() from Bioreactor
@@ -108,7 +117,7 @@ void ethernetReadCommand(){
   long start=millis();
   char fieldName[20];
   char fieldValue[10];
-  while (client.connected() && ((millis()-start)<1000)) 
+  while (client.connected() && ((millis()-start)<1000)) //TODO: change condition or allow nilThreadSleep()
   {
     if (client.available()) {
 
@@ -166,4 +175,24 @@ void ethernetReadCommand(){
   if (DEBUG) Serial.print("Received command file in (ms): ");
   if (DEBUG) Serial.println(millis()-start);
 }
+
+/*-----------------------------
+  Parameter related functions
+----------------------------*/
+
+void ethernetPrintHelp() {
+//  Serial.println(F("(d)ebug"));
+//  Serial.println(F("(e)eprom"));
+//  Serial.println(F("(f)ree mem"));
+//  Serial.println(F("(h)elp"));
+//  Serial.println(F("(i)2c"));
+//  Serial.println(F("(l)og"));
+//  #ifdef ONE_WIRE_BUS1 //TBC
+//  Serial.println(F("(o)ne wire"));
+//  #endif
+//  Serial.println(F("(s)ettings"));
+
+}
+
+
 #endif
