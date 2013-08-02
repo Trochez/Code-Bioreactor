@@ -73,6 +73,8 @@ void setConfig(){
           break;
       
         case  TEMP :
+            Temp temp = Temp();
+            Device[i] = temp;
            ((Temp)Device[h]).initTemp();
            break;
       
