@@ -1,3 +1,4 @@
+
 #include <SST.h>
 #include <SPI.h>
 
@@ -34,6 +35,8 @@
 #define IO4     19//A1
 #define IO5     23//A5
 
+//#define PW(port) (char 
+
 //TBR
 #define RED1    5
 #define GREEN1  9
@@ -47,7 +50,7 @@
 //#define THR_DISTANCEPIN  IO3
 #define THR_MONITORING   13  // INCOMPATIBLE WITH OUT3
 //#define THR_IRPIN        12
-#define THR_STEPPER     {OUT2, IO2}
+#define THR_STEPPER     {PWM2, IO2}
 //#define THR_SERVO       IO4
 //#define THR_WGHT         IO4
 //#define THR_FLUX         I04  //control of gas flux, same Berta as for gas valves

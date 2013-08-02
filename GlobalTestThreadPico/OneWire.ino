@@ -9,6 +9,8 @@
 #ifdef ONE_WIRE_BUS1 || ONE_WIRE_BUS2
 
 #ifdef ONE_WIRE_BUS1
+//OneWire oneWire;
+//oneWire = oneWire(ONE_WIRE_BUS1);
 OneWire oneWire1(ONE_WIRE_BUS1);
 DallasTemperature sensors1(&oneWire1);
 DeviceAddress oneWireAddress1;
