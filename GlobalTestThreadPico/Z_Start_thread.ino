@@ -43,6 +43,14 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadSetup, NULL, waThreadSetup, sizeof(waThreadS
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadServo, NULL, waThreadServo, sizeof(waThreadServo))
 #endif
 
+#ifdef THR_ETHERNET
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadEthernet, NULL, waThreadEthernet, sizeof(waThreadEthernet))
+#endif
+
+#ifdef THR_LINEAR_LOGS
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadLinearLog, NULL, waThreadLinearLog, sizeof(waThreadLinearLog))
+#endif
+
 #ifdef THR_DISTANCEPIN
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadMeasure, NULL, waThreadMeasure, sizeof(waThreadMeasure))
 #endif

@@ -6,6 +6,7 @@ This thread will take care of the Ethernet communications
 -Get state updates from the server / other modules
 
 --------------------------------*/
+#ifdef THR_ETHERNET
 
 void ethernetSetup();
 void ethernetPushLog(char *logString);
@@ -31,7 +32,16 @@ byte ip[] = {
 EthernetClient client;
 unsigned int localPort = 8888;      // local port to listen for UDP packets
 IPAddress server(10,0,0,2); // local NTP server 
-  
+
+NIL_WORKING_AREA(waThreadEthernet, 50); //change memoy allocation
+NIL_THREAD(ThreadEthernet, arg) {
+  while (TRUE) {
+    // a coder
+    nilThdSleepMilliseconds(1000);
+  }
+}
+
+
 void ethernetSetup() {
   // the ethernet pin has been initialized in the main setup() from Bioreactor
   Ethernet.begin(mac,ip);
@@ -156,3 +166,4 @@ void ethernetReadCommand(){
   if (DEBUG) Serial.print("Received command file in (ms): ");
   if (DEBUG) Serial.println(millis()-start);
 }
+#endif

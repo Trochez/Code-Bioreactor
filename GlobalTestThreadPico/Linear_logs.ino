@@ -3,6 +3,8 @@
   The thread write the logs at a definite fixed interval of time in the SST25VF064 chip of the main boards
   The time synchronization works through the NTP protocol and our server
 */
+#ifdef THR_LINEAR_LOGS
+
 //Memory libraries
 #include <SST.h>
 #include <SPI.h>
@@ -18,8 +20,8 @@
 
 
 
-NIL_WORKING_AREA(waThreadLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
-NIL_THREAD(ThreadLog, arg) {
+NIL_WORKING_AREA(waThreadLinearLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
+NIL_THREAD(ThreadLinearLog, arg) {
   
   /*----------------------------------
     Memory setup
@@ -242,3 +244,4 @@ unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char 
   Udp.endPacket(); 
 }
 
+#endif
