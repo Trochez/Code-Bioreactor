@@ -5,6 +5,8 @@ This thread will take care of the Ethernet communications
 -Answer to request from the server (get logs, get parameters)
 -Get state updates from the server / other modules
 
+TODO:
+-Add parsing for the new commands
 !! Need to set the flag for CONFIG_MODIF in FLAG_VECTOR
 
 --------------------------------*/
@@ -91,7 +93,7 @@ void ethernetSendLog(){
   //TODO
 }
 
-//TODO : To be changed with the new data structure
+//JSON PARSING
 void ethernetReadCommand(){
  String jsonCommand = String(""); // reinitialize alocated string
   //char jsonCommandBuffer[MAX_HTTP_STRING_LENGTH]; // reserve space
@@ -177,8 +179,24 @@ void ethernetReadCommand(){
 }
 
 /*-----------------------------
-  Parameter related functions
+  Parameter & requests related functions
 ----------------------------*/
+
+void ethernetSendStatus(){
+
+}
+
+void ethernetSendPlugStatus(){
+  
+}
+
+void ethernetSendSensorLog(){
+  
+}
+
+void ethernetSendGeneralLog(){
+
+}
 
 void ethernetPrintHelp() {
 //  Serial.println(F("(d)ebug"));
@@ -192,6 +210,14 @@ void ethernetPrintHelp() {
 //  #endif
 //  Serial.println(F("(s)ettings"));
 
+}
+
+void ethernetPrintI2C(){
+  
+}
+
+void ethernetPrintOneWire(){
+  
 }
 
 
