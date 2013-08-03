@@ -1,9 +1,9 @@
+// the code addresses all non-I2C sensors
 
-// weight cell sensor with 12V supply and analog output 0-5V
-// min and max value to be defined for the thresholds
-// If there is more than one device on a bus we need to specify the devices address. Otherwise we may just scan
-/* pumping control, linked to weight thread */
 
+//!!!!!!!!!  TO BE DONE  !!!!!!!!!!!
+// add sanity checks, the sensor values should be in a reasonnable range (chack if pluged for analogic case) What is reasonable ? 
+// modify the oneWire library so we don't need to get the address to read the sensor
 
 NIL_WORKING_AREA(waThreadSensor, 70);      //check for memory allocation ?
 NIL_THREAD(ThreadSensor, arg) 
@@ -16,10 +16,9 @@ NIL_THREAD(ThreadSensor, arg)
 }
 
 
-// weight cell reading
 void getSensor() {
   
-    for(char i=0;i<9;i++)
+    for(char i=0;i<MAX_DEVICES;i++)
     {
       switch(Device[i].type)
       {
@@ -29,55 +28,46 @@ void getSensor() {
         case PH :
           getPh(i);
           break;
-        case TEMP :        //gestion du ONE_WIRE
+        case TEMP :       
           getTemp(i);
           break;
-        case FLUX :       // case FLUX eventuellement ailleurs si trop lourd
-          getFlux(i);
-          break;
-        case default :
+        default :
           break;
       }
     }
 }
  
- 
+
 void getWeight(char i){
   
-  int weight= analogRead(Device[i].port);          
+  int weight= analogRead(Device[i].io());                        //change because it is not directly 'PORT' that should be used
   setParameter(Device[i].parameter,weight);
-  if(weight>getParameter(PARAM_LVL_MAX){
-// test and modification of the local state vector, and global state vector if event
-//    Device[i].state=;
+  if(weight>=getParameter(PARAM_LVL_MAX)){
+      setParameter();
+      setParameter();
+    }
+    setParameter(
+
   }
   
 }  
 
 void getPh(char i){
   
+  // to be implemented
+  
 }
 
 
-
-/*
-// we allow an array of devices
-// - the buses
-// - the devices
-// - the target variable
-*/
-
 void getTemp(char i){
   
-OneWire oneWire1(Device[i].port);
+OneWire oneWire1(Device[i].io());                                     
 DallasTemperature sensors1(&oneWire1);
 DeviceAddress oneWireAddress1;
 getTemperature(sensors1, oneWireAddress1, Device[i].port, Device[i].parameter);
   
 }
 
-void getFlux(char i){
-  
-}
 
 
 
@@ -88,34 +78,18 @@ void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, in
   // set the resolution to 12 bit (Each Dallas/Maxim device is capable of several different resolutions)
   sensor.setResolution(address, 12);
 
-
-  while (TRUE) {
     // following instruction takes 2ms
     sensor.requestTemperatures(); // Send the coThreadOneWiremmand to get temperatures
     // we should not forget that with 12 bits it takes over 600ms to get the result so in fact we
     // will get the result of the previous conversion ...
     // Following instruction takes 14ms
     setParameter(parameter,(int)(sensor.getTempC(address)*100));
-  }
-  
 }
-
 
 
 
 /*
-#ifdef ONE_WIRE_BUS2
-OneWire oneWire2(ONE_WIRE_BUS2);
-DallasTemperature sensors2(&oneWire2);
-DeviceAddress oneWireAddress2;
-
-NIL_WORKING_AREA(waThreadOneWire2, 70);
-NIL_THREAD(ThreadOneWire2, arg) {
-  getTemperature(sensors2, oneWireAddress2, ONE_WIRE_BUS2, PARAM_TEMP2);
-}
-#endif
-
-// function to print a device address
+// function to print a oneWire address
 void printOneWireAddress(DeviceAddress deviceAddress, Print* output)
 {
     if (*deviceAddress < 16) output->print("0");

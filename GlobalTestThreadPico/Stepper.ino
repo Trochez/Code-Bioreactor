@@ -1,10 +1,7 @@
-
-#ifdef THR_STEPPER
-
 NIL_WORKING_AREA(waThreadStepper, 0);
 NIL_THREAD(ThreadStepper, arg) {
   byte STEPPER[]=THR_STEPPER;
-  for (byte i=0; i<sizeof(STEPPER); i++) {
+  for (byte i=0; i<sizeof(STEPPER); i++) {    //change ports
     pinMode(STEPPER[i], OUTPUT);    
   }
   while (TRUE) {
@@ -32,7 +29,7 @@ void executeStep(int numberSteps, boolean forward, byte currentDelay, byte port1
       digitalWrite(port2,LOW);
       break;
     case 1:
-      digitalWrite(port1, LOW);
+      digitalWrite(port1, LOW); 
       digitalWrite(port2,HIGH);
       break;
     case 2:

@@ -1,3 +1,5 @@
+#include <DallasTemperature.h>
+
 #include <NilRTOS.h>
 #include <Wire.h>
 #include <OneWire.h>
@@ -29,7 +31,6 @@
 
 // the THR define have to be replaced by dynamical variables (set by the server, not hard coded)
 
-//#define ONE_WIRE_BUS1    IO1
 //#define THR_DISTANCEPIN  IO3
 //#define THR_MONITORING   13  // INCOMPATIBLE WITH OUT3
 //#define THR_IRPIN        12
@@ -39,9 +40,9 @@
 
 /*Card configuration*/
 /*Word structure : 4 bits allocated to each connection port + option for I2C additionnal device
-  DEV_PORT1/DEV_PORT2/DEV_PORT3/DEV_PORT4  (word1)
-  DEV_PORT5/DEV_I2C_1/DEV_I2C_2/DEV_I2C_3  (word2)
-  DEV_I2C_4/-/-/-                          (word3)
+  DEV_PORT4/DEV_PORT3/DEV_PORT2/DEV_PORT1  (word1)
+  DEV_I2C_3/DEV_I2C_2/DEV_I2C_1/DEV_PORT5  (word2)
+  -/-/-/DEV_I2C_4/                         (word3)
 */
 
 #define CONFIG_1   0
@@ -69,9 +70,9 @@
 
 /* Local State Vectors */
 /*Word structure : 4 bits allocated to each connection port + option for I2C additionnal device
-  DEV_PORT1/DEV_PORT2/DEV_PORT3/DEV_PORT4  (word1)
-  DEV_PORT5/DEV_I2C_1/DEV_I2C_2/DEV_I2C_3  (word2)
-  DEV_I2C_4/-/-/-                          (word3)
+  DEV_PORT4/DEV_PORT3/DEV_PORT2/DEV_PORT1  (word1)
+  DEV_I2C_3/DEV_I2C_2/DEV_I2C_1/DEV_PORT5  (word2)
+  -/-/-/DEV_I2C_4/                         (word3)
 */
 
 #define STATE_VCTR1  3  
@@ -96,11 +97,11 @@
 #define PARAM_GAS_MIX      15  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), lookup table to be implemented by calibrating for each gas
 #define PARAM_GAS_RATIO    16
 
-#define PARAM_LVL_MAX      17 
-#define PARAM_LVL_MIN      18  
+#define PARAM_LVL_MAX        17 
+#define PARAM_LVL_MIN        18  
 
-#define PARAM_PH_EQUIL     19
-#define PARAM_TEMP_EQUIL   20
+#define PARAM_PH_EQUIL     20
+#define PARAM_TEMP_EQUIL   21
 
 /*State FlagVector*/
 
@@ -110,12 +111,16 @@
 
 #define FLAG_MOTOR_OFF     (1<<0)   //motor turned off
 #define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
+
+
+
 #define ERROR_SERVER_DWN   (1<<2)   //set the condition for individual data control (alert useless here)
 #define ERROR_TEMP         (1<<3)   //set the condition to stop temperature control + alert message
 #define ERROR_PH           (1<<4)   //set the condition to disable ph control       + alert message
 #define ERROR_WEIGHT       (1<<5)   //set the condition to disable pumping control  + alert message
 #define ERROR_MEMORY       (1<<6)   //set the condition to disable 
 
+#define CONFIG_MODIF (1<<12)
 #define MODE_STDBY   (1<<13)   //motor and temperature PID On only
 #define MODE_MANUAL  (1<<14)   //everything is set manually
 #define MODE_AUTO    (1<<15)   //reactor working by itself, log can be performed
