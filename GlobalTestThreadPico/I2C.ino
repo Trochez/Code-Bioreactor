@@ -33,6 +33,9 @@ void controlI2C() {
 }
 
 
+/* rewritre everything here
+Must control the delay off motor shutdown by playing with the flags FLAG_STEPPER_OFF and FLAG_PUMPING
+
 
 void pumping(){                       
   if((getParameter(PARAM_LVL_MAX)<getParameter(PARAM_WGHT))&                // if level max reached and FLAG_MOTOR_OFF to 0, flag set to 1

@@ -1,16 +1,38 @@
-NIL_WORKING_AREA(waThreadStepper, 0);
+// Stepper motor thread, highest priority module
+
+
+NIL_WORKING_AREA(waThreadStepper, 0);        //memory allocation ??
 NIL_THREAD(ThreadStepper, arg) {
-  byte STEPPER[]=THR_STEPPER;
-  for (byte i=0; i<sizeof(STEPPER); i++) {    //change ports
-    pinMode(STEPPER[i], OUTPUT);    
-  }
-  while (TRUE) {
+  
+    int stepper= findStepper();
+    pinMode(Device[stepper].io(),OUTPUT); 
+    pinMode(Device[stepper].pwm(),OUTPUT); 
+    
+  while (TRUE /* set condition here on the presence or not of a motor not to recheck the position of the motor each time*/) {
     for (int i=0; i<200; i=i+20) {
-      executeStep(i,true, 4, STEPPER[0], STEPPER[1]);
-      executeStep(i,false, 4, STEPPER[0], STEPPER[1]);
+      executeStep(i,true, 4, Device[stepper].pwm(), Device[stepper].io());
+      executeStep(i,false, 4, Device[stepper].pwm(), Device[stepper].io());
     }
   }
 }
+
+
+//find if a Stepper motor is connected
+unint8_t findStepper() {
+    for(char i=0;i<MAX_DEVICES;i++)
+    {
+      switch(Device[i].type)
+      {
+        case STEPPER :
+          return i;
+        default :
+          break;
+      }
+    }
+}
+
+
+
 
 int counter=0;
 

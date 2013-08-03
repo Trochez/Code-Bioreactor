@@ -40,14 +40,11 @@ void getSensor() {
 
 void getWeight(char i){
   
-  int weight= analogRead(Device[i].io());                        //change because it is not directly 'PORT' that should be used
+  int weight= analogRead(Device[i].io());                       
   setParameter(Device[i].parameter,weight);
   if(weight>=getParameter(PARAM_LVL_MAX)){
-      setParameter();
-      setParameter();
+    setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)||FLAG_STEPPER_OFF));                       //STEPPER_OFF FLAG !!, enable pumping sequence
     }
-    setParameter(
-
   }
   
 }  
@@ -69,49 +66,21 @@ getTemperature(sensors1, oneWireAddress1, Device[i].port, Device[i].parameter);
 }
 
 
-
-
 void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, int parameter){
-   sensor.begin();
+  
+  sensor.begin();
   if (!sensor.getAddress(address, 0)) debugger(DEBUG_ONEWIRE_NODEVICE, bus); 
   sensor.setWaitForConversion(false); // we don't wait for conversion (otherwise may take 900mS)
   // set the resolution to 12 bit (Each Dallas/Maxim device is capable of several different resolutions)
   sensor.setResolution(address, 12);
 
     // following instruction takes 2ms
-    sensor.requestTemperatures(); // Send the coThreadOneWiremmand to get temperatures
+  sensor.requestTemperatures(); // Send the coThreadOneWiremmand to get temperatures
     // we should not forget that with 12 bits it takes over 600ms to get the result so in fact we
     // will get the result of the previous conversion ...
     // Following instruction takes 14ms
-    setParameter(parameter,(int)(sensor.getTempC(address)*100));
+  setParameter(parameter,(int)(sensor.getTempC(address)*100));
 }
 
-
-
-/*
-// function to print a oneWire address
-void printOneWireAddress(DeviceAddress deviceAddress, Print* output)
-{
-    if (*deviceAddress < 16) output->print("0");
-    else output->print(*deviceAddress, HEX);
-}
-
-/*Does not work at the moment
-void oneWireInfo(Print* output) {
-  output->println("One wire");
-  // Loop through each device, print out address
-  for(int i=0;i<sensors1.getDeviceCount(); i++)
-  {
-    // Search the wire for address
-    if (sensors1.getAddress(oneWireAddress, i))
-    {
-      output->print(i);
-      output->print(": ");
-      printOneWireAddress(oneWireAddress, output);
-      output->println();
-    }
-  }
-}
-*/
 
 

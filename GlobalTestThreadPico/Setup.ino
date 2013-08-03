@@ -36,7 +36,7 @@ void setConfig(){
   // conditionnal test, config is reset only if a modification occurred
   if(config_modif==TRUE){
     
-    setParameter(FLAG_VECTOR)=(getParameter(FLAG_VECTOR)||CONFIG_MODIF);
+    setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)&~(CONFIG_MODIF)));
     int config_table[]={getParameter(CONFIG1),getParameter(CONFIG2),getParameter(CONFIG3)};
     char h=0;  // select device index in the Device[] object table
   
