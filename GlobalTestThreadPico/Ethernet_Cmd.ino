@@ -178,27 +178,50 @@ void ethernetReadCommand(){
   if (DEBUG) Serial.println(millis()-start);
 }
 
+void ethernetParseRequest(char *fieldName, double extractedValueFloat){
+ /*---------------------------------------
+   The module has to be able to respond to 
+   several HTML request.
+   
+   1. Help menu
+   2. State vector
+   3. logs
+   4. i2c devices
+   5. 1-wire devices
+ ---------------------------------------*/
+ int extractedValueInt=(int)extractedValueFloat;
+  if (strcmp(fieldName,"StateVector")==0) {
+     ethernetSendStatus();
+  } else if (strcmp(fieldName,"helpMenu")==0) {
+    ethernetSendPlugStatus();
+  } else {
+    //Error, request non existant
+  }
+}
+
 /*-----------------------------
   Parameter & requests related functions
 ----------------------------*/
 
 void ethernetSendStatus(){
-
+  //return the parameters corresponding to the vector state
 }
 
 void ethernetSendPlugStatus(){
-  
+ //return the state of all the module plug on the device 
 }
 
-void ethernetSendSensorLog(){
-  
+void ethernetSendSensorLog(uint8_t device){
+  //return the logs of a specific sensor
 }
 
 void ethernetSendGeneralLog(){
-
+  //return the last X entry in the command log
 }
 
 void ethernetPrintHelp() {
+  //return the menu
+  
 //  Serial.println(F("(d)ebug"));
 //  Serial.println(F("(e)eprom"));
 //  Serial.println(F("(f)ree mem"));
@@ -213,11 +236,11 @@ void ethernetPrintHelp() {
 }
 
 void ethernetPrintI2C(){
-  
+  //return the I2C devices plugged on the device
 }
 
 void ethernetPrintOneWire(){
-  
+  //return the One-Wire devices pluggedf on the device
 }
 
 
