@@ -93,7 +93,7 @@
 
 /*State FlagVector*/
 
-#define FLAG_VECTOR     25
+#define FLAG_VECTOR     3
 
 /*related masks*/
 
@@ -105,16 +105,20 @@
 #define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
 #define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
 #define ERROR_MEMORY       (1<<14)   //set the condition to disable 
-#define MODE_STDBY   (1<<13)   //motor and temperature PID On only
-#define MODE_MANUAL  (1<<14)   //everything is set manually
-#define MODE_AUTO    (1<<15)   //reactor working by itself, log can be performed
+#define MODE_STDBY         (1<<13)   //motor and temperature PID On only
+#define MODE_MANUAL        (1<<14)   //everything is set manually
+#define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed
 
 /*Local events*/
+
+#define FLAG_VECTOR     4
+
+/*related masks*/
 
 #define ENABLE_STEPPER      (1<<0)
 #define ENABLE_TEMP_PID     (1<<1)
 #define ENABLE_PH_CTRL      (1<<2)
-#define CONFIG_MODIF        (1<<3)                                        // !!!!!!!!!! SHOULD BE IN A LOCAL VECTOR
+#define CONFIG_MODIF        (1<<3)                                       
 
 
 
