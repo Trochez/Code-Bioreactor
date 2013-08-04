@@ -58,6 +58,7 @@ void ethernetSetup() {
   Ethernet.begin(mac,ip);
 }  
 
+//kept here as an example
 void ethernetPushStatus() {
   if(DEBUG)Serial.println("PUSH STATUS: Connecting to server...");
   ethernetOpenConnection80();
