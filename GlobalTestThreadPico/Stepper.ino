@@ -1,5 +1,5 @@
 // Stepper motor thread, highest priority module
-
+// !!!!!!!!!! Find a way not to rescan the motor each time !!!!!
 
 NIL_WORKING_AREA(waThreadStepper, 0);        //memory allocation ??
 NIL_THREAD(ThreadStepper, arg) {
@@ -18,7 +18,7 @@ NIL_THREAD(ThreadStepper, arg) {
 
 
 //find if a Stepper motor is connected
-unint8_t findStepper() {
+int findStepper() {
     for(char i=0;i<MAX_DEVICES;i++)
     {
       switch(Device[i].type)
@@ -65,9 +65,6 @@ void executeStep(int numberSteps, boolean forward, byte currentDelay, byte port1
     }
     nilThdSleepMilliseconds(currentDelay);
   }
-}
-
-#endif
 
 
 

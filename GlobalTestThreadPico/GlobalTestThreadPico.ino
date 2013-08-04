@@ -101,6 +101,7 @@
 #define PARAM_LVL_MIN        18  
 
 #define PARAM_PH_EQUIL     20
+
 #define PARAM_TEMP_EQUIL   21
 
 /*State FlagVector*/
@@ -112,12 +113,15 @@
 #define FLAG_STEPPER_OFF   (1<<0)   //motor turned off
 #define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
 
+#define ENABLE_STEPPER      (1<<2)
+#define ENABLE_TEMP_PID     (1<<3)
+#define ENABLE_PH_CTRL      (1<<4)
 
-#define ERROR_SERVER_DWN   (1<<3)   //set the condition for individual data control (alert useless here)
-#define ERROR_TEMP         (1<<4)   //set the condition to stop temperature control + alert message
-#define ERROR_PH           (1<<5)   //set the condition to disable ph control       + alert message
-#define ERROR_WEIGHT       (1<<6)   //set the condition to disable pumping control  + alert message
-#define ERROR_MEMORY       (1<<7)   //set the condition to disable 
+#define ERROR_SERVER_DWN   (1<<10)   //set the condition for individual data control (alert useless here)
+#define ERROR_TEMP         (1<<11)   //set the condition to stop temperature control + alert message
+#define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
+#define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
+#define ERROR_MEMORY       (1<<14)   //set the condition to disable 
 
 #define CONFIG_MODIF (1<<12)                                        // !!!!!!!!!! SHOULD BE IN A LOCAL VECTOR
 //#define MODE_STDBY   (1<<13)   //motor and temperature PID On only
