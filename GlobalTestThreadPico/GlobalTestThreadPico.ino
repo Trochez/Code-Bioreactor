@@ -67,19 +67,6 @@
 
 //add a new definition here for a new type of sensor + code the additionnal related thread.
 
-
-/* Local State Vectors */
-/*Word structure : 4 bits allocated to each connection port + option for I2C additionnal device
-  DEV_PORT4/DEV_PORT3/DEV_PORT2/DEV_PORT1  (word1)
-  DEV_I2C_3/DEV_I2C_2/DEV_I2C_1/DEV_PORT5  (word2)
-  -/-/-/DEV_I2C_4/                         (word3)
-*/
-
-#define STATE_VCTR1  3  
-#define STATE_VCTR2  4  
-#define STATE_VCTR3  5  
-
-
 /*Port values*/     
 
 #define PARAM_PORT1    6
@@ -113,20 +100,22 @@
 #define FLAG_STEPPER_OFF   (1<<0)   //motor turned off
 #define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
 
-#define ENABLE_STEPPER      (1<<2)
-#define ENABLE_TEMP_PID     (1<<3)
-#define ENABLE_PH_CTRL      (1<<4)
-
 #define ERROR_SERVER_DWN   (1<<10)   //set the condition for individual data control (alert useless here)
 #define ERROR_TEMP         (1<<11)   //set the condition to stop temperature control + alert message
 #define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
 #define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
 #define ERROR_MEMORY       (1<<14)   //set the condition to disable 
+#define MODE_STDBY   (1<<13)   //motor and temperature PID On only
+#define MODE_MANUAL  (1<<14)   //everything is set manually
+#define MODE_AUTO    (1<<15)   //reactor working by itself, log can be performed
 
-#define CONFIG_MODIF (1<<12)                                        // !!!!!!!!!! SHOULD BE IN A LOCAL VECTOR
-//#define MODE_STDBY   (1<<13)   //motor and temperature PID On only
-//#define MODE_MANUAL  (1<<14)   //everything is set manually
-//#define MODE_AUTO    (1<<15)   //reactor working by itself, log can be performed
+/*Local events*/
+
+#define ENABLE_STEPPER      (1<<0)
+#define ENABLE_TEMP_PID     (1<<1)
+#define ENABLE_PH_CTRL      (1<<2)
+#define CONFIG_MODIF        (1<<3)                                        // !!!!!!!!!! SHOULD BE IN A LOCAL VECTOR
+
 
 
 /*Setup*/
