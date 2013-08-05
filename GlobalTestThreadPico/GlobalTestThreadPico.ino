@@ -34,8 +34,6 @@
 //#define THR_DISTANCEPIN  IO3
 //#define THR_MONITORING   13  // INCOMPATIBLE WITH OUT3
 //#define THR_IRPIN        12
-//#define THR_STEPPER      {OUT2, IO2}
-//#define THR_SERVO        IO4
 //#define THR_FLUX         IO4  //control of gas flux, same Berta as for gas valves
 
 /*Card configuration*/
@@ -87,9 +85,9 @@
 #define PARAM_LVL_MAX        17 
 #define PARAM_LVL_MIN        18  
 
-#define PARAM_PH_EQUIL     20
+#define PARAM_PH_EQUIL       20
 
-#define PARAM_TEMP_EQUIL   21
+#define PARAM_TEMP_EQUIL     21
 
 /*State FlagVector*/
 
@@ -111,7 +109,7 @@
 
 /*Local events*/
 
-#define FLAG_VECTOR     4
+#define LOCAL_VECTOR     4
 
 /*related masks*/
 

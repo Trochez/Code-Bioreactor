@@ -31,7 +31,7 @@ void resetConfig(){
 
 void setConfig(){
   
-  boolean config_modif=((getParameter(FLAG_VECTOR)&CONFIG_MODIF)==CONFIG_MODIF);
+  boolean config_modif=((getParameter(LOCAL_VECTOR)&CONFIG_MODIF)==CONFIG_MODIF);
   
   // conditionnal test, config is reset only if a modification occurred
   if(config_modif==TRUE){
