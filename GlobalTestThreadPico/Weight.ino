@@ -11,8 +11,10 @@ NIL_THREAD(ThreadSensor, arg)
 void getWeight(char i){
   int weight= analogRead(WGHT);                       
   setParameter(PARAM_WGHT,weight);
-  
-  //ADD condition to set flag motor off
+  if(weight>=PARAM_LVL_MAX){
+    //set the condition to initiate pumping sequence
+    setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)||FLAG_STEPPER_OFF));
+  }
   
 }  
 
