@@ -8,7 +8,7 @@ NIL_THREAD(ThreadStepper, arg) {
   }
   while (TRUE) {
     for (int i=0; i<200; i=i+20) {
-      //condition on the STEPPER flag  CHECK IF THIS CONDITION IS AT THE RIGHT PLACE HERE !!!!!!!
+      //condition on the STEPPER flag                                          CHECK IF THIS CONDITION IS AT THE RIGHT PLACE HERE !!!!!!!
       if((getParameter(FLAG_VECTOR)&&FLAG_STEPPER_OFF)==0){
         executeStep(i,true, 4, STEPPER_TAB[0], STEPPER_TAB[1]);
         executeStep(i,false, 4, STEPPER_TAB[0], STEPPER_TAB[1]);

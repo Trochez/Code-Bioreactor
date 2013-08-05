@@ -128,11 +128,12 @@
 #define PARAM_GAS_RATIO      19
 
 #define PARAM_LVL_MAX        20
-#define PARAM_LVL_MIN        21  
+#define PARAM_LVL_MIN        21 
+#define PRAM_WAIT_PUMP       22
 
-#define PARAM_PH_EQUIL       22
+#define PARAM_PH_EQUIL       23
 
-#define PARAM_TEMP_EQUIL     23
+#define PARAM_TEMP_EQUIL     24
 
 
 /*State FlagVector*/

@@ -15,6 +15,10 @@ void getWeight(char i){
     //set the condition to initiate pumping sequence
     setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)||FLAG_STEPPER_OFF));
   }
+  if(weight<=PARAM_LVL_MIN){
+    setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)&~(FLAG_STEPPER_OFF)));
+    setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)&~(FLAG_PUMPING)));
+  }
   
 }  
 
