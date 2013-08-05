@@ -28,66 +28,112 @@
 #define IO4     19//A1
 #define IO5     23//A5
 
+#define I2C    //????
 
-// the THR define have to be replaced by dynamical variables (set by the server, not hard coded)
+//select a Card definition
 
-//#define THR_DISTANCEPIN  IO3
-//#define THR_MONITORING   13  // INCOMPATIBLE WITH OUT3
-//#define THR_IRPIN        12
-//#define THR_FLUX         IO4  //control of gas flux, same Berta as for gas valves
+#define TEMP_CTRL     0
+//#define PH_CTRL       0
+//#define GAS_CTRL      0
+//#define STEPPER_CTRL  0
 
-/*Card configuration*/
-/*Word structure : 4 bits allocated to each connection port + option for I2C additionnal device
-  DEV_PORT4/DEV_PORT3/DEV_PORT2/DEV_PORT1  (word1)
-  DEV_I2C_3/DEV_I2C_2/DEV_I2C_1/DEV_PORT5  (word2)
-  -/-/-/DEV_I2C_4/                         (word3)
-*/
 
-#define CONFIG_1   0
-#define CONFIG_2   1
-#define CONFIG_3   2
+// Device define
 
-/* related MASK */
+#ifdef     TEMP_CTRL
+  #define  TEMP_LIQ       I01
+  #define  TEMP_PLATE     IO2
+  #define  RELAY_PID      I2C
+#endif
 
-#define PORT_MASK     0b0000000000001111
+#ifdef    PH_CTRL
+  #define PH              IO1
+  #define TAP_ACID_BASE   {I02,PWM2}
+#endif
 
-/*related DEVICE definitions*/
+#ifdef     GAS_CTRL
+  #define  FLUX           I2C
+  #define  TAP_GAS1_2     {IO1,PWM1}
+  #define  TAP_GAS3_4     {IO2,PWM2}
+#endif
 
-#define NO_DEVICE 0b1111
+#ifdef STEPPER_CTRL
+  #define  WGHT           IO1
+  #define  STEPPER        {IO4,PWM4}
+  #define  TAP_FOOD       IO3
+  #define  TEMP_STEPPER   IO5
+  #define  RELAY_PUMP     I2C
+#endif
 
-#define TEMP      0b0001
-#define WGHT      0b0010
-#define PH        0b0011
-#define FLUX      0b0100
-#define RELAY     0b0101
-#define GAS_TAP   0b0110
-#define STEPPER   0b0111
 
-//add a new definition here for a new type of sensor + code the additionnal related thread.
+/*Hard coded parameters*/     
 
-/*Port values*/     
+#ifdef TEMP_LIQ
+#define PARAM_TEMP_LIQ      0
+#endif
 
-#define PARAM_PORT1    6
-#define PARAM_PORT2    7
-#define PARAM_PORT3    8
-#define PARAM_PORT4    9
-#define PARAM_PORT5    10
-#define PARAM_I2C_1    11
-#define PARAM_I2C_2    12
-#define PARAM_I2C_3    13
-#define PARAM_I2C_4    14
+#ifdef TEMP_PLATE
+#define PARAM_TEMP_PALTE    1
+#endif
 
-/*hard coded parameters*/
+#ifdef TEMP_STEPPER
+#define PARAM_TEMP_STEPPER  2
+#endif
 
-#define PARAM_GAS_MIX      15  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), lookup table to be implemented by calibrating for each gas
-#define PARAM_GAS_RATIO    16
+#ifdef   PH
+#define  PARAM_PH           3
+#endif  
 
-#define PARAM_LVL_MAX        17 
-#define PARAM_LVL_MIN        18  
+#ifdef  WGHT         
+#define  PARAM_WGHT         4
+#endif
 
-#define PARAM_PH_EQUIL       20
+#ifdefine FLUX  
+#define   PARAM_FLUX_GAS1      5
+#define   PARAM_FLUX_GAS2      6
+#define   PARAM_FLUX_GAS3      7
+#define   PARAM_FLUX_GAS4      8
+#define   PARAM_TAP_GAS1_2     9
+#define   PARAM_TAP_GAS3_4     10
 
-#define PARAM_TEMP_EQUIL     21
+#endif
+
+#ifdefine  TAP_ACID_BASE
+#define  PARAM_TAP_ACID_BASE  13
+#endif
+
+
+#ifdefine  TAP_FOOD
+#define  PARAM_TAP_GAS4       14
+#endif
+
+#ifdefine  RELAY_PUMP
+#define  PARAM_RELAY_PUMP     15
+#endif
+
+#ifdefine  RELAY_PID
+#define  PARAM_RELAY_PID      16
+#endif
+
+#ifdefine  STEPPER
+#define  PARAM_STEPPER        17
+#endif 
+
+
+
+//to be CHECKED
+/*control parameters*/
+
+#define PARAM_GAS_MIX        18  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), lookup table to be implemented by calibrating for each gas
+#define PARAM_GAS_RATIO      19
+
+#define PARAM_LVL_MAX        20
+#define PARAM_LVL_MIN        21  
+
+#define PARAM_PH_EQUIL       22
+
+#define PARAM_TEMP_EQUIL     23
+
 
 /*State FlagVector*/
 
@@ -105,19 +151,7 @@
 #define ERROR_MEMORY       (1<<14)   //set the condition to disable 
 #define MODE_STDBY         (1<<13)   //motor and temperature PID On only
 #define MODE_MANUAL        (1<<14)   //everything is set manually
-#define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed
-
-/*Local events*/
-
-#define LOCAL_VECTOR     4
-
-/*related masks*/
-
-#define ENABLE_STEPPER      (1<<0)
-#define ENABLE_TEMP_PID     (1<<1)
-#define ENABLE_PH_CTRL      (1<<2)
-#define CONFIG_MODIF        (1<<3)                                       
-
+#define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed                                    
 
 
 /*Setup*/

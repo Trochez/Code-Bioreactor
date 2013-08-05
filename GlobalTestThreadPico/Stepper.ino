@@ -1,38 +1,18 @@
-// Stepper motor thread, highest priority module
-// !!!!!!!!!! Find a way not to rescan the motor each time !!!!!
+#ifdef STEPPER
 
-NIL_WORKING_AREA(waThreadStepper, 0);        //memory allocation ??
+NIL_WORKING_AREA(waThreadStepper, 0);
 NIL_THREAD(ThreadStepper, arg) {
-  
-    int stepper= findStepper();
-    pinMode(Device[stepper].io(),OUTPUT); 
-    pinMode(Device[stepper].pwm(),OUTPUT); 
-    
-  while (TRUE /* set condition here on the presence or not of a motor not to recheck the position of the motor each time*/) {
+  byte STEPPER_TAB[]=STEPPER;
+  for (byte i=0; i<sizeof(STEPPER_TAB); i++) {
+    pinMode(STEPPER_TAB[i], OUTPUT);    
+  }
+  while (TRUE) {
     for (int i=0; i<200; i=i+20) {
-      executeStep(i,true, 4, Device[stepper].pwm(), Device[stepper].io());
-      executeStep(i,false, 4, Device[stepper].pwm(), Device[stepper].io());
+      executeStep(i,true, 4, STEPPER_TAB[0], STEPPER_TAB[1]);
+      executeStep(i,false, 4, STEPPER_TAB[0], STEPPER_TAB[1]);
     }
   }
 }
-
-
-//find if a Stepper motor is connected
-int findStepper() {
-    for(char i=0;i<MAX_DEVICES;i++)
-    {
-      switch(Device[i].type)
-      {
-        case STEPPER :
-          return i;
-        default :
-          break;
-      }
-    }
-}
-
-
-
 
 int counter=0;
 
@@ -51,7 +31,7 @@ void executeStep(int numberSteps, boolean forward, byte currentDelay, byte port1
       digitalWrite(port2,LOW);
       break;
     case 1:
-      digitalWrite(port1, LOW); 
+      digitalWrite(port1, LOW);
       digitalWrite(port2,HIGH);
       break;
     case 2:
@@ -65,6 +45,7 @@ void executeStep(int numberSteps, boolean forward, byte currentDelay, byte port1
     }
     nilThdSleepMilliseconds(currentDelay);
   }
+}
 
-
+#endif
 
