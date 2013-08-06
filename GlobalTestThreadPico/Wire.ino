@@ -18,6 +18,7 @@ MCP23008:
 #define WIRE_EXT_1 B00100010
 #define WIRE_EXT_2 B00100011
 
+// address same for 4 relays
 #define WIRE_RELAY_1 B00100100 // 4-Relay 
 #define WIRE_RELAY_2 B00100101 // 4-Relay 
 

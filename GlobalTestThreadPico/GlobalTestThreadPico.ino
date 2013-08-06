@@ -28,7 +28,8 @@
 #define IO4     19//A1
 #define IO5     23//A5
 
-#define I2C    //????
+#define I2C_RELAY  B00100100
+#define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
 
 //select a Card definition
 
@@ -43,7 +44,7 @@
 #ifdef     TEMP_CTRL
   #define  TEMP_LIQ       I01
   #define  TEMP_PLATE     IO2
-  #define  RELAY_PID      I2C
+  #define  RELAY_PID      I2C_RELAY
 #endif
 
 #ifdef    PH_CTRL
@@ -52,7 +53,7 @@
 #endif
 
 #ifdef     GAS_CTRL
-  #define  FLUX           I2C
+  #define  FLUX           I2C_FLUX
   #define  TAP_GAS1_2     {IO1,PWM1}
   #define  TAP_GAS3_4     {IO2,PWM2}
 #endif
@@ -62,7 +63,7 @@
   #define  STEPPER        {IO4,PWM4}
   #define  TAP_FOOD       IO3
   #define  TEMP_STEPPER   IO5
-  #define  RELAY_PUMP     I2C
+  #define  RELAY_PUMP     I2C_RELAY
 #endif
 
 
@@ -112,11 +113,13 @@
 #endif
 
 #ifdefine  RELAY_PID
-#define  PARAM_RELAY_PID      16
+#define  PARAM_RELAY_PID      15
+//for the regulation of temperature values btw 10 and 45 [s] are commun
+#define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
 #endif
 
 #ifdefine  STEPPER
-#define  PARAM_STEPPER        17
+#define  PARAM_STEPPER        16
 #endif 
 
 
@@ -124,21 +127,23 @@
 //to be CHECKED
 /*control parameters*/
 
-#define PARAM_GAS_MIX        18  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), lookup table to be implemented by calibrating for each gas
-#define PARAM_GAS_RATIO      19
+#define PARAM_GAS_MIX        17  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), lookup table to be implemented by calibrating for each gas
+#define PARAM_GAS_RATIO      18
 
-#define PARAM_LVL_MAX        20
-#define PARAM_LVL_MIN        21 
-#define PRAM_WAIT_PUMP       22
+#define PARAM_LVL_MAX        19
+#define PARAM_LVL_MIN        20 
+#define PRAM_WAIT_PUMP       21
 
-#define PARAM_PH_EQUIL       23
+#define PARAM_PH_EQUIL       22
 
-#define PARAM_TEMP_EQUIL     24
+#define PARAM_TEMP_EQUIL     23
+#define PARAM_TEMP_MAX       24
+#define PARAM_TEMP_MIN       25
 
 
 /*State FlagVector*/
 
-#define FLAG_VECTOR     3
+#define FLAG_VECTOR     26           //possible out of the table ??
 
 /*related masks*/
 
@@ -146,7 +151,7 @@
 #define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
 
 #define ERROR_SERVER_DWN   (1<<10)   //set the condition for individual data control (alert useless here)
-#define ERROR_TEMP         (1<<11)   //set the condition to stop temperature control + alert message
+#define ERROR_PID          (1<<11)   //set the condition to stop temperature control + alert message
 #define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
 #define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
 #define ERROR_MEMORY       (1<<14)   //set the condition to disable 
@@ -170,3 +175,4 @@ void setup() {
 
 void loop() {
 }
+
