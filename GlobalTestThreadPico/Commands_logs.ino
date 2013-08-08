@@ -5,28 +5,41 @@
 #define PARAMETER_SIZE 32
 
 // Definition of all events to be logged
-#define PUMPING_START
-#define PUMPING_STOP
-#define MOTOR_START
-#define MOTOR_STOP
-#define PARAMETER_SET
-#define SENSORS_ERROR
-#define SET_MODE
+#define PUMPING_START    1
+#define PUMPING_STOP     2
+#define MOTOR_START      3
+#define MOTOR_STOP       4
+//#define PARAMETER_SET
+#define SENSORS_ERROR    5
+#define SET_MODE_1       16
+#define SET_MODE_2       17
+#define SET_MODE_3       18
+
+
+#define LOGS_ENTRY_SIZE  8
+#define 
 
 /* 
   Function to save the events in the Flash memory
   
-  event:  The event number to be logged
-  value:  The value of the changes made if needed
+  sst:             The object where is defined the operations to manipulate 
+                   the flash memory
+  addr:            The location in the memory where the command logs should be writen
+  timesamp:        The time when the event happend 
+  parameter_value: The value of the parameter (used when a user changes the value of
+                   on of the 26 variables)
+  
 */
-/*
-void writeCommandLog(uint8_t event, uint16_t value) {
+void writeCommandLog(SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_number, uint16_t parameter_value) {
   
-  // take the time, need to be synchronized with the NTP server
-  int time = now();
+  if(parameter_value == 0)
   
-  // Initialized the flash memory
-  sst.flashWriteInit();
+  
+  //compute the address of the last row (4 byte for the timestamp)
+  uint32_t address = *addr - (LOGS_ENTRY_SIZE - parameter - 1);
+  
+  // Initialized the flash memory with the rigth address in the memory
+  sst.flashWriteInit(*addr);
   
   // Write the timestamp
   for(int i=0; i<4; i++){
@@ -39,4 +52,15 @@ void writeCommandLog(uint8_t event, uint16_t value) {
   
   
   sst.flashWriteFinish();
-}*/
+  
+  
+  //Update the value of the actual entry
+  updateAddrLogs(uint32_t* addr);
+  
+}
+
+// Update the value of the position where a new events should be
+// logged in the memory
+void updateAddrLogs(uint32_t* addr){
+   *addr = (*addr + LOGS_ENTRY_SIZE);
+}
