@@ -1,3 +1,4 @@
+//This code is kept here as an example. It is not used for the bioreactor
 // Small demonstration of rgb1
 // RGB1 is NOT pulseWidth ModulatedThreadRGB1
 

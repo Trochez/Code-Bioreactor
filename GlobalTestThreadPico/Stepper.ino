@@ -1,4 +1,3 @@
-
 #ifdef THR_STEPPER
 
 NIL_WORKING_AREA(waThreadStepper, 0);

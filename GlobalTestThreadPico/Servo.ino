@@ -1,3 +1,5 @@
+//This code is kept here as an example. It is not used for the bioreactor
+
 #ifdef THR_SERVO
 
 #include <Servo.h>
