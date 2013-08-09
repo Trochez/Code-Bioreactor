@@ -17,6 +17,7 @@
 
 #define LOGS_ENTRY_SIZE        7
 
+#define 
 
 /* 
   Function to save the events in the Flash memory
