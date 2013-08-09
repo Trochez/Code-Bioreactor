@@ -18,6 +18,10 @@
 
 #define NTP_PACKET_SIZE (48)
 
+// the different types of logs
+#define LINEARS_LOGS    1
+#define COMMANDS_LOGS   2
+#define RRD_LOGS        3  //If Needed
 
 
 NIL_WORKING_AREA(waThreadLinearLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
@@ -76,11 +80,11 @@ NIL_THREAD(ThreadLinearLog, arg) {
         sendPacket(Udp,timeServer, packetBuffer);
         waitPacket = true;
       } 
-      // 2 seconds later we checke if we have an answer from the server and update the time if possible
+      // 2 seconds later we check if we have an answer from the server and update the time if possible
       else if(waitPacket == true && time_now - previousNTP >= 3602){
         boolean success = updateNTP(Udp,timeServer, packetBuffer);
         if(!success){
-           //TODO :write it in the event log 
+           writeCommandLog(sst, findAddress (COMMAND_LOGS), NO_ANSWER_NTP_SERVER,  time_now, 0) //TODO :update the function 
         }
         previousNTP = time_now;
         waitPacket = false;
@@ -88,7 +92,7 @@ NIL_THREAD(ThreadLinearLog, arg) {
       
       //This function suppose that the thread is called very regularly (at least 1 time every seconds)
       if(time_now - previousLog > 1){
-        writeLog(sst, &addr, time_now, getParametersTable());
+        writeLog(sst, findAddress(LINEAR_LOGS), time_now, getParametersTable());
         previousLog = time_now;
       }
       
@@ -110,10 +114,22 @@ void setupMemory(SST sst){
   sst.init();
 }
 
-//Update the value of the actual entry
-void updateAddr(uint32_t* addr){
-   *addr = (*addr + ENTRY_SIZE);
+// Update the value of the position where a new events should be
+// logged in the memory
+void updateAddrLogs(uint32_t* addr, uint8_t log_type){
+  switch(log_type)
+  {
+    case LINEARS_LOGS:
+      *addr = (*addr + ENTRY_SIZE);
+      break;
+    case COMMANDS_LOGS:
+      *addr = (*addr + LOGS_ENTRY_SIZE);
+      break;
+    case RRD_LOGS:
+      *addr = (*addr + ENTRY_SIZE);
+  }
 }
+
 
 //Write in the memory the data with a timestamp. The data has a predifined & invariable size
 void writeLog(SST sst, uint32_t* addr, uint32_t timestamp, int* data){
@@ -148,7 +164,7 @@ uint8_t* readLastEntry(SST sst, uint32_t* addr, uint8_t* result) {
 uint8_t* readLast(SST sst, uint32_t* addr, uint8_t* result, uint8_t parameter, uint8_t n){
   
     //compute the address of the last row (4 byte for the timestamp)
-    uint32_t address = *addr - (MAX_PARAM- parameter-1);
+    uint32_t address = *addr - (MAX_PARAM - parameter - 1);
     
     for(int i=0; i<n; i++){
          sst.flashReadInit(address);
@@ -156,7 +172,7 @@ uint8_t* readLast(SST sst, uint32_t* addr, uint8_t* result, uint8_t parameter, u
          //TODO : is it necessary in the loop ?
          sst.flashReadFinish();
          //Update Addresss
-         address = address- ENTRY_SIZE;
+         address = address - ENTRY_SIZE;
     }
     return result;
 }
@@ -182,7 +198,16 @@ uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_
 }
 
 //TODO: to be implemented
-uint32_t findAddress(){
+uint32_t findAddress(uint8 logs_type) {
+  switch(logs_type) {
+    case LINEAR_LOGS:
+      break;
+    case COMMANDS_LOGS:
+      break;
+    case RRD_LOGS: 
+      break;
+  }
+  
   return 0;
 }
 

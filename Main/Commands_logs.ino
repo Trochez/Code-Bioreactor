@@ -10,11 +10,14 @@
 #define MOTOR_START      3
 #define MOTOR_STOP       4
 //#define PARAMETER_SET
+#define NO_ANSWER_NTP_SERVER   6
+#define NO_ANSWER_SERVER       7
+#define SENSORS_ERROR          8
 #define SENSORS_ERROR    5
 #define SET_MODE_1       16
 #define SET_MODE_2       17
 #define SET_MODE_3       18
-
+#define PARAMETER_SET          32
 
 #define LOGS_ENTRY_SIZE  8
 
