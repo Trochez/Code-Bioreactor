@@ -14,7 +14,7 @@
 #include <EthernetUdp.h>
 
 //size of every new entry (4 bytes for the timestamp)
-#define ENTRY_SIZE (MAX_PARAM+4)
+#define ENTRY_SIZE (MAX_PARAM + 4)
 
 #define NTP_PACKET_SIZE (48)
 
@@ -76,12 +76,12 @@ NIL_THREAD(ThreadLinearLog, arg) {
       
       time_now = now();
       
-      if(waitPacket == false && time_now - previousNTP >= 3600){
+      if(!waitPacket && time_now - previousNTP >= 3600){
         sendPacket(Udp,timeServer, packetBuffer);
         waitPacket = true;
       } 
       // 2 seconds later we check if we have an answer from the server and update the time if possible
-      else if(waitPacket == true && time_now - previousNTP >= 3602){
+      else if(waitPacket && time_now - previousNTP >= 3602){
         boolean success = updateNTP(Udp,timeServer, packetBuffer);
         if(!success){
            writeCommandLog(sst, findAddress (COMMAND_LOGS), NO_ANSWER_NTP_SERVER,  time_now, 0) //TODO :update the function 
@@ -198,7 +198,7 @@ uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_
 }
 
 //TODO: to be implemented
-uint32_t findAddress(uint8 logs_type) {
+uint32_t findAddress(uint8_t logs_type) {
   switch(logs_type) {
     case LINEAR_LOGS:
       break;
