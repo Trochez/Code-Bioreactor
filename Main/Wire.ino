@@ -37,11 +37,11 @@ ADS7823
  Open drain led drive driver
  */
 
-
+/*
 #define WIRE_PHMETER_ID 0b01001000 // pH-meter v1.3
 #define REGISTER_RELAY_COMMAND 0b00010001 // = 17 = R (elay)
 #define REGISTER_PH_METER_READOUT 0b00001111 // = 15 = P 
-
+*/
 
 #define WIRE_MAX_DEVICES 10
 byte numberI2CDevices=0;
@@ -83,11 +83,16 @@ NIL_THREAD(ThreadWire, arg) {
         wireWrite(WIRE_EXT_2,B00001111);
       }
     }
-    /*TODO
-    #ifdef PARAM_RELAY
-      sendRelay(I2C_RELAY, getParameter(PARAM_RELAY), wireFlag32);
+
+    #ifdef PARAM_RELAY_PUMP
+      sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PUMP), wireFlag32);
     #endif
-    */
+    
+    #ifdef PARAM_RELAY_PID
+      sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PID), wireFlag32);
+    #endif
+    
+    
     
     #ifdef PARAM_FLUX
       sendRelay(I2C_FLUX, getParameter(PARAM_FLUX), wireFlag32);

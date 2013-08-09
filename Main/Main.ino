@@ -52,7 +52,7 @@
 #ifdef     TEMP_CTRL
   #define  TEMP_LIQ       IO1
   #define  TEMP_PLATE     IO2
-  #define  RELAY_PID      I2C_RELAY
+  #define  RELAY_PID      I2C_RELAY 
 #endif
 
 #ifdef    PH_CTRL
@@ -142,16 +142,16 @@
 #define PARAM_LVL_MIN        20 
 #define PRAM_WAIT_PUMP       21
 
-#define PARAM_PH_EQ       22
+#define PARAM_PH_EQ          22
 
-#define PARAM_TEMP_EQ     23
+#define PARAM_TEMP_EQ        23
 #define PARAM_TEMP_MAX       24
 #define PARAM_TEMP_MIN       25
 
 
 /*State FlagVector*/
 
-#define FLAG_VECTOR     26           //possible out of the table ??
+#define FLAG_VECTOR          26           //possible out of the table ??
 
 /*related masks*/
 
