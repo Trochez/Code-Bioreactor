@@ -145,4 +145,7 @@ NIL_THREAD(ThreadSerial, arg) {
   }
 }
 
-
+static void printFreeMemory(Print* output)
+{
+  nilPrintUnusedStack(output);
+}

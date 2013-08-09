@@ -17,7 +17,7 @@
 
 
 #define LOGS_ENTRY_SIZE  8
-#define 
+
 
 /* 
   Function to save the events in the Flash memory
@@ -34,9 +34,9 @@ void writeCommandLog(SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_
   
   if(parameter_value == 0)
   
-  
+  //TODO CHECK event_number
   //compute the address of the last row (4 byte for the timestamp)
-  uint32_t address = *addr - (LOGS_ENTRY_SIZE - parameter - 1);
+  uint32_t address = *addr - (LOGS_ENTRY_SIZE - event_number - 1);
   
   // Initialized the flash memory with the rigth address in the memory
   sst.flashWriteInit(*addr);
@@ -55,7 +55,7 @@ void writeCommandLog(SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_
   
   
   //Update the value of the actual entry
-  updateAddrLogs(uint32_t* addr);
+  updateAddrLogs(addr);
   
 }
 

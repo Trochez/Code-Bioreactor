@@ -1,3 +1,5 @@
+//TODO: Rewrite with the new structure
+
 /*
 MCP23008:
  - start address: B00100000 (32)
@@ -18,8 +20,8 @@ MCP23008:
 #define WIRE_EXT_1 B00100010
 #define WIRE_EXT_2 B00100011
 
-#define WIRE_RELAY_1 B00100100 // 4-Relay 
-#define WIRE_RELAY_2 B00100101 // 4-Relay 
+//#define WIRE_RELAY_PID B00100100 // 4-Relay 
+//#define WIRE_RELAY_PUMP B00100101 // 4-Relay 
 
 /*
 ADS7823
@@ -81,10 +83,16 @@ NIL_THREAD(ThreadWire, arg) {
         wireWrite(WIRE_EXT_2,B00001111);
       }
     }
-
-    sendRelay(WIRE_RELAY_1, getParameter(PARAM_RELAY_1), wireFlag32);
-    sendRelay(WIRE_RELAY_2, getParameter(PARAM_RELAY_2), wireFlag32);
-
+    /*TODO
+    #ifdef PARAM_RELAY
+      sendRelay(I2C_RELAY, getParameter(PARAM_RELAY), wireFlag32);
+    #endif
+    */
+    
+    #ifdef PARAM_FLUX
+      sendRelay(I2C_FLUX, getParameter(PARAM_FLUX), wireFlag32);
+    #endif
+    /*
     if (wireEventStatus%10==0) {
       if (wireDeviceExists(WIRE_LCD_16_2)) {
         if (! wireFlagStatus(wireFlag32, WIRE_LCD_16_2)) {
@@ -107,9 +115,7 @@ NIL_THREAD(ThreadWire, arg) {
         lcd.setCursor(12,1);
         lcd.print(getParameter(PARAM_IRCODE));
         lcd.print(F("   "));
-        /*
-
-         */
+   
       } 
       else {
         clearWireFlag(wireFlag32, WIRE_LCD_16_2); 
@@ -148,6 +154,7 @@ NIL_THREAD(ThreadWire, arg) {
       wireWrite(WIRE_PHMETER_ID, 0b00010000); // initialize A/D conversion with 5th bit
       setParameter(REGISTER_PH_METER_READOUT, wireReadTwoBytesToInt(WIRE_PHMETER_ID)); // save pH value into 
     }
+    */
     nilThdSleepMilliseconds(100);
 
   }
