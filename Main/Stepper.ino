@@ -17,7 +17,7 @@ RED = {PWM=HIGH, IO=LOW}
 
 
 
-NIL_WORKING_AREA(waThreadStepper, 0);
+NIL_WORKING_AREA(waThreadStepper, 48);
 NIL_THREAD(ThreadStepper, arg) {
   byte STEPPER_TAB[]=STEPPER;
   boolean forward = true;

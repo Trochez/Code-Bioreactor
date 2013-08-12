@@ -52,24 +52,16 @@
 #define URL_2 6
 #define URL_3 7
 
-// THIS SHOULD BE DEFINED GLOBALLY SO THREADS CAN ACCESS IT 
-// Enter a MAC address and IP address for the Arduino controller below.
-// The IP address is reserved on the routher for this Arduino controller.
-// CAUTION
-// Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
-// and a different MAC address
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-byte ip[] = {172,17,0,100}; // reserved IP adress of the Arduino
-
-
 // Initialize the Ethernet client library
 // with the IP address and port of the server 
 // that you want to connect to (port 80 is default for HTTP):
 
-unsigned int localPort = 8888;      // local port to listen for UDP packets
-EthernetServer server(80);
+uint8_t ip[] = IP;
+uint8_t mac[] = MAC;
+const uint8_t alix[] = ALIX;
 
-IPAddress alix_server(172,17,0,10); // local NTP server 
+EthernetServer server(80);
+IPAddress alix_server(alix[0],alix[1],alix[2],alix[3]); // local NTP server 
 
 //The longest request possible is "GET /s=4294967295"
 #define REQUEST_LENGTH 17
@@ -78,7 +70,7 @@ IPAddress alix_server(172,17,0,10); // local NTP server
  Ethernet Thread
  ---------------------------*/
 
-NIL_WORKING_AREA(waThreadEthernet, 250); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 296); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   
   // Initializate the connection with the server
@@ -168,8 +160,8 @@ void parseRequest(Client* cl, uint8_t* req) {
   
   // show settings hardCoded on the card
   else if (c=='f') {
-    //TODO
-  } 
+    printHardCodedParameters(cl);
+  }
   
   // show i2c (wire) information
   else if (c=='i') { 
@@ -196,12 +188,13 @@ void parseRequest(Client* cl, uint8_t* req) {
   
   //return the log of the entry given
   else if ( (c=='s') || (c=='m') || (c=='h') || (c='e')){
+    #ifdef THR_LINEAR_LOGS
     uint8_t d = req[URL_2];
     switch(d){
       //We return the last entry
       case ' ':
         readLastEntry(c, req);
-        client.write(req, 32, HEX);
+        (*cl).write(req, 32, HEX);
         break;
       case '=':
         {
@@ -209,14 +202,17 @@ void parseRequest(Client* cl, uint8_t* req) {
           uint8_t i=URL_3;
           while(req[i] != ' ' && i<REQUEST_LENGTH){
             //The letters start at index 48 in ASCII
-            value = (req[i]-ASCII_0) + value*10;
+            index = (req[i]-ASCII_0) + index*10;
             i++;
           }
           readEntryN(c, req, index);
-          client.write(req, 32, HEX);
+          (*cl).write(req, 32, HEX);
         }
+     }
+     #else
+     (*cl).println("Thread log not activated");
+     #endif
   }
-  
   // The request is a parameter A-Z
   else if(c >= ASCII_A && c <= ASCII_Z){
     
@@ -267,6 +263,24 @@ void printHelp(Print* output) {
   output->println(F("(o)ne wire<br/>"));
   output->println(F("(s)ettings<br/>"));
 
+}
+
+void printHardCodedParameters(Print* output){
+   output->println(F("Hardcoded Parameters :")); 
+   output->print(F("IP : "));
+   //output->print(ip[0] + " " + ip[1] + " " + ip[2] + " " + ip[3]);
+   output->print(F("MAC : "));
+   //output->println(mac[0] + " " + mac[1] + " " + mac[2] + " " + mac[3]); 
+   output->print(F("ALIX : "));
+   //output->println(alix[0] + " " + alix[1] + " " + alix[2] + " " + alix[3]); 
+   #ifdef RELAY_PUMP
+     output->print(F("I2C relay : "));
+     output->println(I2C_RELAY); 
+   #endif
+   #ifdef FLUX
+     output->print(F("I2C Flux : "));
+     output->println(I2C_FLUX); 
+   #endif
 }
 
 /*

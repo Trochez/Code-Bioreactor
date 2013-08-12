@@ -1,5 +1,3 @@
-#include <SST.h>
-
 /**************
   LIBRAIRIES
 **************/
@@ -77,7 +75,7 @@ LOGGER AND DEBUGGER
 *******************************/  
 
 //#define THR_LINEAR_LOGS       1
-//#define THR_ETHERNET          1
+#define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
 #define FLAG_VECTOR               23
@@ -90,7 +88,7 @@ LOGGER AND DEBUGGER
 
 //#define TEMP_CTRL     1
 //#define PH_CTRL       1
-#define GAS_CTRL      1
+//#define GAS_CTRL      1
 //#define STEPPER_CTRL   1
 
 
@@ -220,9 +218,25 @@ LOGGER AND DEBUGGER
                                  //lookup table to be implemented by calibrating for each gas
 //#define PARAM_GAS_RATIO   
 
+
+/**********************
+  Network parameters
+  
+// Enter a MAC address and IP address for the Arduino controller below.
+// The IP address is reserved on the routher for this Arduino controller.
+// CAUTION
+// Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
+// and a different MAC address
+***********************/
+
+#define IP {172, 17, 0 ,100}
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
+#define ALIX {172,17,0,10}
+
 /*********
   SETUP
 *********/
+
 
 byte IO[] = {
   IO1, IO2, IO3, IO4};
