@@ -12,7 +12,7 @@
 #include <EthernetUdp.h>
 
 //Log libraries TODO: should be completed and corrected, still problem with the C/C++ compiler
-#include <Log.h>
+//#include <Log.h>
 
 //Prototypes
 void writeLog(uint8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
@@ -368,6 +368,68 @@ uint8_t getLogsN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN)
     result[index] = sst.flashReadNextInt8();
   sst.flashReadFinish();
   return 0;
+}
+
+/*
+  This function returns the next log ID that should be use for the next entry in the memory
+  corresponding to the log type.
+  
+  log_type:    The type of logs (RRD_SEC_LOGS, RRD_MIN_LOGS, RRD_HOUR_LOGS, COMMAND_LOGS)
+  entryN:      The actual log ID
+  
+  return:      The next log ID to be used
+*/
+uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN)
+{
+  uint32_t lastEntry = 0;
+  switch(log_type) 
+  {
+    case COMMAND_LOGS:
+      lastEntry = (entryN + 1) % NB_ENTRIES_CMD;
+      break;
+    case RRD_SEC_LOGS: 
+      lastEntry = (entryN + 1) % NB_ENTRIES_SEC;
+      break;
+    case RRD_MIN_LOGS: 
+      lastEntry = (entryN + 1) % NB_ENTRIES_MIN;
+      break;
+    case RRD_HOUR_LOGS: 
+      lastEntry = (entryN + 1) % NB_ENTRIES_HOUR;
+      break;
+  return lastEntry;
+  }
+}
+
+/*
+  This function returns the previous log ID that has been used for the previous entry in 
+  the memory corresponding to the log type.
+  
+  log_type:    The type of logs (RRD_SEC_LOGS, RRD_MIN_LOGS, RRD_HOUR_LOGS, COMMAND_LOGS)
+  entryN:      The actual log ID
+  
+  return:      The previous log ID stored in the memory
+*/
+uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN)
+{
+  uint32_t PreviousEntry = 0;
+  switch(logs_type) 
+  {
+    case COMMAND_LOGS:
+      PreviousEntry = (entryN - 1 + NB_ENTRIES_CMD) % NB_ENTRIES_CMD;
+      break;
+    case RRD_SEC_LOGS: 
+      PreviousEntry = (entryN - 1 + NB_ENTRIES_SEC) % NB_ENTRIES_SEC;
+      break;
+      /*
+    case RRD_MIN_LOGS: 
+      PreviousEntry = (entryN - 1 + NB_ENTRIES_MIN) % NB_ENTRIES_MIN;
+      break;
+    case RRD_HOUR_LOGS: 
+      PreviousEntry = (entryN - 1 + NB_ENTRIES_HOUR) % NB_ENTRIES_HOUR;
+      break;
+      */
+  }
+  return PreviousEntry;
 }
 
 /*
