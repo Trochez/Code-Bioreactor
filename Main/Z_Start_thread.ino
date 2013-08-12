@@ -24,13 +24,20 @@
 
 NIL_THREADS_TABLE_BEGIN()
 
+
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThreadSerial))
+
+#if defined(THR_ETHERNET) || defined(THR_LINEAR_LOGS)
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadEthernet, NULL, waThreadEthernet, sizeof(waThreadEthernet))
+#endif
+
 #ifdef PH_CTRL
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadPH, NULL, waThreadPH, sizeof(waThreadPH))   //probably inclued in Wire thread addressing the I2C
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadPH, NULL, waThreadPH, sizeof(waThreadPH))
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadTap, NULL, waThreadTap, sizeof(waThreadTap))
 #endif
 
 #ifdef  GAS_CTRL 
-  NIL_THREADS_TABLE_ENTRY(NULL, ThreadTap, NULL, waThreadTap, sizeof(waThreadTap))
+//NIL_THREADS_TABLE_ENTRY(NULL, ThreadTap, NULL, waThreadTap, sizeof(waThreadTap))
 #endif  
 
 #if defined(TEMP_LIQ) || defined(TEMP_PLATE) || defined(TEMP_STEPPER)
@@ -41,27 +48,16 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadTemp, NULL, waThreadTemp, sizeof(waThreadTem
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay_PID, NULL, waThreadRelay_PID, sizeof(waThreadRelay_PID))      
 #endif
 
-#ifdef  STEPPER
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
-#endif
-
 #ifdef WGHT
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
 #endif
 
-
-#ifdef THR_LINEAR_LOGS
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadLinearLog, NULL, waThreadLinearLog, sizeof(waThreadLinearLog))
-#endif
-
-#ifdef THR_ETHERNET
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadEthernet, NULL, waThreadEthernet, sizeof(waThreadEthernet))
-#endif
-
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThreadSerial))
-
 #if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
+#endif
+
+#ifdef  STEPPER
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
 #endif
 
 #ifdef THR_MONITORING 
