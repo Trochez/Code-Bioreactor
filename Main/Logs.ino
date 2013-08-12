@@ -11,7 +11,7 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 
-//Log libraries
+//Log libraries TODO: should be completed and corrected, still problem with the C/C++ compiler
 #include <Log.h>
 
 //Prototypes
@@ -22,9 +22,9 @@ uint8_t getLogsN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN);
 uint16_t findSectorOfN(uint8_t log_type, uint32_t entryNb);
 void updateEntryN(uint8_t log_type);
 uint32_t findAddressOfEntryN(uint8_t logs_type, uint32_t entryN);
-uint32_t findLastEntryN(uint8_t log_type);
 uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN);
 uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
+uint32_t findLastEntryN(uint8_t log_type);
 uint32_t getLastEntrySec();
 uint32_t getLastEntryMin();
 uint32_t getLastEntryHour();
@@ -59,6 +59,28 @@ uint32_t getLastEntryCmd();
 #define ERROR_ERASE_SECTOR     140
 #define PARAMETER_SET          130
 #define ERROR_NOT_FOUND_ENTRY_N  150
+
+
+// Definition of the log sectors in the flash for the logs
+#define ADDRESS_SEC_BEG   0x000000
+#define ADDRESS_MIN_BEG   0x3F4000
+#define ADDRESS_HOUR_BEG  0x5EE000
+#define ADDRESS_CMD_BEG   0x620000
+
+#define SECTOR_SIZE       4096
+
+// Size of the log sectors in bytes
+#define ADDRESS_SEC_SIZE  (ADDRESS_MIN_BEG  - ADDRESS_SEC_BEG)
+#define ADDRESS_MIN_SIZE  (ADDRESS_HOUR_BEG - ADDRESS_MIN_BEG)
+#define ADDRESS_HOUR_SIZE (ADDRESS_CMD_BEG  - ADDRESS_HOUR_BEG)
+#define ADDRESS_CMD_SIZE  0x020000
+
+// The number of entires by types of logs (seconds, minutes, hours, commands/events)
+#define NB_ENTRIES_SEC    (ADDRESS_SEC_SIZE  / ENTRY_SIZE_LINEAR_LOGS) 
+#define NB_ENTRIES_MIN    (ADDRESS_MIN_SIZE  / ENTRY_SIZE_LINEAR_LOGS)
+#define NB_ENTRIES_HOUR   (ADDRESS_HOUR_SIZE / ENTRY_SIZE_LINEAR_LOGS)
+#define NB_ENTRIES_CMD    (ADDRESS_CMD_SIZE  / ENTRY_SIZE_COMMAND_LOGS)
+
 
 //Determine the position of the last logs in the memory for
 // all type of logs (linear, RRD, commands/event)
@@ -166,14 +188,14 @@ void writeLog(uint8_t log_type, uint32_t entryNb, uint32_t timestamp, uint16_t e
   uint16_t param = 0;
   
   // test if it is the begining of one sector, and erase the sector of 4094 bytes if needed
-  if(!(*entryNb % SECTOR_SIZE))
-    sst.flashSectorErase(findSectorOfN(log_type, *entryNb));
+  if(!(entryNb % SECTOR_SIZE))
+    sst.flashSectorErase(findSectorOfN(log_type, entryNb));
       
   // Initialized the flash memory with the rigth address in the memory
-  sst.flashWriteInit(findAddressOfEntryN(log_type, *entryNb));
+  sst.flashWriteInit(findAddressOfEntryN(log_type, entryNb));
   
   // Write the 4 bytes of the entry number
-  sst.flashWriteNextInt32(*entryNb);
+  sst.flashWriteNextInt32(entryNb);
   
   // Write the 4 bytes of the timestamp in the memory using a mask
   sst.flashWriteNextInt32(timestamp);
@@ -231,14 +253,15 @@ void readLastEntry(uint8_t log_type, uint8_t* result) {
       address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryCmd));
       break;
     case RRD_SEC_LOGS: 
-      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntrySec));
-      break;
+      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryRRDSec));
+      break;/*
     case RRD_MIN_LOGS:
-      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryMin));
+      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryRRDMin));
       break;
     case RRD_HOUR_LOGS:
-      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryHour));
+      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryRRDHour));
       break;
+      */
   } 
   
   // Initializate the memory for the reading
@@ -252,7 +275,7 @@ void readLastEntry(uint8_t log_type, uint8_t* result) {
         result[i] = sst.flashReadNextInt8();
       break;
     
-    case RRD_SEC_LOGS:
+    case RRD_SEC_LOGS: case RRD_MIN_LOGS:  case RRD_HOUR_LOGS:
       for(int i = 0; i < ENTRY_SIZE_LINEAR_LOGS + 4; i++) 
         result[i] = sst.flashReadNextInt8();
       break;
@@ -395,14 +418,16 @@ void updateEntryN(uint8_t log_type) {
       newEntryCmd = (newEntryCmd + 1) % NB_ENTRIES_CMD;
       break;
     case RRD_SEC_LOGS: 
-      newEntrySec = (newEntrySec + 1) % NB_ENTRIES_SEC;
+      newEntryRRDSec = (newEntryRRDSec + 1) % NB_ENTRIES_SEC;
       break;
+      /*
     case RRD_MIN_LOGS: 
-      newEntryMin = (newEntryMin + 1) % NB_ENTRIES_MIN;
+      newEntryRRDMin = (newEntryMin + 1) % NB_ENTRIES_MIN;
       break;
     case RRD_HOUR_LOGS: 
-      newEntryHour = (newEntryHour + 1) % NB_ENTRIES_HOUR;
+      newEntryRRDHour = (newEntryHour + 1) % NB_ENTRIES_HOUR;
       break;
+      */
   }
 }
 
@@ -483,70 +508,12 @@ uint32_t findLastEntryN(uint8_t log_type)
   return lastEntry;
 }
 
+uint32_t getLastEntrySec() {return findPreviousEntryN(COMMAND_LOGS, newEntryRRDSec );}
+uint32_t getLastEntryMin() {return findPreviousEntryN(RRD_SEC_LOGS, newEntryRRDSMin);}
 /*
-  This function returns the next log ID that should be use for the next entry in the memory
-  corresponding to the log type.
-  
-  log_type:    The type of logs (RRD_SEC_LOGS, RRD_MIN_LOGS, RRD_HOUR_LOGS, COMMAND_LOGS)
-  entryN:      The actual log ID
-  
-  return:      The next log ID to be used
+uint32_t getLastEntryHour() {return findPreviousEntryN(RRD_MIN_LOGS, newEntryRRDHour);}
+uint32_t getLastEntryCmd() {return findPreviousEntryN(RRD_HOUR_LOGS, newEntryRRDSCmd);}
 */
-uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN)
-{
-  uint32_t lastEntry = 0;
-  switch(log_type) 
-  {
-    case COMMAND_LOGS:
-      lastEntry = (entryN + 1) % NB_ENTRIES_CMD;
-      break;
-    case RRD_SEC_LOGS: 
-      lastEntry = (entryN + 1) % NB_ENTRIES_SEC;
-      break;
-    case RRD_MIN_LOGS: 
-      lastEntry = (entryN + 1) % NB_ENTRIES_MIN;
-      break;
-    case RRD_HOUR_LOGS: 
-      lastEntry = (entryN + 1) % NB_ENTRIES_HOUR;
-      break;
-  return lastEntry;
-  }
-}
-
-/*
-  This function returns the previous log ID that has been used for the previous entry in 
-  the memory corresponding to the log type.
-  
-  log_type:    The type of logs (RRD_SEC_LOGS, RRD_MIN_LOGS, RRD_HOUR_LOGS, COMMAND_LOGS)
-  entryN:      The actual log ID
-  
-  return:      The previous log ID stored in the memory
-*/
-uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN)
-{
-  uint32_t PreviousEntry = 0;
-  switch(logs_type) 
-  {
-    case COMMAND_LOGS:
-      PreviousEntry = (entryN - 1 + NB_ENTRIES_CMD) % NB_ENTRIES_CMD;
-      break;
-    case RRD_SEC_LOGS: 
-      PreviousEntry = (entryN - 1 + NB_ENTRIES_SEC) % NB_ENTRIES_SEC;
-      break;
-    case RRD_MIN_LOGS: 
-      PreviousEntry = (entryN - 1 + NB_ENTRIES_MIN) % NB_ENTRIES_MIN;
-      break;
-    case RRD_HOUR_LOGS: 
-      PreviousEntry = (entryN - 1 + NB_ENTRIES_HOUR) % NB_ENTRIES_HOUR;
-      break;
-  }
-  return PreviousEntry;
-}
-
-uint32_t getLastEntrySec() {return findPreviousEntryN(COMMAND_LOGS, );}
-uint32_t getLastEntryMin() {return findPreviousEntryN(RRD_SEC_LOGS, );}
-uint32_t getLastEntryHour() {return findPreviousEntryN(RRD_MIN_LOGS, );}
-uint32_t getLastEntryCmd() {return findPreviousEntryN(RRD_HOUR_LOGS, );}
 
 /*-----------------------
   NTP related functions
