@@ -150,6 +150,7 @@ NIL_THREAD(ThreadEthernet, arg) {
           previousLog = time_now;
         }
       #endif
+    Serial.println(newEntryCmd);
     
    /****************************
       THREAD ETHERNET 
