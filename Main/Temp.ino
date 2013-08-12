@@ -9,7 +9,7 @@
   #endif
 
   #ifdef TEMP_PLATE
-  OneWire oneWire2(TEMP_LIQ);
+  OneWire oneWire2(TEMP_PLATE);
   DallasTemperature sensors2(&oneWire2);
   DeviceAddress oneWireAddress2;
   #endif
@@ -31,6 +31,7 @@
 NIL_WORKING_AREA(waThreadTemp, 70);
 NIL_THREAD(ThreadTemp, arg) {
   
+  while(TRUE){
   #ifdef TEMP_LIQ
   getTemperature(sensors1, oneWireAddress1, TEMP_LIQ, PARAM_TEMP_LIQ);
   #endif
@@ -44,6 +45,7 @@ NIL_THREAD(ThreadTemp, arg) {
   #endif
   
   nilThdSleepMilliseconds(500);
+  }
 }
 
 
@@ -54,7 +56,6 @@ void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, in
   sensor.setWaitForConversion(false); // we don't wait for conversion (otherwise may take 900mS)
   // set the resolution to 12 bit (Each Dallas/Maxim device is capable of several different resolutions)
   sensor.setResolution(address, 12);
-
     // following instruction takes 2ms
     sensor.requestTemperatures(); // Send the coThreadOneWiremmand to get temperatures
     // we should not forget that with 12 bits it takes over 600ms to get the result so in fact we
