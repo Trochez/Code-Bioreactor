@@ -289,20 +289,14 @@ void parseRequest(Client* cl, uint8_t* req) {
       //We have a log entry number given
       case '=':
         {
-          uint32_t index = 0;
-          uint8_t i=URL_3;
-          while(req[i] >= ASCII_0  && req[i] <= ASCII_9 && i<REQUEST_LENGTH){
-            //The letters start at index 48 in ASCII
-            index = (req[i]-ASCII_0) + index*10;
-            i++;
-          }
           (*cl).println("get log");
-          readEntryN(c, req, index);
+          //We get the number in the url with the function getNumber
+          readEntryN(c, req, getNumber(URL_3, req));
           if(c=='e') (*cl).write(req, ENTRY_SIZE_COMMAND_LOGS);
           else (*cl).write(req, ENTRY_SIZE_LINEAR_LOGS);
         }
        default:
-         noSuchCommand();
+         noSuchCommand(cl);
          break;
      }
      #else
@@ -323,17 +317,7 @@ void parseRequest(Client* cl, uint8_t* req) {
         
       case '=':
         { // { } Allow to declare variables inside the switch
-          int value = 0;
-          //We are interested by the 7th bit of the request
-          uint8_t i=URL_3;
-          //The request modifies a parameter
-          //We need to check if the value is correct
-          while(req[i] != ' ' && i<REQUEST_LENGTH){
-            //The letters start at index 48 in ASCII
-            value = (req[i]-ASCII_0) + value*10;
-            i++;
-          }
-          setParameter((byte) (c-ASCII_A), value);
+          setParameter((byte) (c-ASCII_A), getNumber(URL_3, req));
           printParameter(cl, (byte) (c-ASCII_A));
         }
         break;
@@ -348,6 +332,20 @@ void parseRequest(Client* cl, uint8_t* req) {
   else {
     noSuchCommand(cl); 
   }
+}
+
+uint32_t getNumber(uint8_t start, uint8_t* tab){
+  uint32_t index = 0;
+  uint8_t i = start;
+  uint8_t c = tab[i];
+  
+  while(c >= ASCII_0  && c <= ASCII_9 && i<REQUEST_LENGTH){
+    //Conversion in integers : The letters start at index 48 in ASCII
+    index = (c-ASCII_0) + index*10;
+    i++;
+    c = tab[i];
+  }
+  return index; 
 }
 
 /****************************************

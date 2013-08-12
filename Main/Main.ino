@@ -21,7 +21,7 @@
 // http://www.arduino.cc/playground/Code/Time
 #include <Time.h>
 
-#define THR_MONITORING 13
+//#define THR_MONITORING 13
 /*define the IN/OUT ports of the card*/
 
 /***********************
@@ -74,9 +74,13 @@ LOGGER AND DEBUGGER
   THREADS AND PARAMETERS PRESENT IN EACH CARD 
 *******************************/  
 
+<<<<<<< HEAD
 
 #define THR_LINEAR_LOGS       1
 
+=======
+#define THR_LINEAR_LOGS       1
+>>>>>>> 9084117a56a60ea2c9ce4b7f3395796e74c942ef
 #define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
