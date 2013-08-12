@@ -52,7 +52,7 @@ NIL_THREAD(ThreadSerial, arg) {
    l : show the log file
    */
 
-  while(TRUE) {
+  while(true) {
     while (Serial.available()) {
       // get the new byte:
       char inChar = (char)Serial.read(); 
@@ -76,10 +76,10 @@ NIL_THREAD(ThreadSerial, arg) {
         serialReset();
       } */
       else if (inChar=='i') { // show i2c (wire) information
-        #ifdef GAS_CTRL || STEPPER_CTRL || I2C_LCD
+        #if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
           wireInfo(&Serial);
           serialReset();
-        #elseif
+        #else  //not elsif !!
           Serial.println("I2C Thread not activated");
         #endif
       } 

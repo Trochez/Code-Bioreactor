@@ -1,11 +1,12 @@
 
-#ifdef  TAP_GAS1_2 || TAP_GAS3_4 || TAP_ACID_BASE || TAP_FOOD 
+#if defined(TAP_GAS1_2) || defined(TAP_GAS3_4) || defined(TAP_ACID_BASE) || defined(TAP_FOOD)
 
 
 
 NIL_WORKING_AREA(waThreadTap, 50);
 NIL_THREAD(ThreadTap, arg) { 
 
+  /*
   #ifdef  TAP_GAS1_2
   #endif
   
@@ -17,7 +18,7 @@ NIL_THREAD(ThreadTap, arg) {
   
   #ifdef  TAP_ACID_BASE
   #endif
-  
+  */
 }
 
 #endif

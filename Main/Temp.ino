@@ -50,7 +50,7 @@ The conversion in 12 bits take 750ms, so we actually read the previous value :
     
     #endif
     
-    while(TRUE){
+    while(true){
     #ifdef TEMP_LIQ
       getTemperature(oneWire1, PARAM_TEMP_LIQ);
     #endif
