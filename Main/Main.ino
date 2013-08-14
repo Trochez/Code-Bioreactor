@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 #include <PID_v1.h>
+=======
+>>>>>>> 64c594340fed13dfae001cb8f5db8a50fecf9826
 
 #include <SST.h>
 #include <SPI.h>
@@ -30,11 +33,11 @@
 #define PWM3    9//D9 OC4B, OC1A, PCINT5
 #define PWM4    5//D6 OC4A  
 #define PWM5    11//D11 OC0A, OC1C, PCINT7
-#define IO1     20//A2
-#define IO2     21//A3
-#define IO3     22//A4
-#define IO4     19//A1
-#define IO5     23//A5
+#define IO1     21//A3
+#define IO2     20//A2
+#define IO3     19//A1
+#define IO4     22//A4
+#define IO5     18//A0
 
 #define I2C_RELAY  B00100100
 #define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
@@ -52,7 +55,7 @@
 #ifdef     TEMP_CTRL
   #define  TEMP_LIQ       IO1
   #define  TEMP_PLATE     IO2
-  #define  RELAY_PID      I2C_RELAY 
+//  #define  RELAY_PID      I2C_RELAY 
 #endif
 
 #ifdef    PH_CTRL
