@@ -1,4 +1,4 @@
-//#include <PID_v1.h>
+#include <PID_v1.h>
 
 #include <SST.h>
 #include <SPI.h>
@@ -41,10 +41,10 @@
 
 //select a Card definition
 
-#define TEMP_CTRL     0
+//define TEMP_CTRL     0
 //#define PH_CTRL       0
 //#define GAS_CTRL      0
-//#define STEPPER_CTRL  0
+#define STEPPER_CTRL  0
 
 
 // Device define
@@ -67,11 +67,11 @@
 #endif
 
 #ifdef STEPPER_CTRL
-  #define  WGHT           IO1
+  //#define  WGHT           IO1
   #define  STEPPER        {IO4,PWM4}
-  #define  TAP_FOOD       IO3
-  #define  TEMP_STEPPER   IO5
-  #define  RELAY_PUMP     I2C_RELAY
+  //#define  TAP_FOOD       IO3
+  //#define  TEMP_STEPPER   IO5
+  //#define  RELAY_PUMP     I2C_RELAY
 #endif
 
 
@@ -174,7 +174,7 @@ byte IO[]={
   IO1, IO2, IO3, IO4};
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   setupLogger();
   setupDebugger();
   setupParameters();
@@ -182,5 +182,7 @@ void setup() {
 }
 
 void loop() {
+  executeStep(200, true, 10,  IO4,PWM4  );
+  delay(1000);
 }
 
