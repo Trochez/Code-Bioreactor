@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 #include <PID_v1.h>
-=======
->>>>>>> 64c594340fed13dfae001cb8f5db8a50fecf9826
+
 
 #include <SST.h>
 #include <SPI.h>
@@ -9,8 +7,7 @@
 //Ethernet libraries
 #include <Ethernet.h>
 #include <EthernetUdp.h>
-// This is a more complex example showing many simultaneous action
-//
+
 #include <NilRTOS.h>
 #include <Wire.h>
 #include <OneWire.h>
@@ -138,7 +135,8 @@
 //to be CHECKED
 /*control parameters*/
 
-#define PARAM_GAS_MIX        17  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), lookup table to be implemented by calibrating for each gas
+#define PARAM_GAS_MIX        17  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), 
+                      //lookup table to be implemented by calibrating for each gas
 #define PARAM_GAS_RATIO      18
 
 #define PARAM_LVL_MAX        19
@@ -181,6 +179,9 @@ void setup() {
   setupLogger();
   setupDebugger();
   setupParameters();
+  
+  // Initializate the connection with the server
+  ethernetSetup();
   nilSysBegin();
 }
 
