@@ -44,6 +44,9 @@ IPAddress server(10,0,0,2); // local NTP server
 NIL_WORKING_AREA(waThreadEthernet, 50); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   
+  // Initializate the connection with the server
+  ethernetSetup();
+  
   while (TRUE) {
     
      // listen for client request
@@ -135,6 +138,7 @@ void ethernetOpenConnection80() {
 
 void ethernetSendLog(){
   //TODO
+  client.println("Test 1 <p> test 2 ");
 }
 
 //JSON PARSING

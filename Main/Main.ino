@@ -180,8 +180,7 @@ void setup() {
   setupDebugger();
   setupParameters();
   
-  // Initializate the connection with the server
-  ethernetSetup();
+  
   nilSysBegin();
 }
 
