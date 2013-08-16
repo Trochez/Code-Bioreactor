@@ -1,3 +1,17 @@
+/* Thread Stepper Motor
+This is the thread controlling the motor. It should have a high priority 
+as it is called very often and is short. It controls the sequence with the pin PWM and IO
+of the port.
+The sequence for turning the motor turn is :
+RED-GREEN-BLUE-BLACK => win turn clockwise (top view) where :
+RED = {PWM=LOW, IO=LOW}
+BLUE = {PWM=LOW, IO=HIGH}
+BLACK = {PWM=HIGH, IO=HIGH}
+RED = {PWM=HIGH, IO=LOW}
+*/
+
+//We define here the number of step executed during every call to the thread
+#define NB_STEP_CALL 5
 #ifdef STEPPER
 
 NIL_WORKING_AREA(waThreadStepper, 0);
@@ -7,19 +21,16 @@ NIL_THREAD(ThreadStepper, arg) {
     pinMode(STEPPER_TAB[i], OUTPUT);    
   }
   while (TRUE) {
-    for (int i=0; i<200; i=i+20) {
-      //condition on the STEPPER flag                                          CHECK IF THIS CONDITION IS AT THE RIGHT PLACE HERE !!!!!!!
-      if((getParameter(FLAG_VECTOR)&&FLAG_STEPPER_OFF)==0){
-        executeStep(i,true, 4, STEPPER_TAB[0], STEPPER_TAB[1]);
-        executeStep(i,false, 4, STEPPER_TAB[0], STEPPER_TAB[1]);
-    }
-    }
+     executeStep(NB_STEP_CALL, true, 1, STEPPER_TAB[1],STEPPER_TAB[2]);
+     
+     //The final delay has to be decided 
+     nilThdSleepMilliseconds(50);
   }
 }
 
 int counter=0;
 
-void executeStep(int numberSteps, boolean forward, byte currentDelay, byte port1, byte port2) {
+void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
   while (numberSteps>0) {
     numberSteps--;
     if (forward) {
@@ -29,24 +40,28 @@ void executeStep(int numberSteps, boolean forward, byte currentDelay, byte port1
       counter--;
     }
     switch (counter%4) {
-    case 0:
-      digitalWrite(port1, LOW);
-      digitalWrite(port2,LOW);
-      break;
-    case 1:
-      digitalWrite(port1, LOW);
-      digitalWrite(port2,HIGH);
-      break;
-    case 2:
-      digitalWrite(port1, HIGH);
-      digitalWrite(port2,HIGH);
-      break;
-    case 3:
-      digitalWrite(port1, HIGH);
-      digitalWrite(port2,LOW);
-      break;
+      case 0:
+        //This is RED
+        digitalWrite(port1, LOW);
+        digitalWrite(port2,LOW);
+        break;
+      case 2:
+        //This is BLUE
+        digitalWrite(port1, LOW);
+        digitalWrite(port2,HIGH);
+        break;
+      case 3:
+      //This is Black
+        digitalWrite(port1, HIGH);
+        digitalWrite(port2,HIGH);
+        break;
+      case 1:
+      //This is Green
+        digitalWrite(port1, HIGH);
+        digitalWrite(port2,LOW);
+        break;
     }
-    nilThdSleepMilliseconds(currentDelay);
+    delay(2);
   }
 }
 

@@ -185,7 +185,5 @@ void setup() {
 }
 
 void loop() {
-  executeStep(200, true, 10,  IO4,PWM4  );
-  delay(1000);
 }
 
