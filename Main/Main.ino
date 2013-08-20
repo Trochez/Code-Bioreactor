@@ -41,17 +41,17 @@
 
 //select a Card definition
 
-//define TEMP_CTRL     0
+#define TEMP_CTRL     0
 //#define PH_CTRL       0
 //#define GAS_CTRL      0
-#define STEPPER_CTRL  0
+//define STEPPER_CTRL  0
 
 
 // Device define
 
 #ifdef     TEMP_CTRL
   #define  TEMP_LIQ       IO1
-  #define  TEMP_PLATE     IO2
+  //#define  TEMP_PLATE     IO2
 //  #define  RELAY_PID      I2C_RELAY 
 #endif
 

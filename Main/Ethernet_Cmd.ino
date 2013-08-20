@@ -25,17 +25,18 @@ void ethernetReadCommand();
 // THIS SHOULD BE DEFINED GLOBALLY SO THREADS CAN ACCESS IT 
 // Enter a MAC address and IP address for the Arduino controller below.
 // The IP address is reserved on the routher for this Arduino controller.
-byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-byte ip[] = {
-  10,0,0,3}; // reserved IP adress of the Arduino
+// CAUTION
+// Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
+// and a different MAC address
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+byte ip[] = { 172,17,0,100}; // reserved IP adress of the Arduino
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server 
 // that you want to connect to (port 80 is default for HTTP):
 EthernetClient client;
 unsigned int localPort = 8888;      // local port to listen for UDP packets
-IPAddress server(10,0,0,2); // local NTP server 
+IPAddress server(172,17,0,10); // local NTP server 
 
 /*---------------------------
   Ethernet Thread

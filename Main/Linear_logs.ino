@@ -40,10 +40,7 @@ NIL_THREAD(ThreadLinearLog, arg) {
   /*----------------------------------
     ethernet & NTP Setup
   ----------------------------------*/
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-  IPAddress ip(192,168,0,177);
-  unsigned int localPort = 8888;      // local port to listen for UDP packets
-  IPAddress timeServer(192, 168, 0, 170); // time-a.timefreq.bldrdoc.gov NTP server
+  
   //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
   unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
 

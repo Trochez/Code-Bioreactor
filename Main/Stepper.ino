@@ -21,7 +21,7 @@ NIL_THREAD(ThreadStepper, arg) {
     pinMode(STEPPER_TAB[i], OUTPUT);    
   }
   while (TRUE) {
-     executeStep(NB_STEP_CALL, true, 1, STEPPER_TAB[1],STEPPER_TAB[2]);
+     executeStep(NB_STEP_CALL, true, STEPPER_TAB[1],STEPPER_TAB[2]);
      
      //The final delay has to be decided 
      nilThdSleepMilliseconds(50);
