@@ -40,7 +40,7 @@ int wireReadTwoBytesToInt(uint8_t address) {
 }
 
 void wireInfo(Print* output) {
-  // wireUpdateList();
+  //wireUpdateList();
   output->println("I2C");
 
   for (byte i=0; i<numberI2CDevices; i++) {
@@ -140,8 +140,6 @@ void sendRelay(byte id, byte value, byte* flag) {
 }
 
 
-
-
 // We will combine flags in a byte. Using pointer does not seems to improve
 // memory size so we don't use pointer
 void setWireFlag(byte *aByte, byte address) {
@@ -155,7 +153,4 @@ void clearWireFlag(byte *aByte, byte address) {
 boolean wireFlagStatus(byte *aByte, byte address) {
   return *aByte & (1 << (address & 0b00000111));
 }
-
-
-
 

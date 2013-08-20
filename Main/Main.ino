@@ -1,6 +1,8 @@
+/**************
+  LIBRAIRIES
+**************/
+
 #include <PID_v1.h>
-
-
 #include <SST.h>
 #include <SPI.h>
 
@@ -25,6 +27,11 @@
 #define THR_MONITORING 1000
 /*define the IN/OUT ports of the card*/
 
+
+/********************
+  PIN&ADRESS MAPPING
+*********************/
+
 #define PWM1    6//D6 OC4D
 #define PWM2    8//D8 PCINT4
 #define PWM3    9//D9 OC4B, OC1A, PCINT5
@@ -39,20 +46,29 @@
 #define I2C_RELAY  B00100100
 #define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
 
-//select a Card definition
+//Define here if the LCD screen is used or not
+#define I2C_LCD B00100111
+//WIRE_LCD_16_2 B00100111
+//WIRE_LCD_20_4 B00100110
 
-#define TEMP_CTRL     0
-//#define PH_CTRL       0
-//#define GAS_CTRL      0
-//define STEPPER_CTRL  0
+/******************
+  DEFINE CARD TYPE
+******************/
+
+#define TEMP_CTRL     1
+//#define PH_CTRL       1
+//#define GAS_CTRL      1
+//define STEPPER_CTRL   1
 
 
-// Device define
+/*******************************
+  CARD DEFINITION (HARD CODED)
+*******************************/  
 
 #ifdef     TEMP_CTRL
   #define  TEMP_LIQ       IO1
-  //#define  TEMP_PLATE     IO2
-//  #define  RELAY_PID      I2C_RELAY 
+  #define  TEMP_PLATE     IO2
+  #define  RELAY_PID      I2C_RELAY 
 #endif
 
 #ifdef    PH_CTRL
@@ -75,52 +91,53 @@
 #endif
 
 
-/*Hard coded parameters*/     
+/************************
+  Hard coded parameters
+*************************/     
 
 #ifdef TEMP_LIQ
-#define PARAM_TEMP_LIQ      0
+  #define PARAM_TEMP_LIQ      0
 #endif
 
 #ifdef TEMP_PLATE
-#define PARAM_TEMP_PLATE    1
+  #define PARAM_TEMP_PLATE    1
 #endif
 
 #ifdef TEMP_STEPPER
-#define PARAM_TEMP_STEPPER  2
+  #define PARAM_TEMP_STEPPER  2
 #endif
 
-#ifdef   PH
-#define  PARAM_PH           3
+#ifdef PH
+  #define  PARAM_PH           3
 #endif  
 
-#ifdef  WGHT         
-#define  PARAM_WGHT         4
+#ifdef WGHT         
+  #define  PARAM_WGHT         4
 #endif
 
 #ifdef FLUX  
-  #define   PARAM_FLUX_GAS1      5
-  #define   PARAM_FLUX_GAS2      6
-  #define   PARAM_FLUX_GAS3      7
-  #define   PARAM_FLUX_GAS4      8
-  #define   PARAM_TAP_GAS1_2     9
-  #define   PARAM_TAP_GAS3_4     10
+  #define PARAM_FLUX_GAS1      5
+  #define PARAM_FLUX_GAS2      6
+  #define PARAM_FLUX_GAS3      7
+  #define PARAM_FLUX_GAS4      8
+  #define PARAM_TAP_GAS1_2     9
+  #define PARAM_TAP_GAS3_4     10
 
 #endif
 
-#ifdef  TAP_ACID_BASE
-#define  PARAM_TAP_ACID_BASE  13
+#ifdef TAP_ACID_BASE
+  #define PARAM_TAP_ACID_BASE  13
 #endif
 
-
-#ifdef  TAP_FOOD
-  #define  PARAM_TAP_GAS4       14
+#ifdef TAP_FOOD
+  #define PARAM_TAP_GAS4       14
 #endif
 
-#ifdef  RELAY_PUMP
-  #define  PARAM_RELAY_PUMP     15
+#ifdef RELAY_PUMP
+  #define PARAM_RELAY_PUMP     15
 #endif
 
-#ifdef  RELAY_PID
+#ifdef RELAY_PID
   #define  PARAM_RELAY_PID      15
   //for the regulation of temperature values btw 10 and 45 [s] are commun
   #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
@@ -131,9 +148,9 @@
 #endif 
 
 
-
-//to be CHECKED
-/*control parameters*/
+/**********************
+  Control parameters
+***********************/
 
 #define PARAM_GAS_MIX        17  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), 
                       //lookup table to be implemented by calibrating for each gas
@@ -169,7 +186,9 @@
 #define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed                                    
 
 
-/*Setup*/
+/*********
+  SETUP
+*********/
 
 byte IO[]={
   IO1, IO2, IO3, IO4};

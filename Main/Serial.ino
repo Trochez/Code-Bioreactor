@@ -120,7 +120,7 @@ NIL_THREAD(ThreadSerial, arg) {
         }
         serialReset();
       } 
-      else if (inChar>47 && inChar<58 || inChar=='-') {
+      else if ((inChar>47 && inChar<58) || inChar=='-') {
         if (paramSerialValuePosition<MAX_PARAM_VALUE_LENGTH) {
           paramSerialValue[paramSerialValuePosition]=inChar;
           paramSerialValuePosition++;
