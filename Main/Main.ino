@@ -75,7 +75,7 @@
 #ifdef     TEMP_CTRL
   #define  TEMP_LIQ       IO1
   #define  TEMP_PLATE     IO2
-  #define  RELAY_PID      I2C_RELAY 
+  #define  TRANS_PID      PWM3
 #endif
 
 #ifdef    PH_CTRL
@@ -137,14 +137,14 @@
 #endif
 
 #ifdef TAP_FOOD
-  #define PARAM_TAP_GAS4       14
+  #define PARAM_TAP_FOOD       14
 #endif
 
 #ifdef RELAY_PUMP
   #define PARAM_RELAY_PUMP     15
 #endif
 
-#ifdef RELAY_PID
+#ifdef TRANS_PID
   #define  PARAM_RELAY_PID      15
   //for the regulation of temperature values btw 10 and 45 [s] are commun
   #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 

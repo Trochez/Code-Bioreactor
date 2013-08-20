@@ -1,6 +1,6 @@
 //TODO : Clean global variables
 
-#ifdef RELAY_PID
+#ifdef TRANS_PID
 #include <PID_v1.h>
 
 double heatingRegInput, heatingRegOutput, heatingRegSetpoint;
@@ -42,12 +42,14 @@ void pid_ctrl()
   if(heatingRegOutput > exactPresentTime - heatingRegWindowStartTime) 
   {
     //set relay ON, ensure the Wire thread makes the work then !!!
-    setParameter(PARAM_RELAY_PID,getParameter(PARAM_RELAY_PID)&(~(1<<3))); 
+    setParameter(PARAM_RELAY_PID,getParameter(PARAM_RELAY_PID)&(~(1<<3)));
+    digitalWrite(TRANS_PID, HIGH); 
   }  
   else 
   {
     //set relay OFF, ensure the Wire thread makes the work then !!!
     setParameter(PARAM_RELAY_PID,getParameter(PARAM_RELAY_PID)||(1<<4));
+    digitalWrite(TRANS_PID, LOW); 
   } 
 }
 

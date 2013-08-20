@@ -73,10 +73,6 @@ NIL_THREAD(ThreadWire, arg) {
       sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PUMP), wireFlag32);
     #endif
     
-    #ifdef PARAM_RELAY_PID
-      sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PID), wireFlag32);
-    #endif
-    
     #ifdef PARAM_FLUX
       sendRelay(I2C_FLUX, getParameter(PARAM_FLUX), wireFlag32);
     #endif
