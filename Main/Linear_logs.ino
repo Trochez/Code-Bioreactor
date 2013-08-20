@@ -13,14 +13,26 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 
+// Prototypages
+void setupMemory(SST sst);
+void updateAddrLogs(uint32_t* addr, uint8_t log_type);
+void writeLog(SST sst, uint32_t* addr, uint32_t timestamp, int* data);
+uint8_t* readLastEntry(SST sst, uint32_t* addr, uint8_t* result);
+uint8_t* readLast(SST sst, uint32_t* addr, uint8_t* result, uint8_t parameter, uint8_t n);
+uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_t n);
+uint32_t findAddress(uint8_t logs_type);
+void sendPacket(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffer[] );
+boolean updateNTP(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffer[] );
+unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char packetBuffer[]);
+
 //size of every new entry (4 bytes for the timestamp)
 #define ENTRY_SIZE (MAX_PARAM + 4)
 
 #define NTP_PACKET_SIZE (48)
 
 // the different types of logs
-#define LINEARS_LOGS    1
-#define COMMANDS_LOGS   2
+#define LINEAR_LOGS    1
+#define COMMAND_LOGS   2
 #define RRD_LOGS        3  //If Needed
 
 
@@ -74,12 +86,12 @@ NIL_THREAD(ThreadLinearLog, arg) {
       time_now = now();
       
       if(!waitPacket && time_now - previousNTP >= 3600){
-        sendPacket(Udp,timeServer, packetBuffer);
+        sendPacket(Udp,server, packetBuffer);
         waitPacket = true;
       } 
       // 2 seconds later we check if we have an answer from the server and update the time if possible
       else if(waitPacket && time_now - previousNTP >= 3602){
-        boolean success = updateNTP(Udp,timeServer, packetBuffer);
+        boolean success = updateNTP(Udp,server, packetBuffer);
         if(!success){
            writeCommandLog(sst, findAddress (COMMAND_LOGS), NO_ANSWER_NTP_SERVER,  time_now, 0) //TODO :update the function 
         }
@@ -116,10 +128,10 @@ void setupMemory(SST sst){
 void updateAddrLogs(uint32_t* addr, uint8_t log_type){
   switch(log_type)
   {
-    case LINEARS_LOGS:
+    case LINEAR_LOGS:
       *addr = (*addr + ENTRY_SIZE);
       break;
-    case COMMANDS_LOGS:
+    case COMMAND_LOGS:
       *addr = (*addr + LOGS_ENTRY_SIZE);
       break;
     case RRD_LOGS:
@@ -178,7 +190,7 @@ uint8_t* readLast(SST sst, uint32_t* addr, uint8_t* result, uint8_t parameter, u
 uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_t n){
     uint32_t address = *addr;
    
-    for(int i=0; i<n; i++){
+    for(int i=0; i<n; i++) {
         //compute the address of the last entry
         address = address - ENTRY_SIZE;
         sst.flashReadInit(address);
@@ -199,7 +211,7 @@ uint32_t findAddress(uint8_t logs_type) {
   switch(logs_type) {
     case LINEAR_LOGS:
       break;
-    case COMMANDS_LOGS:
+    case COMMAND_LOGS:
       break;
     case RRD_LOGS: 
       break;
@@ -211,11 +223,11 @@ uint32_t findAddress(uint8_t logs_type) {
 /*-----------------------
   NTP related functions
 -----------------------*/
-void sendPacket(EthernetUDP& Udp, IPAddress& timeServer, unsigned char packetBuffer[] ){
-   sendNTPpacket(Udp, timeServer, packetBuffer); // send an NTP packet to a time server 
+void sendPacket(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffer[] ){
+   sendNTPpacket(Udp, server, packetBuffer); // send an NTP packet to a time server 
 }
 
-boolean updateNTP(EthernetUDP& Udp, IPAddress& timeServer, unsigned char packetBuffer[] ){
+boolean updateNTP(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffer[] ){
    if ( Udp.parsePacket() ) {  
        // We've received a packet, read the data from it
       Udp.read(packetBuffer, (size_t) NTP_PACKET_SIZE);  // read the packet into the buffer
@@ -242,7 +254,7 @@ boolean updateNTP(EthernetUDP& Udp, IPAddress& timeServer, unsigned char packetB
    
 }
 
-// send an NTP request to the time server at the given address 
+// send an NTP request to the time server at the given address
 unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char packetBuffer[])
 {
   // set all bytes in the buffer to 0

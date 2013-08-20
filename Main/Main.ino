@@ -51,6 +51,13 @@
 //WIRE_LCD_16_2 B00100111
 //WIRE_LCD_20_4 B00100110
 
+/*******************************
+  THREADS PRESENT IN EACH CARD
+*******************************/  
+
+#define THR_LINEAR_LOGS 1
+#define THR_ETHERNET 1
+
 /******************
   DEFINE CARD TYPE
 ******************/

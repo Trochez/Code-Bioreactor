@@ -36,7 +36,9 @@ byte ip[] = { 172,17,0,100}; // reserved IP adress of the Arduino
 // that you want to connect to (port 80 is default for HTTP):
 EthernetClient client;
 unsigned int localPort = 8888;      // local port to listen for UDP packets
-IPAddress server(172,17,0,10); // local NTP server 
+EthernetServer server(80);
+
+IPAddress alix_server(172,17,0,10); // local NTP server 
 
 /*---------------------------
   Ethernet Thread
@@ -103,6 +105,7 @@ NIL_THREAD(ThreadEthernet, arg) {
 void ethernetSetup() {
   // the ethernet pin has been initialized in the main setup() from Bioreactor
   Ethernet.begin(mac,ip);
+  server.begin();
 }  
 
 //kept here as an example
@@ -127,7 +130,7 @@ void ethernetPushStatus() {
 }
 
 void ethernetOpenConnection80() {
-  client.connect(server,80);
+  client.connect(alix_server,80);
   long start=millis(); 
   while (! client.connected() && ((millis()-start)<500))
   {
@@ -140,10 +143,18 @@ void ethernetOpenConnection80() {
 void ethernetSendLog(){
   //TODO
   client.println("Test 1 <p> test 2 ");
+  for (int analogChannel = 0; analogChannel < 6; analogChannel++) {
+            int sensorReading = analogRead(analogChannel);
+            client.print("analog input ");
+            client.print(analogChannel);
+            client.print(" is ");
+            client.print(sensorReading);
+            client.println("<br />");       
+  }
 }
 
 //JSON PARSING
-void ethernetReadCommand(){
+void ethernetReadCommand() {
  String jsonCommand = String(""); // reinitialize alocated string
   //char jsonCommandBuffer[MAX_HTTP_STRING_LENGTH]; // reserve space
   //  if(DEBUG)Serial.print("String initialized has length of: ");
@@ -215,7 +226,6 @@ void ethernetReadCommand(){
         }
         break;
       case 3:
-        break; 
         break;
       default:
         Serial.println("ERROR in fetching command");
