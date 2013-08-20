@@ -108,6 +108,7 @@ void ethernetSetup() {
   server.begin();
 }  
 
+/*
 //kept here as an example
 void ethernetPushStatus() {
   if(DEBUG)Serial.println("PUSH STATUS: Connecting to server...");
@@ -139,7 +140,7 @@ void ethernetOpenConnection80() {
   if (DEBUG) Serial.print("Connection achieved in (ms): ");
   if (DEBUG) Serial.println(millis()-start);
 }
-
+*/
 void ethernetSendLog(){
   //TODO
   client.println("Test 1 <p> test 2 ");
@@ -152,7 +153,7 @@ void ethernetSendLog(){
             client.println("<br />");       
   }
 }
-
+/*
 //JSON PARSING
 void ethernetReadCommand() {
  String jsonCommand = String(""); // reinitialize alocated string
@@ -170,11 +171,11 @@ void ethernetReadCommand() {
   client.println("GET /bioReacTor/command HTTP/1.0\n"); //connect to the command page of the server
 
   int STATUS=0; // the JSON didn't start yet
-  /* STATUS:
-   1 : the JSON started
-   2 : we get the field name
-   3 : we get the value
-   */
+  
+  // 1 : the JSON started
+  // 2 : we get the field name
+  // 3 : we get the value
+   
 
   long start=millis();
   char fieldName[20];
@@ -238,7 +239,7 @@ void ethernetReadCommand() {
 }
 
 void ethernetParseRequest(char *fieldName, double extractedValueFloat){
- /*---------------------------------------
+ //---------------------------------------
    The module has to be able to respond to 
    several HTML request.
    
@@ -247,7 +248,7 @@ void ethernetParseRequest(char *fieldName, double extractedValueFloat){
    3. logs
    4. i2c devices
    5. 1-wire devices
- ---------------------------------------*/
+ //---------------------------------------
  int extractedValueInt=(int)extractedValueFloat;
   if (strcmp(fieldName,"StateVector")==0) {
      ethernetSendStatus();
@@ -258,9 +259,9 @@ void ethernetParseRequest(char *fieldName, double extractedValueFloat){
   }
 }
 
-/*-----------------------------
+----------------------------
   Parameter & requests related functions
-----------------------------*/
+----------------------------
 
 void ethernetSendStatus(){
   //return the parameters corresponding to the vector state
@@ -302,5 +303,334 @@ void ethernetPrintOneWire(){
   //return the One-Wire devices pluggedf on the device
 }
 
+void ethernetParseCommandValue(char *fieldName, double extractedValueFloat)
+{
+  int extractedValueInt=(int)extractedValueFloat;
+  if (strcmp(fieldName,"liquidTemp")==0) {
+    // first check if there is a difference between the read value and the stored one
+    // (because floats are used, an error value of 0.05 has been set!)
+    if(HEATING_TEMPERATURE_LIMIT >= extractedValueFloat + 0.05 || HEATING_TEMPERATURE_LIMIT <= extractedValueFloat-0.05)
+    {
+      // check if the input value is valid, then safe it
+      if(extractedValueFloat > HEATING_MAX_ALLOWED_LIMIT)
+      {
+        if(DEBUG)Serial.println("WARNING: The input temperature is to high! New temperature value has not been set.");
+      }
+      else if (extractedValueFloat < HEATING_MIN_ALLOWED_LIMIT)
+      {
+        if(DEBUG)Serial.println("WARNING: The input temperature is to low! New temperature value has not been set.");
+      }
+      else
+      {
+        HEATING_TEMPERATURE_LIMIT = extractedValueFloat;
+        if(DEBUG)Serial.print("The new temperature has been successfully set to: [C]");
+        if(DEBUG)Serial.println(HEATING_TEMPERATURE_LIMIT);
+      }
+    }
+    else if(DEBUG)Serial.println("The set temperature is the same as the saved one (deviation <0.05).");
+  } 
+  else if (strcmp(fieldName,"liquidLevelMax")==0) {
+    if(extractedValueInt != LIQUID_LEVEL_WEB_MAX)
+    {
+      // check if the input value is valid, then safe it
+      if(extractedValueInt > LIQUID_LEVEL_PHYSICAL_MAX_INTERVAL)
+      {
+        if(DEBUG)Serial.println("WARNING: The input liquid level is to high! New liquid value has not been set.");
+      }
+      else if (extractedValueInt < LIQUID_LEVEL_PHYSICAL_MIN_INTERVAL)
+      {
+        if(DEBUG)Serial.println("WARNING: The input liquid level negative! New liquid value has not been set.");
+      }
+      else
+      {
+        LIQUID_LEVEL_WEB_MAX = extractedValueInt;
+        if(DEBUG)Serial.print("The new liquid level has been successfully set to [Arduino AD interval]: ");
+        if(DEBUG)Serial.println(LIQUID_LEVEL_WEB_MAX);
+      }
+    }
+    else if(DEBUG)Serial.println("The set liquid level is the same as the saved one.");
+  } 
+  else if (strcmp(fieldName,"liquidLevelMin")==0) {
+    if(extractedValueInt != LIQUID_LEVEL_WEB_MAX)
+    {
+      // check if the input value is valid, then safe it
+      if(extractedValueInt > LIQUID_LEVEL_PHYSICAL_MAX_INTERVAL)
+      {
+        if(DEBUG)Serial.println("WARNING: The input liquid level is to high! New liquid value has not been set.");
+      }
+      else if (extractedValueInt < LIQUID_LEVEL_PHYSICAL_MIN_INTERVAL)
+      {
+        if(DEBUG)Serial.println("WARNING: The input liquid level negative! New liquid value has not been set.");
+      }
+      else
+      {
+        LIQUID_LEVEL_WEB_MIN = extractedValueInt;
+        if(DEBUG)Serial.print("The new liquid level has been successfully set to [Arduino AD interval]: ");
+        if(DEBUG)Serial.println(LIQUID_LEVEL_WEB_MIN);
+      }
+    }
+    else if(DEBUG)Serial.println("The set liquid level is the same as the saved one.");
+  } 
+  else if (strcmp(fieldName,"pH")==0) {
+    // first check if there is a difference between the read value and the stored one
+    // (because floats are used, an error value of 0.05 has been set!)
+    if(pH_SET >= extractedValueFloat+0.05 || pH_SET <= extractedValueFloat-0.05)
+    {
+      // check if the input value is valid, then safe it
+      if(extractedValueFloat > 14.0) // max pH level is 14
+      {
+        if(DEBUG)Serial.println("WARNING: The input pH level is to high! New pH value has not been set.");
+      }
+      else if (extractedValueFloat < 0.0) // min pH level is 0
+      {
+        if(DEBUG)Serial.println("WARNING: The input pH level negative! New pH value has not been set.");
+      }
+      else
+      {
+        pH_SET = extractedValueFloat;
+        if(DEBUG)Serial.print("The new pH level has been successfully set to: ");
+        if(DEBUG)Serial.println(pH_SET);
+      }
+    }
+    else if(DEBUG)Serial.println("The set temperature is the same as the saved one (deviation <0.05).");
+
+  } 
+  else if (strcmp(fieldName,"waitTime")==0) {
+    // Value read from WebUI is in min; the timer uses millisec!
+    if(extractedValueInt != WAIT_TIME_BEFORE_PUMPING_OUT)
+    {
+      // check if the input value is valid, then safe it
+      if(extractedValueInt * MIN_TO_SEC > WAIT_TIME_BEFORE_PUMPING_OUT_MAX) // min und max values in [sec]!
+      {
+        if(DEBUG)Serial.print("WARNING: The Wait Time is to high! Maximum allowed Wait Time is [sec]:");
+        if(DEBUG)Serial.println(WAIT_TIME_BEFORE_PUMPING_OUT_MAX);
+      }
+      else if (extractedValueInt * MIN_TO_SEC < WAIT_TIME_BEFORE_PUMPING_OUT_MIN)
+      {
+        if(DEBUG)Serial.print("WARNING: The Wait Time is to low! Minimum allowed Wait Time is [sec]:");
+        if(DEBUG)Serial.println(WAIT_TIME_BEFORE_PUMPING_OUT_MIN);
+      }
+      else
+      {
+        WAIT_TIME_BEFORE_PUMPING_OUT = extractedValueInt; //in [min]
+        PUMPING_OUT_TIMER = WAIT_TIME_BEFORE_PUMPING_OUT * MIN_TO_SEC * SEC_TO_MILLISEC; // in [millisec]
+        timerPumpingOut.setInterval(PUMPING_OUT_TIMER); 
+        if(DEBUG)Serial.print("The new Wait Time has been successfully set to [millisec]: ");
+        if(DEBUG)Serial.println(PUMPING_OUT_TIMER);
+      }
+    }
+    else if(DEBUG)Serial.println("The Wait Time is the same as the saved one.");
+  } 
+  else if (strcmp(fieldName,"methaneIn")==0) {
+    
+    
+  } 
+  else if (strcmp(fieldName,"carbonDioxideIn")==0) {
+
+  } 
+  else if (strcmp(fieldName,"nitrogenIn")==0) {
+
+  } 
+  else if (strcmp(fieldName,"liquidIn")==0) {
+
+  } 
+  else if (strcmp(fieldName,"liquidOut")==0) {
+
+  } 
+  else if (strcmp(fieldName,"mode")==0) {
+    // first check if there is a difference between the read value and the stored one
+    // then check if in pumping mode; ONLY change from pumping mode if MANUAL mode is selected
+    if(extractedValueInt != BIOREACTOR_MODE
+      && (BIOREACTOR_MODE != BIOREACTOR_PUMPING_MODE 
+      || (BIOREACTOR_MODE == BIOREACTOR_PUMPING_MODE && extractedValueInt == BIOREACTOR_MANUAL_MODE)))
+    {
+      // check if the input value is valid, then safe it
+      if(extractedValueInt == BIOREACTOR_STANDBY_MODE
+        || extractedValueInt == BIOREACTOR_RUNNING_MODE
+        || extractedValueInt == BIOREACTOR_MANUAL_MODE)
+      {
+
+        //switch Bioreactor mode
+        BIOREACTOR_MODE = extractedValueInt;
+        if(DEBUG)Serial.print("The Bioreactor has been set to a new state: ");
+        if(DEBUG)Serial.println(BIOREACTOR_MODE);
+      }
+      else
+      {
+        if(DEBUG)Serial.println("WARNING: The Bioreactor state is invalid!.");
+      }
+    }
+    else if(DEBUG)Serial.println("The Bioreactor state is the same as the saved one.");
+
+  } 
+  else if (strcmp(fieldName,"pumpOut")==0) {
+    //---------Set pumpOut state ----------
+    // only get the pump's state if in MANUAL mode
+    if(BIOREACTOR_MODE == BIOREACTOR_MANUAL_MODE)
+    {
+
+
+      // first check if there is a difference between the read value and the stored one
+      if(extractedValueInt != relaySwitchPumpOutGetState())
+      {
+        // check if the input value is valid, then safe it
+        if(extractedValueInt == 1 || extractedValueInt == 0 )
+        {
+          //turn ON or OFF
+          if(extractedValueInt == 1) relaySwitchPumpOutTurnOn();
+          else relaySwitchPumpOutTurnOff(); // if extractedValueInt = 0
+          if(DEBUG)Serial.println("PumpOut has been set to a new state.");
+        }
+        else
+        {
+          if(DEBUG)Serial.println("WARNING: PumpOut state is invalid!.");
+        }
+      }
+      else if(DEBUG)Serial.println("PumpOut state is the same as the saved one.");
+    }
+    else if(DEBUG) Serial.println("Not in MANUAL mode: PumpOut's value not taken");
+  } 
+  else if (strcmp(fieldName,"pumpIn")==0) {
+
+    //---------Set pumpIn state ----------
+    // only get the pump's state if in MANUAL mode
+    if(BIOREACTOR_MODE == BIOREACTOR_MANUAL_MODE)
+    {
+      // first check if there is a difference between the read value and the stored one
+      if(extractedValueInt != relaySwitchPumpInGetState())
+      {
+        // check if the input value is valid, then safe it
+        if(extractedValueInt == 1 || extractedValueInt == 0 )
+        {
+          //turn ON or OFF
+          if(extractedValueInt == 1) relaySwitchPumpInTurnOn();
+          else relaySwitchPumpInTurnOff(); // if extractedValueInt = 0
+          if(DEBUG)Serial.println("PumpIn has been set to a new state.");
+        }
+        else
+        {
+          if(DEBUG)Serial.println("WARNING: PumpIn state is invalid!.");
+        }
+      }
+      else if(DEBUG)Serial.println("PumpIn state is the same as the saved one.");
+    }
+    else if(DEBUG) Serial.println("Not in MANUAL mode: PumpIn's value not taken");
+  } 
+  else if (strcmp(fieldName,"motor")==0) {
+
+    //---------Set motor state ----------
+    // only get the motor's state if in MANUAL mode
+    if(BIOREACTOR_MODE == BIOREACTOR_MANUAL_MODE)
+    {
+
+
+      // first check if there is a difference between the read value and the stored one
+      if(extractedValueInt != relaySwitchMotorGetState())
+      {
+        // check if the input value is valid, then safe it
+        if(extractedValueInt == 1 || extractedValueInt == 0 )
+        {
+          //turn ON or OFF
+          if(extractedValueInt == 1) relaySwitchMotorTurnOn();
+          else relaySwitchMotorTurnOff(); // if extractedValueInt = 0
+          if(DEBUG)Serial.println("The motor has been set to a new state.");
+        }
+        else
+        {
+          if(DEBUG)Serial.println("WARNING: The motor state is invalid!.");
+        }
+      }
+      else if(DEBUG)Serial.println("The motor state is the same as the saved one.");
+
+
+    }
+    else if(DEBUG) Serial.println("Not in MANUAL mode: Motor's value not taken");
+  } 
+  else if (strcmp(fieldName,"methane")==0) {
+   //---------Set gas valve (methane) state ----------
+    // only get the pump's state if in MANUAL mode
+    if(BIOREACTOR_MODE == BIOREACTOR_MANUAL_MODE)
+    {
+
+      // first check if there is a difference between the read value and the stored one
+      if(extractedValueInt != gasValvesGetState(CH4))
+      {
+        // check if the input value is valid, then safe it
+        if(extractedValueInt == 1 || extractedValueInt == 0 )
+        {
+          //turn ON or OFF
+          if(extractedValueInt == 1) gasValvesTurnOn(CH4);
+          else gasValvesTurnOff(CH4); // if extractedValueInt = 0
+          if(DEBUG)Serial.println("The gas valve (methane) has been set to a new state.");
+        }
+        else
+        {
+          if(DEBUG)Serial.println("WARNING: The gas valve (methane) state is invalid!.");
+        }
+      }
+       else if(DEBUG)Serial.println("The gas valve (methane) state is the same as the saved one.");
+    }
+    else if(DEBUG) Serial.println("Not in MANUAL mode: Gas valve's value not taken");
+    
+  }   
+  else if (strcmp(fieldName,"carbonDioxide")==0) {
+    //---------Set gas valve (carbonDioxide) state ----------
+    // only get the pump's state if in MANUAL mode
+    if(BIOREACTOR_MODE == BIOREACTOR_MANUAL_MODE)
+    {
+      // first check if there is a difference between the read value and the stored one
+      if(extractedValueInt != gasValvesGetState(CO2))
+      {
+        // check if the input value is valid, then safe it
+        if(extractedValueInt == 1 || extractedValueInt == 0 )
+        {
+          //turn ON or OFF
+          if(extractedValueInt == 1) gasValvesTurnOn(CO2);
+          else gasValvesTurnOff(CO2); // if extractedValueInt = 0
+          if(DEBUG)Serial.println("The gas valve (carbonDioxide) has been set to a new state.");
+        }
+        else
+        {
+          if(DEBUG)Serial.println("WARNING: The gas valve (carbonDioxide) state is invalid!.");
+        }
+      }
+     
+
+
+    }
+    else if(DEBUG) Serial.println("Not in MANUAL mode: Gas valve's value not taken");
+
+  } 
+  else if (strcmp(fieldName,"nitrogen")==0) {
+
+    //---------Set gas valve (nitrogen) state ----------
+    // only get the pump's state if in MANUAL mode
+    if(BIOREACTOR_MODE == BIOREACTOR_MANUAL_MODE)
+    {
+
+      // first check if there is a difference between the read value and the stored one
+      if(extractedValueInt != gasValvesGetState(N2))
+      {
+        // check if the input value is valid, then safe it
+        if(extractedValueInt == 1 || extractedValueInt == 0 )
+        {
+          //turn ON or OFF
+          if(extractedValueInt == 1) gasValvesTurnOn(N2);
+          else gasValvesTurnOff(N2); // if extractedValueInt = 0
+          if(DEBUG)Serial.println("The gas valve (nitrogen) has been set to a new state.");
+        }
+        else
+        {
+          if(DEBUG)Serial.println("WARNING: The gas valve (nitrogen) state is invalid!.");
+        }
+      }
+      else if(DEBUG)Serial.println("The gas valve (nitrogen) state is the same as the saved one.");
+    }
+
+    else if(DEBUG) Serial.println("Not in MANUAL mode: Gas valve's value not taken");
+  } 
+}
+
+*/
 
 #endif

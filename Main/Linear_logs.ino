@@ -15,8 +15,8 @@
 
 // Prototypages
 void setupMemory(SST sst);
-void updateAddrLogs(uint32_t* addr, uint8_t log_type);
-void writeLog(SST sst, uint32_t* addr, uint32_t timestamp, int* data);
+void updateAddrLogs(uint32_t* addr, uint8_t entrySize);
+void writeLog(SST sst, uint32_t addr, uint32_t timestamp, int* data);
 uint8_t* readLastEntry(SST sst, uint32_t* addr, uint8_t* result);
 uint8_t* readLast(SST sst, uint32_t* addr, uint8_t* result, uint8_t parameter, uint8_t n);
 uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_t n);
@@ -33,7 +33,10 @@ unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char 
 // the different types of logs
 #define LINEAR_LOGS    1
 #define COMMAND_LOGS   2
-#define RRD_LOGS        3  //If Needed
+#define RRD_SEC_LOGS   3  //If Needed
+#define RRD_MIN_LOGS   4  //If Needed
+#define RRD_HOUR_LOGS   5  //If Needed
+
 
 
 NIL_WORKING_AREA(waThreadLinearLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
@@ -42,8 +45,13 @@ NIL_THREAD(ThreadLinearLog, arg) {
   /*----------------------------------
     Memory setup
   ----------------------------------*/
-  
-  uint32_t addr = findAddress();
+   //Determine the position of the last logs in the memory for
+   // all type of logs (linear, RRD, commands/event)
+  uint32_t* addrLinear   = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrLinear   = findAddress(LINEAR_LOGS);
+  uint32_t* addrCommand  = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrCommand  = findAddress(COMMAND_LOGS);
+  uint32_t* addrRRDSec   = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSec   = findAddress(RRD_SEC_LOGS);
+  uint32_t* addrRRDSMin  = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSMin  = findAddress(RRD_MIN_LOGS);
+  uint32_t* addrRRDSHour = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSHour = findAddress(RRD_HOUR_LOGS);
   //The memory is on PORTD4
   SST sst = SST(4);
   setupMemory(sst);
@@ -86,22 +94,24 @@ NIL_THREAD(ThreadLinearLog, arg) {
       time_now = now();
       
       if(!waitPacket && time_now - previousNTP >= 3600){
-        sendPacket(Udp,server, packetBuffer);
+        sendPacket(Udp,alix_server, packetBuffer);
         waitPacket = true;
       } 
       // 2 seconds later we check if we have an answer from the server and update the time if possible
       else if(waitPacket && time_now - previousNTP >= 3602){
-        boolean success = updateNTP(Udp,server, packetBuffer);
-        if(!success){
-           writeCommandLog(sst, findAddress (COMMAND_LOGS), NO_ANSWER_NTP_SERVER,  time_now, 0) //TODO :update the function 
+        boolean success = updateNTP(Udp,alix_server, packetBuffer);
+        if(!success) {
+           writeCommandLog(sst, addrCommand, NO_ANSWER_NTP_SERVER,  time_now, 0); //TODO :update the function 
         }
         previousNTP = time_now;
         waitPacket = false;
       }
       
-      //This function suppose that the thread is called very regularly (at least 1 time every seconds)
-      if(time_now - previousLog > 1){
-        writeLog(sst, findAddress(LINEAR_LOGS), time_now, getParametersTable());
+      // This function suppose that the thread is called very regularly (at least 1 time every seconds)
+      // this is the linear logs
+      // 
+      if(time_now - previousLog > 1) {
+        writeLog(sst, addrLinear , time_now, dataToLog());
         previousLog = time_now;
       }
       
@@ -125,35 +135,48 @@ void setupMemory(SST sst){
 
 // Update the value of the position where a new events should be
 // logged in the memory
-void updateAddrLogs(uint32_t* addr, uint8_t log_type){
+void updateAddrLogs(uint32_t* addr, uint8_t entrySize){
+  
+  *addr = *addr + sizeEntry;
+  /*
   switch(log_type)
   {
     case LINEAR_LOGS:
-      *addr = (*addr + ENTRY_SIZE);
+      *addrLinear = (*addrLinear + sizeEntry);
       break;
     case COMMAND_LOGS:
-      *addr = (*addr + LOGS_ENTRY_SIZE);
+      *addrCommand = (*addrCommand + sizeEntry);
       break;
-    case RRD_LOGS:
-      *addr = (*addr + ENTRY_SIZE);
+    case RRD_SEC_LOGS:
+      *addrRRDSec = (*addrRRDSec + sizeEntry);
+      break;
+    case RRD_MIN_LOGS:
+      *addrRRDSMin = (*addrRRDSMin + sizeEntry);
+      break;
+    case RRD_HOUR_LOGS: 
+      *addrRRDSHour = (*addrRRDSHour + sizeEntry);
+      break;
+      
+     
   }
+  */
 }
 
 
 //Write in the memory the data with a timestamp. The data has a predifined & invariable size
-void writeLog(SST sst, uint32_t* addr, uint32_t timestamp, int* data){
+void writeLog(SST sst, uint32_t* addr, uint32_t timestamp, int* data, uint8_t entrySize){
      sst.flashWriteInit(*addr);
      //Write timestamp
-     for(int i=0; i<4; i++){
+     for(int i = 0; i < 4; i++){
         //write the 4 bytes of the timestamp in the memory using a mask
         sst.flashWriteNext((timestamp >> ((4-i-1)*8)) & 0xFF); 
      }
-     for(int i=0; i<MAX_PARAM; i++){
+     for(int i = 0; i < entrySize; i++){
         sst.flashWriteNext(data[i]);
     }
     sst.flashWriteFinish();
     //Update Address of writing
-    updateAddr(addr);
+    updateAddr(addr,entrySize);
 }
 
 //Read the last entry in the memory. It fills the table with all the parameters
