@@ -37,8 +37,8 @@ void logger(byte eventType, float parameter) {
   // or the elapse time since the last event is > 900s
   // Boot event are still taken into account
   // We however always log the Boot event
-  if ((eventType==eventTypes[MAX_NUMBER_EVENTS]) && (eventType>1)) {
-    if ((eventTimestamps[MAX_NUMBER_EVENTS]-now())<900) {
+  if ((eventType==eventTypes[MAX_NUMBER_EVENTS-1]) && (eventType>1)) {
+    if ((eventTimestamps[MAX_NUMBER_EVENTS-1]-now())<900) {
       return;
     }
   }

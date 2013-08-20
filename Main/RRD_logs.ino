@@ -71,4 +71,5 @@ int getMemoryAddress(int time, int type){
          return ((time/3600) % NB_HOURS)*SIZE_LOG + ADD_HOURS;
        break;
     }
+    return 0;
 }

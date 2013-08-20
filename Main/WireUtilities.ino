@@ -14,7 +14,7 @@ void wireWrite(uint8_t address, uint8_t reg, uint8_t _data ) // used by 4-relay
 }
 
 byte wireRead(uint8_t address) {
-  byte _data;
+  byte _data = 0;
   Wire.requestFrom(address, (uint8_t)1);
   if(Wire.available()) {
     _data = Wire.read();
@@ -24,7 +24,7 @@ byte wireRead(uint8_t address) {
 
 int wireReadTwoBytesToInt(uint8_t address) {
   int i = 0;
-  int _data;
+  int _data = 0;
   int byteWithMSB;
   int byteWithLSB;
 

@@ -24,7 +24,7 @@
 // http://www.arduino.cc/playground/Code/Time
 #include <Time.h>
 
-#define THR_MONITORING 1000
+#define THR_MONITORING 13
 /*define the IN/OUT ports of the card*/
 
 
@@ -160,7 +160,7 @@
 ***********************/
 
 #define PARAM_GAS_MIX        17  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), 
-                      //lookup table to be implemented by calibrating for each gas
+                                 //lookup table to be implemented by calibrating for each gas
 #define PARAM_GAS_RATIO      18
 
 #define PARAM_LVL_MAX        19

@@ -24,7 +24,7 @@ NIL_THREAD(ThreadWire, arg) {
   byte aByte=0;
   byte* wireFlag32=&aByte;
   unsigned int wireEventStatus=0;
-  boolean relayInitialized = false;
+  //boolean relayInitialized = false;
   // TODO: PLUG IN / OUT CRASH THE SYSTEM !!! {
   Wire.begin();
   
