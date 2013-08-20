@@ -29,7 +29,7 @@ NIL_THREAD(ThreadWire, arg) {
   Wire.begin();
   
   #ifdef I2C_LCD
-    LiquidCrystal lcd(WIRE_LCD_16_2);
+    LiquidCrystal lcd(I2C_LCD);
   #endif
 
   while(TRUE) {
@@ -88,10 +88,10 @@ NIL_THREAD(ThreadWire, arg) {
     
     #ifdef I2C_LCD
       if (wireEventStatus%10==0) {
-        if (wireDeviceExists(WIRE_LCD_16_2)) {
-          if (! wireFlagStatus(wireFlag32, WIRE_LCD_16_2)) {
+        if (wireDeviceExists(I2C_LCD)) {
+          if (! wireFlagStatus(wireFlag32, I2C_LCD)) {
             // we should be able to dynamically change the LCD I2C bus address
-            setWireFlag(wireFlag32, WIRE_LCD_16_2);
+            setWireFlag(wireFlag32, I2C_LCD);
             lcd.begin(16,2);
             // Print a message to the LCD.
             lcd.setCursor(0,0);
@@ -99,6 +99,7 @@ NIL_THREAD(ThreadWire, arg) {
             lcd.setCursor(0,1);
             lcd.print(F("IO2:"));
           }
+          /* To be replaced with the information we want
           lcd.setCursor(4,0);
           lcd.print(((float)getParameter(PARAM_TEMP1))/100);
           lcd.print(F("C "));
@@ -109,14 +110,14 @@ NIL_THREAD(ThreadWire, arg) {
           lcd.setCursor(12,1);
           lcd.print(getParameter(PARAM_IRCODE));
           lcd.print(F("   "));
-     
+          */
         } 
         else {
-          clearWireFlag(wireFlag32, WIRE_LCD_16_2); 
+          clearWireFlag(wireFlag32, I2C_LCD); 
         }
       }
     
-    
+    /*
     if (wireEventStatus%10==5) {
       if (wireDeviceExists(WIRE_LCD_20_4)) {
         if (! wireFlagStatus(wireFlag32, WIRE_LCD_20_4)) {
@@ -139,14 +140,14 @@ NIL_THREAD(ThreadWire, arg) {
       else {
         clearWireFlag(wireFlag32, WIRE_LCD_20_4); 
       }
-    }
+    }*/
     #endif
 
 
     /*************
       PH METER
     ************/
-    
+    /* No device exist yet
     if (wireDeviceExists(WIRE_PHMETER_ID)) {
       wireWrite(WIRE_PHMETER_ID, 0b00010000); // initialize A/D conversion with 5th bit
       setParameter(REGISTER_PH_METER_READOUT, wireReadTwoBytesToInt(WIRE_PHMETER_ID)); // save pH value into 
