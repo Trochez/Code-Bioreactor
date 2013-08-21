@@ -28,16 +28,16 @@
                    on of the 26 variables)
   
 */
-void writeCommandLog(SST sst, uint32_t addr, uint32_t timestamp, uint8_t event_number, uint16_t parameter_value) {
+void writeCommandLog(SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_number, uint16_t parameter_value) {
   
  
   // Initialized the flash memory with the rigth address in the memory
-  sst.flashWriteInit(addr);
+  sst.flashWriteInit(*addr);
   
   // Write the timestamp
-  for(int i=0; i<4; i++) {
+  for(int i = 0; i < 4; i++) {
     //write the 4 bytes of the timestamp in the memory using a mask
-    sst.flashWriteNext((timestamp >> ((4-i-1)*8)) & 0xFF); 
+    sst.flashWriteNext((timestamp >> ((4 - i - 1) * 8)) & 0xFF); 
   }
   
   // write the byte of the event number
@@ -45,18 +45,17 @@ void writeCommandLog(SST sst, uint32_t addr, uint32_t timestamp, uint8_t event_n
   
   // if needed the parameter value 
   if(event_number & 0x80) {
-    for(int i=0; i<2; i++) {
+    for(int i = 0; i < 2; i++) {
       // write the 2 bytes of the timestamp in the memory using a mask
-      sst.flashWriteNext((parameter_value >> ((2-i-1)*8)) & 0xFF); 
+      sst.flashWriteNext((parameter_value >> ((2 - i - 1) * 8)) & 0xFF); 
     }
   }
   
   // finish the process of writing the data in memory
   sst.flashWriteFinish();
   
-  
   //Update the value of the next event log position in the memory
-  updateAddrLogs(addr);
+  updateAddrLogs(addr, 4 + 3);
   
 }
 
