@@ -28,8 +28,8 @@ NIL_THREAD(ThreadRelay_PID, arg)
 void pid_ctrl()
 {
   float exactPresentTime;
-  heatingRegInput = getParameter(PARAM_TEMP_LIQ);
-  heatingRegSetpoint = getParameter(PARAM_TEMP_EQ);            //hardcoded in the GlobalTestThread, value between 1s and 45s
+  heatingRegInput = getParameter(TEMP_LIQ);
+  heatingRegSetpoint = getParameter(DESIRED_LIQUID_TEMP);            //hardcoded in the GlobalTestThread, value between 1s and 45s
   heatingRegPID.Compute();                                   // the computation takes only 30ms!
   // turn the output pin on/off based on pid output
   exactPresentTime = millis();
@@ -42,13 +42,13 @@ void pid_ctrl()
   if(heatingRegOutput > exactPresentTime - heatingRegWindowStartTime) 
   {
     //set relay ON, ensure the Wire thread makes the work then !!!
-    setParameter(PARAM_RELAY_PID,getParameter(PARAM_RELAY_PID)&(~(1<<3)));
+    setParameter(RELAY_PID,getParameter(RELAY_PID)&(~(1<<3)));
     digitalWrite(TRANS_PID, HIGH); 
   }  
   else 
   {
     //set relay OFF, ensure the Wire thread makes the work then !!!
-    setParameter(PARAM_RELAY_PID,getParameter(PARAM_RELAY_PID)||(1<<4));
+    setParameter(RELAY_PID,getParameter(RELAY_PID)||(1<<4));
     digitalWrite(TRANS_PID, LOW); 
   } 
 }
@@ -65,7 +65,7 @@ void heatingSetup()
   //set PID sampling time to 10000ms                   //possibly set a timer condition with a nilsleep instead
   heatingRegPID.SetSampleTime(10000);
   heatingRegWindowStartTime = millis();
-  heatingRegSetpoint = getParameter(PARAM_TEMP_MAX);
+  heatingRegSetpoint = getParameter(TEMP_MAX);
 }
 
 #endif

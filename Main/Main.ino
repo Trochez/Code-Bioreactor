@@ -103,55 +103,68 @@
 *************************/     
 
 #ifdef TEMP_LIQ
-  #define PARAM_TEMP_LIQ      0
+  #define TEMP_LIQ             0
 #endif
 
 #ifdef TEMP_PLATE
-  #define PARAM_TEMP_PLATE    1
-#endif
-
-#ifdef TEMP_STEPPER
-  #define PARAM_TEMP_STEPPER  2
+  #define TEMP_PLATE           1
 #endif
 
 #ifdef PH
-  #define  PARAM_PH           3
+  #define  PH                  2
 #endif  
 
-#ifdef WGHT         
-  #define  PARAM_WGHT         4
-#endif
-
 #ifdef FLUX  
-  #define PARAM_FLUX_GAS1      5
-  #define PARAM_FLUX_GAS2      6
-  #define PARAM_FLUX_GAS3      7
-  #define PARAM_FLUX_GAS4      8
-  #define PARAM_TAP_GAS1_2     9
-  #define PARAM_TAP_GAS3_4     10
+  #define FLUX_GAS1            3
+  #define FLUX_GAS2            4
+  #define FLUX_GAS3            5
+  #define FLUX_GAS4            6
+  //#define PARAM_TAP_GAS1_2     
+  //#define PARAM_TAP_GAS3_4     
 
 #endif
+
+#ifdef WGHT         
+  #define ACTUAL_WGHT          7  
+#endif
+
+#ifdef TEMP_STEPPER
+  #define TEMP_STEPPER         8
+#endif
+
+#define DESIRED_LIQUID_TEMP    9  
+#define TEMP_MIN               11
+#define TEMP_MAX               10
+
+#define WAIT_TIME_PUMP_MOTOR   12
+
+#define DESIRED_PH             13
+
+#define LVL_MAX_WATER          14        
+#define LVL_MIN_WATER          15 
+
+
 
 #ifdef TAP_ACID_BASE
-  #define PARAM_TAP_ACID_BASE  13
+  #define PARAM_TAP_ACID_BASE  
 #endif
 
 #ifdef TAP_FOOD
-  #define PARAM_TAP_FOOD       14
+  #define FOOD_SPEED_TAP              
 #endif
 
 #ifdef RELAY_PUMP
-  #define PARAM_RELAY_PUMP     15
+  #define PARAM_RELAY_PUMP     
 #endif
 
 #ifdef TRANS_PID
-  #define  PARAM_RELAY_PID      15
+  #define  RELAY_PID      200
   //for the regulation of temperature values btw 10 and 45 [s] are commun
   #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
 #endif
 
 #ifdef  STEPPER
-  #define  PARAM_STEPPER        16
+  #define  PARAM_STEPPER        
 #endif 
 
 
@@ -159,24 +172,13 @@
   Control parameters
 ***********************/
 
-#define PARAM_GAS_MIX        17  //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), 
+//#define PARAM_GAS_MIX          //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), 
                                  //lookup table to be implemented by calibrating for each gas
-#define PARAM_GAS_RATIO      18
-
-#define PARAM_LVL_MAX        19
-#define PARAM_LVL_MIN        20 
-#define PRAM_WAIT_PUMP       21
-
-#define PARAM_PH_EQ          22
-
-#define PARAM_TEMP_EQ        23
-#define PARAM_TEMP_MAX       24
-#define PARAM_TEMP_MIN       25
-
+//#define PARAM_GAS_RATIO   
 
 /*State FlagVector*/
 
-#define FLAG_VECTOR          26           //possible out of the table ??
+//#define FLAG_VECTOR          26           //possible out of the table ??
 
 /*related masks*/
 

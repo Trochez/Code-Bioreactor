@@ -61,6 +61,6 @@ void writeCommandLog(SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_
 
 // Update the value of the position where a new events should be
 // logged in the memory
-void updateAddrLogs(uint32_t* addr){
-   *addr = (*addr + LOGS_ENTRY_SIZE);
+void updateAddrLogs(uint32_t* addr, uint8_t entrySize){
+   *addr = (*addr + entrySize);
 }

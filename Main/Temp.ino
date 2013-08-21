@@ -33,15 +33,15 @@
     
     while(TRUE){
     #ifdef TEMP_LIQ
-      getTemperature(sensors1, oneWireAddress1, TEMP_LIQ, PARAM_TEMP_LIQ);
+      getTemperature(sensors1, oneWireAddress1, TEMP_LIQ, TEMP_LIQ);
     #endif
   
     #ifdef TEMP_PLATE
-      getTemperature(sensors2, oneWireAddress2, TEMP_PLATE, PARAM_TEMP_PLATE);
+      getTemperature(sensors2, oneWireAddress2, TEMP_PLATE, TEMP_PLATE);
     #endif
   
     #ifdef TEMP_STEPPER
-      getTemperature(sensors3, oneWireAddress3, TEMP_STEPPER, PARAM_TEMP_STEPPER); 
+      getTemperature(sensors3, oneWireAddress3, TEMP_STEPPER, TEMP_STEPPER); 
     #endif
     
     nilThdSleepMilliseconds(500);
