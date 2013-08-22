@@ -29,7 +29,7 @@ void pid_ctrl()
 {
   float exactPresentTime;
   heatingRegInput = getParameter(TEMP_LIQ);
-  heatingRegSetpoint = getParameter(DESIRED_LIQUID_TEMP);            //hardcoded in the GlobalTestThread, value between 1s and 45s
+  heatingRegSetpoint = getParameter(DESIRED_LIQUID_TEMP);
   heatingRegPID.Compute();                                   // the computation takes only 30ms!
   // turn the output pin on/off based on pid output
   exactPresentTime = millis();

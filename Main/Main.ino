@@ -24,7 +24,7 @@
 // http://www.arduino.cc/playground/Code/Time
 #include <Time.h>
 
-#define THR_MONITORING 13
+//#define THR_MONITORING 13
 /*define the IN/OUT ports of the card*/
 
 
@@ -55,8 +55,8 @@
   THREADS PRESENT IN EACH CARD
 *******************************/  
 
-#define THR_LINEAR_LOGS 1
-#define THR_ETHERNET 1
+//#define THR_LINEAR_LOGS 1
+//#define THR_ETHERNET 1
 
 /******************
   DEFINE CARD TYPE
@@ -103,15 +103,15 @@
 *************************/     
 
 #ifdef TEMP_LIQ
-  #define TEMP_LIQ             0
+  #define PARAM_TEMP_LIQ             0
 #endif
 
 #ifdef TEMP_PLATE
-  #define TEMP_PLATE           1
+  #define PARAM_TEMP_PLATE           1
 #endif
 
 #ifdef PH
-  #define  PH                  2
+  #define  PARAM_PH                  2
 #endif  
 
 #ifdef FLUX  
@@ -129,7 +129,7 @@
 #endif
 
 #ifdef TEMP_STEPPER
-  #define TEMP_STEPPER         8
+  #define PARAM_TEMP_STEPPER         8
 #endif
 
 #define DESIRED_LIQUID_TEMP    9  
