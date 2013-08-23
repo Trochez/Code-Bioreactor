@@ -76,8 +76,12 @@ NIL_THREAD(ThreadSerial, arg) {
         serialReset();
       } 
       else if (inChar=='i') { // show i2c (wire) information
-        wireInfo(&Serial);
-        serialReset();
+        #ifdef GAS_CTRL || STEPPER_CTRL || I2C_LCD
+          wireInfo(&Serial);
+          serialReset();
+        #elseif
+          Serial.println("I2C Thread not activated");
+        #endif
       } 
       #ifdef ONE_WIRE_BUS1
       else if (inChar=='o') { // show oneWire information
