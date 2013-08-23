@@ -1,4 +1,4 @@
-#ifdef  FLUX
+#ifdef FLUX
 
 NIL_WORKING_AREA(waThreadTap, 50);
 NIL_THREAD(ThreadTap, arg) { 
