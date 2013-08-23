@@ -3,6 +3,7 @@
 #include <SPI.h>
 
 // Definition of all events to be logged
+
 #define PUMPING_START          1
 #define PUMPING_STOP           2
 #define MOTOR_START            3

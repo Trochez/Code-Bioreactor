@@ -14,7 +14,7 @@
 #include <Wire.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include <LiquidCrystal.h>
+//#include <LiquidCrystal.h>
 
 // The normal serial takes 200 bytes more but is buffered
 // And if we send a String for parameters it can not be understand ...
@@ -47,16 +47,21 @@
 #define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
 
 //Define here if the LCD screen is used or not
-#define I2C_LCD B00100111
+//#define I2C_LCD B00100111
 //WIRE_LCD_16_2 B00100111
 //WIRE_LCD_20_4 B00100110
 
 /*******************************
-  THREADS PRESENT IN EACH CARD
+  THREADS AND PARAMETERS PRESENT IN EACH CARD 
 *******************************/  
 
-#define THR_LINEAR_LOGS 1
-//#define THR_ETHERNET 1
+#define THR_LINEAR_LOGS       1
+#define THR_ETHERNET          1
+
+#define PARAM_ERROR_CODE          22  
+#define PARAM_PUMP_STATUS         23
+
+
 
 /******************
   DEFINE CARD TYPE
@@ -81,33 +86,33 @@
   
   // Parameters stored in memory
   #ifdef TEMP_LIQ
-    #define TEMP_LIQ             0
+    #define PARAM_TEMP_LIQ             0
   #endif
   
   #ifdef TEMP_PLATE
-    #define TEMP_PLATE           1
+    #define PARAM_TEMP_PLATE           1
   #endif
   
-  #define DESIRED_LIQUID_TEMP    9  
-  #define TEMP_MIN               11
-  #define TEMP_MAX               10
+  #define PARAM_DESIRED_LIQUID_TEMP    9  
+  #define PARAM_TEMP_MIN               10
+  #define PARAM_TEMP_MAX               11
   
 #endif
 
 //*************************************
 
 #ifdef    PH_CTRL
-  // Input/Output
   
+  // Input/Output  
   #define PH              IO1
   #define TAP_ACID_BASE   {I02,PWM2}
   
   // Parameters stored in memory
   #ifdef PH
-    #define  PH                  2
+    #define  PARAM_PH                  2
   #endif
   
-  #define DESIRED_PH             13
+  #define PARAM_DESIRED_PH             12
 #endif
 
 //*************************************
@@ -121,12 +126,17 @@
   
   // Parameters stored in memory
   #ifdef FLUX  
-    #define FLUX_GAS1            3
-    #define FLUX_GAS2            4
-    #define FLUX_GAS3            5
-    #define FLUX_GAS4            6
+    #define PARAM_FLUX_GAS1            3
+    #define PARAM_FLUX_GAS2            4
+    #define PARAM_FLUX_GAS3            5
+    #define PARAM_FLUX_GAS4            6
     //#define PARAM_TAP_GAS1_2     
-    //#define PARAM_TAP_GAS3_4     
+    //#define PARAM_TAP_GAS3_4   
+    #define PARAM_DESIRED_FLUX_GAS1            13
+    #define PARAM_DESIRED_FLUX_GAS2            14
+    #define PARAM_DESIRED_FLUX_GAS3            15
+    #define PARAM_DESIRED_FLUX_GAS4            16
+    
   #endif
 #endif
 
@@ -144,23 +154,23 @@
   // Parameters stored in memory
   
   #ifdef WGHT         
-    #define ACTUAL_WGHT          7
-    #define LVL_MAX_WATER        14        
-    #define LVL_MIN_WATER        15  
+    #define PARAM_ACTUAL_WGHT          7
+    #define PARAM_LVL_MAX_WATER        17        
+    #define PARAM_LVL_MIN_WATER        18  
   #endif
   
   #ifdef TEMP_STEPPER
-    #define TEMP_STEPPER         8
+    #define PARAM_TEMP_STEPPER         8
   #endif
   
-  #define WAIT_TIME_PUMP_MOTOR   12 
+  #define PARAM_WAIT_TIME_PUMP_MOTOR   21 
   
   #ifdef TAP_ACID_BASE
     #define PARAM_TAP_ACID_BASE  
   #endif
   
   #ifdef TAP_FOOD
-    #define FOOD_SPEED_TAP              
+    #define FOOD_SPEED_TAP            19              
   #endif
   
   #ifdef RELAY_PUMP
@@ -174,7 +184,7 @@
   #endif
   
   #ifdef  STEPPER
-    #define  PARAM_STEPPER        
+    #define  PARAM_STEPPER_SPEED    20        
   #endif 
   
 #endif

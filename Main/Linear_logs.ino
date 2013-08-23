@@ -179,7 +179,7 @@ void updateAddr(uint32_t* addr, uint8_t entrySize){
 
 
 //Write in the memory the data with a timestamp. The data has a predifined & invariable size
-void writeLog(SST sst, uint32_t* addr, uint32_t timestamp){
+void writeLog(SST sst, uint32_t* addr, uint32_t timestamp) {
   
   // Initialized the flash memory with the rigth address in the memory  
   sst.flashWriteInit(*addr);
