@@ -52,8 +52,8 @@ unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char 
 #define SET_MODE_1             16
 #define SET_MODE_2             17
 #define SET_MODE_3             18
-#define PARAMETER_SET          130
 
+#define PARAMETER_SET          130
 
 #define LOGS_ENTRY_SIZE        7
 
@@ -122,7 +122,7 @@ NIL_THREAD(ThreadLinearLog, arg) {
       else if(waitPacket && time_now - previousNTP >= 3602){
         boolean success = updateNTP(Udp,alix_server, packetBuffer);
         if(!success) {
-           writeCommandLog(sst, addrCommand, NO_ANSWER_NTP_SERVER,  time_now, 0); //TODO :update the function 
+           writeLog(COMMAND_LOGS, sst, addrCommand, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
         }
         previousNTP = time_now;
         waitPacket = false;
@@ -175,12 +175,14 @@ void writeLog(uint8_t log_type,SST sst, uint32_t* addr, uint32_t timestamp, uint
       }
     }
     break;
+    
     case RRD_SEC_LOGS:
-    break;
+      for(int i = 0; i < ENTRY_SIZE_LOGS_LINEAR; i++) {
+        sst.flashWriteNext(getParameter(i));
+      }
+      break;
   }
   
-  
-   
   // finish the process of writing the data in memory
   sst.flashWriteFinish();
   
@@ -201,9 +203,7 @@ void writeLog(SST sst, uint32_t* addr, uint32_t timestamp) {
         sst.flashWriteNext((timestamp >> ((4-i-1)*8)) & 0xFF); 
      }
      
-     for(int i = 0; i < ENTRY_SIZE_LOGS_LINEAR; i++){
-        sst.flashWriteNext(getParameter(i));
-    }
+     
     sst.flashWriteFinish();
     //Update Address of writing
     updateAddr(addr, ENTRY_SIZE_LOGS_LINEAR);

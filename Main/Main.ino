@@ -55,8 +55,8 @@
   THREADS AND PARAMETERS PRESENT IN EACH CARD 
 *******************************/  
 
-#define THR_LINEAR_LOGS       1
-#define THR_ETHERNET          1
+#define THR_LINEAR_LOGS           1
+#define THR_ETHERNET              1
 
 #define PARAM_ERROR_CODE          22  
 #define PARAM_PUMP_STATUS         23
