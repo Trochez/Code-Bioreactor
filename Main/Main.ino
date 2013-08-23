@@ -23,7 +23,7 @@
 // http://www.arduino.cc/playground/Code/Time
 #include <Time.h>
 
-#define THR_MONITORING 13
+//#define THR_MONITORING 13
 /*define the IN/OUT ports of the card*/
 
 
