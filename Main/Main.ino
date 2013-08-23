@@ -65,7 +65,7 @@
 #define TEMP_CTRL     1
 //#define PH_CTRL       1
 //#define GAS_CTRL      1
-//define STEPPER_CTRL   1
+//#define STEPPER_CTRL   1
 
 
 /*******************************
@@ -73,99 +73,111 @@
 *******************************/  
 
 #ifdef     TEMP_CTRL
+
+  // Input/Output
   #define  TEMP_LIQ       IO1
   #define  TEMP_PLATE     IO2
   #define  TRANS_PID      PWM3
+  
+  // Parameters stored in memory
+  #ifdef TEMP_LIQ
+    #define TEMP_LIQ             0
+  #endif
+  
+  #ifdef TEMP_PLATE
+    #define TEMP_PLATE           1
+  #endif
+  
+  #define DESIRED_LIQUID_TEMP    9  
+  #define TEMP_MIN               11
+  #define TEMP_MAX               10
+  
 #endif
+
+//*************************************
 
 #ifdef    PH_CTRL
+  // Input/Output
+  
   #define PH              IO1
   #define TAP_ACID_BASE   {I02,PWM2}
+  
+  // Parameters stored in memory
+  #ifdef PH
+    #define  PH                  2
+  #endif
+  
+  #define DESIRED_PH             13
 #endif
 
+//*************************************
+
 #ifdef     GAS_CTRL
+  // Input/Output
+  
   #define  FLUX           I2C_FLUX
   #define  TAP_GAS1_2     {IO1,PWM1}
   #define  TAP_GAS3_4     {IO2,PWM2}
+  
+  // Parameters stored in memory
+  #ifdef FLUX  
+    #define FLUX_GAS1            3
+    #define FLUX_GAS2            4
+    #define FLUX_GAS3            5
+    #define FLUX_GAS4            6
+    //#define PARAM_TAP_GAS1_2     
+    //#define PARAM_TAP_GAS3_4     
+  #endif
 #endif
 
+//*************************************
+
 #ifdef STEPPER_CTRL
+  // Input/Output
+  
   //#define  WGHT           IO1
-  #define  STEPPER        {IO4,PWM4}
+  #define  STEPPER          {IO4,PWM4}
   //#define  TAP_FOOD       IO3
   //#define  TEMP_STEPPER   IO5
   //#define  RELAY_PUMP     I2C_RELAY
+  
+  // Parameters stored in memory
+  
+  #ifdef WGHT         
+    #define ACTUAL_WGHT          7
+    #define LVL_MAX_WATER        14        
+    #define LVL_MIN_WATER        15  
+  #endif
+  
+  #ifdef TEMP_STEPPER
+    #define TEMP_STEPPER         8
+  #endif
+  
+  #define WAIT_TIME_PUMP_MOTOR   12 
+  
+  #ifdef TAP_ACID_BASE
+    #define PARAM_TAP_ACID_BASE  
+  #endif
+  
+  #ifdef TAP_FOOD
+    #define FOOD_SPEED_TAP              
+  #endif
+  
+  #ifdef RELAY_PUMP
+    #define PARAM_RELAY_PUMP     
+  #endif
+  
+  #ifdef TRANS_PID
+    #define  RELAY_PID      200
+    //for the regulation of temperature values btw 10 and 45 [s] are commun
+    #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
+  #endif
+  
+  #ifdef  STEPPER
+    #define  PARAM_STEPPER        
+  #endif 
+  
 #endif
-
-
-/************************
-  Hard coded parameters
-*************************/     
-
-#ifdef TEMP_LIQ
-  #define TEMP_LIQ             0
-#endif
-
-#ifdef TEMP_PLATE
-  #define TEMP_PLATE           1
-#endif
-
-#ifdef PH
-  #define  PH                  2
-#endif  
-
-#ifdef FLUX  
-  #define FLUX_GAS1            3
-  #define FLUX_GAS2            4
-  #define FLUX_GAS3            5
-  #define FLUX_GAS4            6
-  //#define PARAM_TAP_GAS1_2     
-  //#define PARAM_TAP_GAS3_4     
-
-#endif
-
-#ifdef WGHT         
-  #define ACTUAL_WGHT          7  
-#endif
-
-#ifdef TEMP_STEPPER
-  #define TEMP_STEPPER         8
-#endif
-
-#define DESIRED_LIQUID_TEMP    9  
-#define TEMP_MIN               11
-#define TEMP_MAX               10
-
-#define WAIT_TIME_PUMP_MOTOR   12
-
-#define DESIRED_PH             13
-
-#define LVL_MAX_WATER          14        
-#define LVL_MIN_WATER          15 
-
-
-
-#ifdef TAP_ACID_BASE
-  #define PARAM_TAP_ACID_BASE  
-#endif
-
-#ifdef TAP_FOOD
-  #define FOOD_SPEED_TAP              
-#endif
-
-#ifdef RELAY_PUMP
-  #define PARAM_RELAY_PUMP     
-#endif
-
-#ifdef TRANS_PID
-  #define  RELAY_PID      200
-  //for the regulation of temperature values btw 10 and 45 [s] are commun
-  #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
-#endif
-
-#ifdef  STEPPER
-  #define  PARAM_STEPPER        
-#endif 
 
 
 /**********************
