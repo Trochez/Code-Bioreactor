@@ -56,7 +56,7 @@
 *******************************/  
 
 #define THR_LINEAR_LOGS 1
-#define THR_ETHERNET 1
+//#define THR_ETHERNET 1
 
 /******************
   DEFINE CARD TYPE
@@ -77,7 +77,7 @@
   // Input/Output
   #define  TEMP_LIQ       IO1
   #define  TEMP_PLATE     IO2
-  #define  TRANS_PID      PWM3
+  //#define  TRANS_PID      PWM3
   
   // Parameters stored in memory
   #ifdef TEMP_LIQ

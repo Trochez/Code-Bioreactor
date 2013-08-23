@@ -191,7 +191,7 @@ void writeLog(SST sst, uint32_t* addr, uint32_t timestamp){
      }
      
      for(int i = 0; i < ENTRY_SIZE_LOGS_LINEAR; i++){
-        sst.flashWriteNext(getParamter(i));
+        sst.flashWriteNext(getParameter(i));
     }
     sst.flashWriteFinish();
     //Update Address of writing

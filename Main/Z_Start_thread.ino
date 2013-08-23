@@ -1,22 +1,25 @@
 // Nice way to make some monitoring about activity. This should be the lower priority process
 // If the led is "stable" (blinks 500 times per seconds) it means there are not too
 // many activities on the microcontroler
-NIL_WORKING_AREA(waThreadMonitoring, 0);
-NIL_THREAD(ThreadMonitoring, arg) {
-  boolean turnOn=true;
-  pinMode(THR_MONITORING, OUTPUT);   
-  while (TRUE) {
-    if (turnOn) {
-      turnOn=false;
-      digitalWrite(THR_MONITORING,HIGH);
-    } 
-    else {
-      turnOn=true;
-      digitalWrite(THR_MONITORING,LOW);
+
+#ifdef THR_MONITORING
+  NIL_WORKING_AREA(waThreadMonitoring, 0);
+  NIL_THREAD(ThreadMonitoring, arg) {
+    boolean turnOn=true;
+    pinMode(THR_MONITORING, OUTPUT);   
+    while (TRUE) {
+      if (turnOn) {
+        turnOn=false;
+        digitalWrite(THR_MONITORING,HIGH);
+      } 
+      else {
+        turnOn=true;
+        digitalWrite(THR_MONITORING,LOW);
+      }
+      nilThdSleepMilliseconds(1);
     }
-    nilThdSleepMilliseconds(1);
   }
-}
+#endif
 
 
 NIL_THREADS_TABLE_BEGIN()
@@ -39,7 +42,6 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadTap, NULL, waThreadTap, sizeof(waThreadTap))
 
 #ifdef  TEMP_CTRL 
 
-
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay_PID, NULL, waThreadRelay_PID, sizeof(waThreadRelay_PID))
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadTemp, NULL, waThreadTemp, sizeof(waThreadTemp))                        
 
@@ -48,7 +50,7 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadTemp, NULL, waThreadTemp, sizeof(waThreadTem
 
 #ifdef  STEPPER_CTRL
 
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper)
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay, NULL, waThreadRelay, sizeof(waThreadRelay))
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadTap, NULL, waThreadTap, sizeof(waThreadTap))
