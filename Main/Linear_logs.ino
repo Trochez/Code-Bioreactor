@@ -25,8 +25,7 @@ void sendPacket(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffer[
 boolean updateNTP(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffer[] );
 unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char packetBuffer[]);
 
-//size of every new entry (4 bytes for the timestamp)
-#define ENTRY_SIZE (MAX_PARAM + 4)
+
 
 #define NTP_PACKET_SIZE (48)
 
@@ -36,6 +35,27 @@ unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char 
 #define RRD_MIN_LOGS             3      //If Needed
 #define RRD_HOUR_LOGS            4  //If Needed
 #define ENTRY_SIZE_LOGS_LINEAR   10
+
+//size of every new entry (4 bytes for the timestamp)
+#define ENTRY_SIZE (ENTRY_SIZE_LOGS_LINEAR + 4)
+
+
+
+// Definition of all events to be logged
+#define PUMPING_START          1
+#define PUMPING_STOP           2
+#define MOTOR_START            3
+#define MOTOR_STOP             4
+#define NO_ANSWER_NTP_SERVER   6
+#define NO_ANSWER_SERVER       7
+#define SENSORS_ERROR          8
+#define SET_MODE_1             16
+#define SET_MODE_2             17
+#define SET_MODE_3             18
+#define PARAMETER_SET          130
+
+
+#define LOGS_ENTRY_SIZE        7
 
 
 NIL_WORKING_AREA(waThreadLinearLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
@@ -92,7 +112,6 @@ NIL_THREAD(ThreadLinearLog, arg) {
           no answer -> log in event + try again in 3600 seconds
       - Log parameter every 1 second
       *****************************/
-      
       time_now = now();
       
       if(!waitPacket && time_now - previousNTP >= 3600){
@@ -121,60 +140,52 @@ NIL_THREAD(ThreadLinearLog, arg) {
   }
 }
 
-int* dataToLog() {
-  uint8_t entrySize = computeLogSize();
-  int data[entrySize + 1];
-  data[0] = entrySize;
+/* 
+  Function to save the events in the Flash memory
   
-  return data;
+  sst:             The object where is defined the operations to manipulate 
+                   the flash memory
+  addr:            The location in the memory where the command logs should be writen
+  timesamp:        The time when the event happend 
+  parameter_value: The value of the parameter (used when a user changes the value of
+                   on of the 26 variables)
   
-}
-
-uint8_t computeLogSize()
-{
-  return 9;
-}
-
-/*--------------------------
-  Memory related functions
----------------------------*/
-
-//Setup the memory for future use
-//Need to be used only onced at startup
-void setupMemory(SST sst){
-  SPI.begin();
-  SPI.setDataMode(SPI_MODE0);
-  SPI.setBitOrder(MSBFIRST);
-  sst.init();
-}
-
-// Update the value of the position where a new events should be
-// logged in the memory
-void updateAddr(uint32_t* addr, uint8_t entrySize){
+*/
+void writeLog(uint8_t log_type,SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_number, uint16_t parameter_value) {
   
-  *addr = *addr + entrySize;
-  /*
+  // Initialized the flash memory with the rigth address in the memory
+  sst.flashWriteInit(*addr);
+  // Write the timestamp
+  for(int i = 0; i < 4; i++) {
+    //write the 4 bytes of the timestamp in the memory using a mask
+    sst.flashWriteNext((timestamp >> ((4 - i - 1) * 8)) & 0xFF); 
+  }
+  
   switch(log_type)
   {
-    case LINEAR_LOGS:
-      *addrLinear = (*addrLinear + sizeEntry);
-      break;
-    case COMMAND_LOGS:
-      *addrCommand = (*addrCommand + sizeEntry);
-      break;
+    case COMMAND_LOGS :
+      // write the byte of the event number
+      sst.flashWriteNext(event_number);
+  
+      // if needed the parameter value 
+      if(event_number & 0x80) {
+        for(int i = 0; i < 2; i++) {
+        // write the 2 bytes of the timestamp in the memory using a mask
+          sst.flashWriteNext((parameter_value >> ((2 - i - 1) * 8)) & 0xFF); 
+      }
+    }
+    break;
     case RRD_SEC_LOGS:
-      *addrRRDSec = (*addrRRDSec + sizeEntry);
-      break;
-    case RRD_MIN_LOGS:
-      *addrRRDSMin = (*addrRRDSMin + sizeEntry);
-      break;
-    case RRD_HOUR_LOGS: 
-      *addrRRDSHour = (*addrRRDSHour + sizeEntry);
-      break;
-      
-     
+    break;
   }
-  */
+  
+  
+   
+  // finish the process of writing the data in memory
+  sst.flashWriteFinish();
+  
+  //Update the value of the next event log position in the memory
+  updateAddr(addr, LOGS_ENTRY_SIZE);
 }
 
 
@@ -197,6 +208,26 @@ void writeLog(SST sst, uint32_t* addr, uint32_t timestamp) {
     //Update Address of writing
     updateAddr(addr, ENTRY_SIZE_LOGS_LINEAR);
 }
+
+/*--------------------------
+  Memory related functions
+---------------------------*/
+//Setup the memory for future use
+//Need to be used only onced at startup
+void setupMemory(SST sst){
+  SPI.begin();
+  SPI.setDataMode(SPI_MODE0);
+  SPI.setBitOrder(MSBFIRST);
+  sst.init();
+}
+
+// Update the value of the position where a new events should be
+// logged in the memory
+void updateAddr(uint32_t* addr, uint8_t entrySize){
+  
+  *addr = *addr + entrySize;
+}
+
 
 //Read the last entry in the memory. It fills the table with all the parameters
 //Have to give a sufficiently large table to the function

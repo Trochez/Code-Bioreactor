@@ -1,3 +1,4 @@
+/*
 //Whenever a action occurs in the Bioreactor, a log should be written.
 #include <SST.h>
 #include <SPI.h>
@@ -28,7 +29,7 @@
   parameter_value: The value of the parameter (used when a user changes the value of
                    on of the 26 variables)
   
-*/
+
 void writeCommandLog(SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_number, uint16_t parameter_value) {
   
  
@@ -57,11 +58,5 @@ void writeCommandLog(SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_
   
   //Update the value of the next event log position in the memory
   updateAddrLogs(addr, 4 + 3);
-  
 }
-
-// Update the value of the position where a new events should be
-// logged in the memory
-void updateAddrLogs(uint32_t* addr, uint8_t entrySize){
-   *addr = (*addr + entrySize);
-}
+*/
