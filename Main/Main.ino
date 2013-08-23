@@ -2,7 +2,10 @@
   LIBRAIRIES
 **************/
 
-#include <PID_v1.h>
+//MultiThread
+#include <NilRTOS.h>
+
+//Memory
 #include <SST.h>
 #include <SPI.h>
 
@@ -10,11 +13,7 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 
-#include <NilRTOS.h>
-#include <Wire.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
-//#include <LiquidCrystal.h>
+
 
 // The normal serial takes 200 bytes more but is buffered
 // And if we send a String for parameters it can not be understand ...

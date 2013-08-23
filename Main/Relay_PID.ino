@@ -3,23 +3,22 @@
 #ifdef TRANS_PID
 #include <PID_v1.h>
 
-double heatingRegInput, heatingRegOutput, heatingRegSetpoint;
-//initialize PID variables
-
-unsigned long heatingRegWindowStartTime;
-//Specify the heating regulation links and initial tuning parameters //Kp=100; Ti=0.2; Td=5 are initial testing param.
-//PID object definition can be found in PID library (to include for compilation).
-PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000,15,300, DIRECT);
-
 NIL_WORKING_AREA(waThreadRelay_PID, 70);      
 NIL_THREAD(ThreadRelay_PID, arg) 
 {  
-    heatingSetup();
-    
-    while(TRUE){
-      pid_ctrl();
-      nilThdSleepMilliseconds(500);  //refresh every 500ms
-    }
+  double heatingRegInput, heatingRegOutput, heatingRegSetpoint;
+  //initialize PID variables
+  
+  unsigned long heatingRegWindowStartTime;
+  //Specify the heating regulation links and initial tuning parameters //Kp=100; Ti=0.2; Td=5 are initial testing param.
+  //PID object definition can be found in PID library (to include for compilation).
+  PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000,15,300, DIRECT);
+  heatingSetup();
+  
+  while(TRUE){
+    pid_ctrl();
+    nilThdSleepMilliseconds(500);  //refresh every 500ms
+  }
 }
 
 
