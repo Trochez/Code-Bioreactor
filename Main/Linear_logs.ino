@@ -16,7 +16,7 @@
 // Prototypages
 void setupMemory(SST sst);
 void updateAddr(uint32_t* addr, uint8_t entrySize);
-void writeLog(SST sst, uint32_t addr, uint32_t timestamp);
+void writeLog(uint8_t log_type,SST sst, uint32_t* addr, uint32_t timestamp, uint8_t event_number, uint16_t parameter_value);
 uint8_t* readLastEntry(SST sst, uint32_t* addr, uint8_t* result);
 uint8_t* readLast(SST sst, uint32_t* addr, uint8_t* result, uint8_t parameter, uint8_t n);
 uint32_t* readLastTimestamp(SST sst, uint32_t* addr, uint32_t* timestamp, uint8_t n);
@@ -102,7 +102,7 @@ NIL_THREAD(ThreadLinearLog, arg) {
     Thread Main Loop
   --------------------------------*/
   while(true){
-    
+      Serial.println("test!");
       /****************************
       THREAD LOG & TIME : STRUCTURE    
       - Update NTP all the 3600 seconds
@@ -114,12 +114,12 @@ NIL_THREAD(ThreadLinearLog, arg) {
       *****************************/
       time_now = now();
       
-      if(!waitPacket && time_now - previousNTP >= 3600){
+      if(!waitPacket && time_now - previousNTP >= 3600) {
         sendPacket(Udp,alix_server, packetBuffer);
         waitPacket = true;
       } 
       // 2 seconds later we check if we have an answer from the server and update the time if possible
-      else if(waitPacket && time_now - previousNTP >= 3602){
+      else if(waitPacket && time_now - previousNTP >= 3602) {
         boolean success = updateNTP(Udp,alix_server, packetBuffer);
         if(!success) {
            writeLog(COMMAND_LOGS, sst, addrCommand, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
