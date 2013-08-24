@@ -2,7 +2,7 @@
 // The parameters should be saved in the EEPROM
 // And could be modified using a serial port.
 
-#define MAX_PARAM 40    // If the MAX_PARAM change you need to change the pointer in the EEPROM
+#define MAX_PARAM 26   // If the MAX_PARAM change you need to change the pointer in the EEPROM
 
 int parameters[MAX_PARAM];
 

@@ -26,6 +26,13 @@
 //#define THR_MONITORING 13
 /*define the IN/OUT ports of the card*/
 
+/***********************
+LOGGER AND DEBUGGER
+************************/
+
+//#define LOGGER 1
+//#define DEBUGGER 1
+
 
 /********************
   PIN&ADRESS MAPPING
@@ -80,8 +87,8 @@
 
   // Input/Output
   #define  TEMP_LIQ       IO1
-  #define  TEMP_PLATE     IO2
-  #define  TRANS_PID      PWM5
+  //#define  TEMP_PLATE     IO2
+  //#define  TRANS_PID      PWM5
   
   // Parameters stored in memory
   #ifdef TEMP_LIQ
@@ -226,8 +233,8 @@ byte IO[]={
 void setup() {
   delay(1000);
   Serial.begin(9600);
-  setupLogger();
-  setupDebugger();
+  //setupLogger();
+  //setupDebugger();
   setupParameters();
   
   

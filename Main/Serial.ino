@@ -56,11 +56,11 @@ NIL_THREAD(ThreadSerial, arg) {
     while (Serial.available()) {
       // get the new byte:
       char inChar = (char)Serial.read(); 
-
+      /*
       if (inChar=='d') { // show debug info
         getDebuggerLog(&Serial);
         serialReset();
-      } else if (inChar=='e') { // show debug info
+      } else */if (inChar=='e') { // show debug info
         getStatusEEPROM(&Serial);
         serialReset();
       } else if (inChar=='f') { // show settings
@@ -70,11 +70,11 @@ NIL_THREAD(ThreadSerial, arg) {
       else if (inChar=='h') {
         serialPrintHelp();
         serialReset();
-      } 
+      } /*
       else if (inChar=='l') { // show log
         getLoggerLog(&Serial);
         serialReset();
-      } 
+      } */
       else if (inChar=='i') { // show i2c (wire) information
         #ifdef GAS_CTRL || STEPPER_CTRL || I2C_LCD
           wireInfo(&Serial);
@@ -90,6 +90,7 @@ NIL_THREAD(ThreadSerial, arg) {
       } 
       #endif
       else if (inChar=='s') { // show settings
+        Serial.println("bouh?!");
         printParameters(&Serial);
         serialReset();
       } 
@@ -107,7 +108,7 @@ NIL_THREAD(ThreadSerial, arg) {
             paramSerialValue[0]='\0';
           } 
           else {
-            debugger(1,inChar);
+            //debugger(1,inChar);
             serialReset();
           }
         }
@@ -133,7 +134,7 @@ NIL_THREAD(ThreadSerial, arg) {
           }
         } 
         else {
-          debugger(1,inChar);
+          //debugger(1,inChar);
           serialReset();
         }
       } 
@@ -141,7 +142,7 @@ NIL_THREAD(ThreadSerial, arg) {
         paramCurrent=inChar-64;
       }
       else {
-        debugger(1,inChar);
+        //debugger(1,inChar);
         serialReset();
       }
     }

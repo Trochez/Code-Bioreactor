@@ -8,6 +8,8 @@ We have the way to log some event.
  * a value
  */
 
+#ifdef LOGGER
+
 /* EEPROM IS LIMITED TO 100000 WRITES !!!! LOG EVENT WRITE TO EEPROM SO TAKE CARE !!!!!!!
  If the MAX_NUMBER_EVENTS change you need to change the pointer in the EEPROM
  */
@@ -105,5 +107,5 @@ void print2Digits(Print* output, int number) {
   output->print(number);
 }
 
-
+#endif
 

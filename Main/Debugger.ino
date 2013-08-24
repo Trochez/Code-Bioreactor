@@ -2,6 +2,7 @@
   Events that are not stored in the EEPROM mainly for DEBUG purpose
  */
 
+#ifdef DEBUGGER
 
 #define DEBUG_MAX_NUMBER_EVENTS 8
 
@@ -59,4 +60,4 @@ void getDebuggerLog(Print* output) {
   }
 }
 
-
+#endif

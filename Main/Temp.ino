@@ -54,7 +54,7 @@
   
   void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, int parameter){
     sensor.begin();
-    if (!sensor.getAddress(address, 0)) debugger(DEBUG_ONEWIRE_NODEVICE, bus); 
+    //if (!sensor.getAddress(address, 0)) debugger(DEBUG_ONEWIRE_NODEVICE, bus); 
     sensor.setWaitForConversion(false); // we don't wait for conversion (otherwise may take 900mS)
     // set the resolution to 12 bit (Each Dallas/Maxim device is capable of several different resolutions)
     sensor.setResolution(address, 12);
@@ -68,4 +68,3 @@
 
 
 #endif
-
