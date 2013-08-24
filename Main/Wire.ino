@@ -2,8 +2,8 @@
 
 #include <Wire.h>
 /*
-   MCP23008:
- - B00100000 - Start address(32)
+   MCP23008 (DEFAULT RELAY):
+ - B00100XXX - Start address(32)
    relay box
  - B00100100 - First relay box
  - B00100101 - Second relay box
@@ -14,11 +14,13 @@
  - B00100010 - EXT_1 (34)
  - B00100011 - EXT_2 (35)
    FLUX
- -B????????
+ - B1011 XXX R/W  (XXX is the user defined address and R/W the read/write byte)
    PH METER
- -B????????
+ - B????????
  */
 
+#define ANEMOMETER_WRITE 0b10110000
+#define ANEMOMETER_READ  0b10110001
 
 #define PUMP_BYTE 0
 #define PID_BYTE  1
@@ -33,7 +35,7 @@ NIL_THREAD(ThreadWire, arg) {
   byte* wireFlag32=&aByte;
   unsigned int wireEventStatus=0;
   //boolean relayInitialized = false;
-  // TODO: PLUG IN / OUT CRASH THE SYSTEM !!! {
+  //TODO: PLUG IN / OUT CRASH THE SYSTEM !!! {
   Wire.begin();
   
   #ifdef I2C_LCD
@@ -43,35 +45,10 @@ NIL_THREAD(ThreadWire, arg) {
   while(TRUE) {
     
     wireEventStatus++;
-
     if (wireEventStatus%10==5) {
       wireUpdateList();
     }
-
-
-    /*****************
-      EXT DEVICE (We don't use it)
-    *****************/
-    
-    /*if (wireDeviceExists(WIRE_EXT_1)) {
-      // Serial.println("Device exists");
-      if (wireEventStatus%2==1) {
-        wireWrite(WIRE_EXT_1,B01010101);
-      }
-      if (wireEventStatus%2==0) {
-        wireWrite(WIRE_EXT_1,B10101010);
-      }
-    } 
-    if (wireDeviceExists(WIRE_EXT_2)) {
-      // Serial.println("Device exists");
-      if (wireEventStatus%2==1) {
-        wireWrite(WIRE_EXT_2,B11110000);
-      }
-      if (wireEventStatus%2==0) {
-        wireWrite(WIRE_EXT_2,B00001111);
-      }
-    }*/
-    
+ 
     
     /*********
       RELAY
@@ -80,11 +57,7 @@ NIL_THREAD(ThreadWire, arg) {
     #ifdef PARAM_RELAY_PUMP
       sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PUMP), wireFlag32);
     #endif
-    
-    #ifdef PARAM_FLUX
-      sendRelay(I2C_FLUX, getParameter(PARAM_FLUX), wireFlag32);
-    #endif
-    
+
     
     /*****************
       LCD I2C Module
@@ -113,7 +86,7 @@ NIL_THREAD(ThreadWire, arg) {
           
           lcd.setCursor(12,1);
           lcd.print(getParameter(PARAM_IRCODE));
-          lcd.print(F("   "));
+          lcd.print(F("   "));(
           */
         } 
         else {
@@ -157,6 +130,59 @@ NIL_THREAD(ThreadWire, arg) {
       setParameter(REGISTER_PH_METER_READOUT, wireReadTwoBytesToInt(WIRE_PHMETER_ID)); // save pH value into 
     }
     */
+    
+    
+    /*************
+      ANEMOMETER
+    ************/
+    
+    
+    // check if a conditionnal test on the ready bit of the config word is mandatory or not (indicate end of conversion) voir fonction wireReadFourBytesToInt
+    
+    #ifdef  PARAM_FLUX_GAS1
+      wireWrite(ANEMOMETER_WRITE,0b10010000);
+      setParameter(PARAMETER_FLUX_GAS1,wireReadFourBytesToInt(ANEMOMETER_READ));
+    #endif
+    
+    #ifdef  PARAM_FLUX_GAS2
+      wireWrite(ANEMOMETER_WRITE,0b10110000);
+      setParameter(PARAMETER_FLUX_GAS2,wireReadFourBytesToInt(ANEMOMETER_READ));
+    #endif
+    
+    #ifdef  PARAM_FLUX_GAS3
+      wireWrite(ANEMOMETER_WRITE,0b11010000);
+      setParameter(PARAMETER_FLUX_GAS3,wireReadFourBytesToInt(ANEMOMETER_READ));
+    #endif
+    
+    #ifdef  PARAM_FLUX_GAS4
+      wireWrite(ANEMOMETER_WRITE,0b11110000);
+      setParameter(PARAMETER_FLUX_GAS4,wireReadFourBytesToInt(ANEMOMETER_READ));
+    #endif
+    
+    
+    /*****************
+      EXT DEVICE (We don't use it)
+    *****************/
+    
+    /*if (wireDeviceExists(WIRE_EXT_1)) {
+      // Serial.println("Device exists");
+      if (wireEventStatus%2==1) {
+        wireWrite(WIRE_EXT_1,B01010101);
+      }
+      if (wireEventStatus%2==0) {
+        wireWrite(WIRE_EXT_1,B10101010);
+      }
+    } 
+    if (wireDeviceExists(WIRE_EXT_2)) {
+      // Serial.println("Device exists");
+      if (wireEventStatus%2==1) {
+        wireWrite(WIRE_EXT_2,B11110000);
+      }
+      if (wireEventStatus%2==0) {
+        wireWrite(WIRE_EXT_2,B00001111);
+      }
+    }*/    
+    
     nilThdSleepMilliseconds(100);
 
   }
@@ -190,6 +216,7 @@ byte wireRead(uint8_t address) {
   return _data;
 }
 
+
 int wireReadTwoBytesToInt(uint8_t address) {
   int i = 0;
   int _data = 0;
@@ -202,6 +229,28 @@ int wireReadTwoBytesToInt(uint8_t address) {
     else i++;
     byteWithMSB = Wire.read();
     byteWithLSB = Wire.read();
+    _data = (byteWithMSB<<8) | byteWithLSB;
+  }
+  return _data;
+}
+
+
+int wireReadFourBytesToInt(uint8_t address) {
+  int i = 0;
+  int _data = 0;
+  int byteWithADD;
+  int byteWithMSB;
+  int byteWithLSB;
+  int byteWithCFG
+
+  Wire.requestFrom(address, (uint8_t)4);
+  while(Wire.available()) {
+    if (i > 4) return 0; // security mechanism, see if sufficient or not (give false info about the FLUX if the case !!!!)
+    else i++;
+    byteWithADD = Wire.read();
+    byteWithMSB = Wire.read();
+    byteWithLSB = Wire.read();
+    byteWithCFG = Wire.read();
     _data = (byteWithMSB<<8) | byteWithLSB;
   }
   return _data;
@@ -324,3 +373,4 @@ boolean wireFlagStatus(byte *aByte, byte address) {
 
 
 #endif
+

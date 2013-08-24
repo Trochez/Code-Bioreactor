@@ -40,7 +40,7 @@
 #define IO2     20//A2
 #define IO3     19//A1
 #define IO4     22//A4
-#define IO5     18//A0
+#define IO5     19//A0
 
 #define I2C_RELAY  B00100100
 #define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
@@ -81,7 +81,7 @@
   // Input/Output
   #define  TEMP_LIQ       IO1
   #define  TEMP_PLATE     IO2
-  //#define  TRANS_PID      PWM3
+  #define  TRANS_PID      PWM5
   
   // Parameters stored in memory
   #ifdef TEMP_LIQ
@@ -96,6 +96,12 @@
   #define PARAM_TEMP_MIN               10
   #define PARAM_TEMP_MAX               11
   
+  
+  #ifdef TRANS_PID
+    #define  RELAY_PID      200
+    //for the regulation of temperature values btw 10 and 45 [s] are commun
+    #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
+  #endif
 #endif
 
 //*************************************
@@ -176,12 +182,6 @@
     #define PARAM_RELAY_PUMP     
   #endif
   
-  #ifdef TRANS_PID
-    #define  RELAY_PID      200
-    //for the regulation of temperature values btw 10 and 45 [s] are commun
-    #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
-  #endif
-  
   #ifdef  STEPPER
     #define  PARAM_STEPPER_SPEED    20        
   #endif 
@@ -224,6 +224,7 @@ byte IO[]={
   IO1, IO2, IO3, IO4};
 
 void setup() {
+  delay(1000);
   Serial.begin(9600);
   setupLogger();
   setupDebugger();
