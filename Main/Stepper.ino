@@ -12,7 +12,7 @@ RED = {PWM=HIGH, IO=LOW}
 
 //We define here the number of step executed during every call to the thread
 #ifdef STEPPER
-#define NB_STEP_CALL 4
+#define NB_STEP_CALL 20
 
 
 NIL_WORKING_AREA(waThreadStepper, 0);
@@ -28,9 +28,10 @@ NIL_THREAD(ThreadStepper, arg) {
   }
 }
 
-int counter=0;
 
-void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
+void executeStep(int steps, boolean forward, byte port1, byte port2) {
+  int counter=0;
+  int numberSteps = steps;
   while (numberSteps>0) {
     numberSteps--;
     if (forward) {
@@ -61,7 +62,7 @@ void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
         digitalWrite(port2,LOW);
         break;
     }
-    delay(8);
+    delay(4);
   }
 }
 

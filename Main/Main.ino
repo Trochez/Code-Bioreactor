@@ -40,7 +40,7 @@
 #define IO2     20//A2
 #define IO3     19//A1
 #define IO4     22//A4
-#define IO5     19//A0
+#define IO5     18//A0
 
 #define I2C_RELAY  B00100100
 #define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
@@ -151,9 +151,9 @@
   // Input/Output
   
   //#define  WGHT           IO1
-  #define  STEPPER          {IO4,PWM4}
+  #define  STEPPER          {IO5,PWM5}
   //#define  TAP_FOOD       IO3
-  //#define  TEMP_STEPPER   IO5
+  //#define  TEMP_STEPPER   IO4
   //#define  RELAY_PUMP     I2C_RELAY
   
   // Parameters stored in memory
