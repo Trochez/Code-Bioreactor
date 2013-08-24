@@ -3,16 +3,20 @@
 #ifdef TRANS_PID
 #include <PID_v1.h>
 
+void pid_ctrl();
+void heatingSetup();
+double heatingRegInput, heatingRegOutput, heatingRegSetpoint;
+//initialize PID variables
+
+unsigned long heatingRegWindowStartTime;
+//Specify the heating regulation links and initial tuning parameters //Kp=100; Ti=0.2; Td=5 are initial testing param.
+//PID object definition can be found in PID library (to include for compilation).
+PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000,15,300, DIRECT);
+
 NIL_WORKING_AREA(waThreadRelay_PID, 70);      
 NIL_THREAD(ThreadRelay_PID, arg) 
 {  
-  double heatingRegInput, heatingRegOutput, heatingRegSetpoint;
-  //initialize PID variables
-  
-  unsigned long heatingRegWindowStartTime;
-  //Specify the heating regulation links and initial tuning parameters //Kp=100; Ti=0.2; Td=5 are initial testing param.
-  //PID object definition can be found in PID library (to include for compilation).
-  PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000,15,300, DIRECT);
+
   heatingSetup();
   
   while(TRUE){
@@ -27,8 +31,8 @@ NIL_THREAD(ThreadRelay_PID, arg)
 void pid_ctrl()
 {
   float exactPresentTime;
-  heatingRegInput = getParameter(TEMP_LIQ);
-  heatingRegSetpoint = getParameter(DESIRED_LIQUID_TEMP);
+  heatingRegInput = getParameter(PARAM_TEMP_LIQ);
+  heatingRegSetpoint = getParameter(PARAM_DESIRED_LIQUID_TEMP);
   heatingRegPID.Compute();                                   // the computation takes only 30ms!
   // turn the output pin on/off based on pid output
   exactPresentTime = millis();
@@ -64,7 +68,7 @@ void heatingSetup()
   //set PID sampling time to 10000ms                   //possibly set a timer condition with a nilsleep instead
   heatingRegPID.SetSampleTime(10000);
   heatingRegWindowStartTime = millis();
-  heatingRegSetpoint = getParameter(TEMP_MAX);
+  heatingRegSetpoint = getParameter(PARAM_TEMP_MAX);
 }
 
 #endif
