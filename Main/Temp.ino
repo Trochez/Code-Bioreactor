@@ -67,20 +67,6 @@ The conversion in 12 bits take 750ms, so we actually read the previous value :
   }
   
   
-<<<<<<< HEAD
-  void getTemperature(DallasTemperature sensor, DeviceAddress address, int bus, int parameter){
-    sensor.begin();
-    //if (!sensor.getAddress(address, 0)) debugger(DEBUG_ONEWIRE_NODEVICE, bus); 
-    sensor.setWaitForConversion(false); // we don't wait for conversion (otherwise may take 900mS)
-    // set the resolution to 12 bit (Each Dallas/Maxim device is capable of several different resolutions)
-    sensor.setResolution(address, 12);
-    // following instruction takes 2ms
-    sensor.requestTemperatures(); // Send the coThreadOneWiremmand to get temperatures
-    // we should not forget that with 12 bits it takes over 600ms to get the result so in fact we
-    // will get the result of the previous conversion ...
-    // Following instruction takes 14ms
-    setParameter(parameter,(int)(sensor.getTempC(address)*100));
-=======
   void getTemperature(OneWire &ow, int parameter){
     byte data[2];
     ow.reset();
@@ -94,7 +80,6 @@ The conversion in 12 bits take 750ms, so we actually read the previous value :
     int16_t raw = (data[1] << 8) | data[0];
     //float celsius = (float)raw / 16.0;
     setParameter(parameter, raw*62);
->>>>>>> 7240473b50128f4ab9b105be1f7d19b2a12587e2
   }  
 
 
