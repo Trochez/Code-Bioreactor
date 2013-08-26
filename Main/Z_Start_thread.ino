@@ -25,19 +25,6 @@
 
 NIL_THREADS_TABLE_BEGIN()
 
-#ifdef  STEPPER_CTRL
-
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay, NULL, waThreadRelay, sizeof(waThreadRelay))
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadTap, NULL, waThreadTap, sizeof(waThreadTap))
-//NIL_THREADS_TABLE_ENTRY(NULL, ThreadTemp, NULL, waThreadTemp, sizeof(waThreadTemp))
-
-#endif
-
-
-
-
 #ifdef PH_CTRL
 
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadPH, NULL, waThreadPH, sizeof(waThreadPH))
@@ -61,9 +48,6 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThr
 
 #endif
 
-
-<<<<<<< HEAD
-=======
 #ifdef  STEPPER_CTRL
 
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
@@ -78,7 +62,6 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThr
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay_PID, NULL, waThreadRelay_PID, sizeof(waThreadLinearLog))      
 #endif
 
->>>>>>> 17f774ae9ad53207fe709728ddb16cbd9a0875e2
 #ifdef THR_LINEAR_LOGS
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadLinearLog, NULL, waThreadLinearLog, sizeof(waThreadLinearLog))
 #endif
@@ -89,7 +72,7 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay_PID, NULL, waThreadRelay_PID, sizeof(w
 
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThreadSerial))
 
-#ifdef GAS_CTRL || STEPPER_CTRL || I2C_LCD
+#ifdef GAS_CTRL || I2C_LCD
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
 #endif
 

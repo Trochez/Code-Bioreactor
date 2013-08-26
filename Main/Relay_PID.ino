@@ -18,10 +18,11 @@ NIL_THREAD(ThreadRelay_PID, arg)
 {  
   //Default parameters
   setParameter(PARAM_PID_ON, 0);
-  setParameter(PARAM_DESIRED_LIQUID_TEMP, 30);
-  setParameter(PARAM_TEMP_MIN, 25);
-  setParameter(PARAM_TEMP_MAX, 35);
-
+  setParameter(PARAM_DESIRED_LIQUID_TEMP, 30000);
+  setParameter(PARAM_TEMP_MIN, 28000);
+  setParameter(PARAM_TEMP_MAX, 32000);
+  pinMode(TRANS_PID, OUTPUT);
+  
   heatingSetup();
   
   while(TRUE){
@@ -31,7 +32,7 @@ NIL_THREAD(ThreadRelay_PID, arg)
 }
 
 
-/*Temperature PID Control addressing I2C resistors*/
+/*Temperature PID Control addressing relay*/
 
 void pid_ctrl()
 {
