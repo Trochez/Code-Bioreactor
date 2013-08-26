@@ -41,7 +41,7 @@ LOGGER AND DEBUGGER
 #define PWM1    6//D6 OC4D
 #define PWM2    8//D8 PCINT4
 #define PWM3    9//D9 OC4B, OC1A, PCINT5
-#define PWM4    5//D6 OC4A  
+#define PWM4    5//D5 OC4A  
 #define PWM5    11//D11 OC0A, OC1C, PCINT7
 #define IO1     21//A3
 #define IO2     20//A2
