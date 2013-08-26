@@ -1,6 +1,6 @@
 #ifdef WGHT
 
-NIL_WORKING_AREA(waThreadWeight;    
+NIL_WORKING_AREA(waThreadWeight);    
 NIL_THREAD(ThreadWeight, arg) 
 {
     getWeight();
