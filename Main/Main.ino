@@ -99,6 +99,7 @@
   
   #ifdef TRANS_PID
     #define  RELAY_PID      200
+    #define PARAM_PID_ON    22
     //for the regulation of temperature values btw 10 and 45 [s] are commun
     #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
   #endif

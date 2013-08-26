@@ -16,6 +16,11 @@ PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000
 NIL_WORKING_AREA(waThreadRelay_PID, 70);      
 NIL_THREAD(ThreadRelay_PID, arg) 
 {  
+  //Default parameters
+  setParameter(PARAM_PID_ON, 0);
+  setParameter(PARAM_DESIRED_LIQUID_TEMP, 30);
+  setParameter(PARAM_TEMP_MIN, 25);
+  setParameter(PARAM_TEMP_MAX, 35);
 
   heatingSetup();
   

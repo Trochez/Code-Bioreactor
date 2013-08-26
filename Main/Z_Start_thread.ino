@@ -58,6 +58,10 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThr
 
 #endif
 
+#ifdef TRANS_PID
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay_PID, NULL, waThreadRelay_PID, sizeof(waThreadLinearLog))      
+#endif
+
 #ifdef THR_LINEAR_LOGS
 //NIL_THREADS_TABLE_ENTRY(NULL, ThreadLinearLog, NULL, waThreadLinearLog, sizeof(waThreadLinearLog))
 #endif
