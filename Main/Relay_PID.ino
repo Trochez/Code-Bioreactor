@@ -16,6 +16,11 @@ PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000
 NIL_WORKING_AREA(waThreadRelay_PID, 70);      
 NIL_THREAD(ThreadRelay_PID, arg) 
 {  
+  //Default parameters
+  setParameter(PARAM_PID_ON, 0);
+  setParameter(PARAM_DESIRED_LIQUID_TEMP, 30);
+  setParameter(PARAM_TEMP_MIN, 25);
+  setParameter(PARAM_TEMP_MAX, 35);
 
   heatingSetup();
   
@@ -45,13 +50,15 @@ void pid_ctrl()
   if(heatingRegOutput > exactPresentTime - heatingRegWindowStartTime) 
   {
     //set relay ON, ensure the Wire thread makes the work then !!!
-    setParameter(RELAY_PID,getParameter(RELAY_PID)&(~(1<<3)));
+    //setParameter(RELAY_PID,getParameter(RELAY_PID)&(~(1<<3)));
+    setParameter(PARAM_PID_ON, 1);
     digitalWrite(TRANS_PID, HIGH); 
   }  
   else 
   {
     //set relay OFF, ensure the Wire thread makes the work then !!!
-    setParameter(RELAY_PID,getParameter(RELAY_PID)||(1<<4));
+    //setParameter(RELAY_PID,getParameter(RELAY_PID)||(1<<4));
+    setParameter(PARAM_PID_ON, 0);
     digitalWrite(TRANS_PID, LOW); 
   } 
 }
