@@ -12,25 +12,32 @@ RED = {PWM=HIGH, IO=LOW}
 
 //We define here the number of step executed during every call to the thread
 #ifdef STEPPER
-#define NB_STEP_CALL 4
+#define NB_STEP_CALL 60
 
 
 NIL_WORKING_AREA(waThreadStepper, 0);
 NIL_THREAD(ThreadStepper, arg) {
   byte STEPPER_TAB[]=STEPPER;
+  boolean forward = true;
+  uint8_t count = 0;
   for (byte i=0; i<sizeof(STEPPER_TAB); i++) {
     pinMode(STEPPER_TAB[i], OUTPUT);    
   }
-  while (TRUE) {
-     executeStep(NB_STEP_CALL, true, STEPPER_TAB[1],STEPPER_TAB[0]);
+  while (1) {
+     executeStep(NB_STEP_CALL, forward, STEPPER_TAB[1],STEPPER_TAB[0]);
      //The final delay has to be decided 
-     nilThdSleepMilliseconds(50);
+     if(!(count % 40)) {
+       forward = !forward;
+     }
+     count = (count + 1) % 40;
+     nilThdSleepMilliseconds(10);
   }
 }
 
-int counter=0;
+
 
 void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
+  int counter=1000;
   while (numberSteps>0) {
     numberSteps--;
     if (forward) {
@@ -39,7 +46,8 @@ void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
     else { 
       counter--;
     }
-    switch (counter%4) {
+    
+    switch (counter % 4) {
       case 0:
         //This is RED
         digitalWrite(port1, LOW);
@@ -61,8 +69,8 @@ void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
         digitalWrite(port2,LOW);
         break;
     }
-    delay(8);
-  }
+    delay(5);
+  } 
 }
 
 #endif
