@@ -167,7 +167,7 @@ LOGGER AND DEBUGGER
   // Parameters stored in memory
   
   #ifdef WGHT         
-    #define PARAM_ACTUAL_WGHT          7
+    #define PARAM_WGHT                 7
     #define PARAM_LVL_MAX_WATER        17        
     #define PARAM_LVL_MIN_WATER        18  
   #endif
