@@ -28,8 +28,8 @@ void ethernetReadCommand();
 // CAUTION
 // Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
 // and a different MAC address
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-byte ip[] = { 172,17,0,100}; // reserved IP adress of the Arduino
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+byte ip[] = {172,17,0,100}; // reserved IP adress of the Arduino
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server 
