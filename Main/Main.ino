@@ -157,7 +157,7 @@ LOGGER AND DEBUGGER
 #ifdef STEPPER_CTRL
   // Input/Output
   
-  //#define  WGHT           IO1
+  #define  WGHT           IO1
   #define  STEPPER          {IO5,PWM5}
   //#define  TAP_FOOD       IO3
   //#define  TEMP_STEPPER   IO4
@@ -166,7 +166,7 @@ LOGGER AND DEBUGGER
   // Parameters stored in memory
   
   #ifdef WGHT         
-    #define PARAM_ACTUAL_WGHT          7
+    #define PARAM_WGHT                 7
     #define PARAM_LVL_MAX_WATER        17        
     #define PARAM_LVL_MIN_WATER        18  
   #endif
