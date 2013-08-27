@@ -23,6 +23,7 @@ NIL_THREAD(ThreadRelay_PID, arg)
   setParameter(PARAM_TEMP_MAX, 32000);
   pinMode(TRANS_PID, OUTPUT);
   
+  //Todo : update heatingSetup when a parameter is changed
   heatingSetup();
   
   while(TRUE){
