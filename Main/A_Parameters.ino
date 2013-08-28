@@ -44,7 +44,7 @@ void printParameter(Print* output, byte number){
 
 void printParameters(Print* output) {
   output->println("Current settings:<br/>");
-  for (int i = 0; i <= MAX_PARAM; i++) {
+  for (int i = 0; i < MAX_PARAM; i++) {
     output->print(i);
     output->print("-");
     output->print((char)(i + 65));
