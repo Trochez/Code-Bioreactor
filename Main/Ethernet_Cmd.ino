@@ -24,7 +24,7 @@
 
 //Define ASCII position Bytes
 #define ASCII_A 65
-#define ASCII_Z 65
+#define ASCII_Z 90
 #define ASCII_0 48
 
 #define ASCII_a 48
@@ -64,12 +64,9 @@ IPAddress alix_server(172,17,0,10); // local NTP server
 NIL_WORKING_AREA(waThreadEthernet, 250); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   char request[REQUEST_LENGTH];
-  Serial.println("Start Ethernet Thread");
   // Initializate the connection with the server
   Ethernet.begin(mac,ip);
   server.begin();
-  Serial.print("server is at ");
-  Serial.println(Ethernet.localIP());
 
   while (TRUE) {
     // listen for client request
@@ -152,7 +149,6 @@ void parseRequest(Client* cl, char* req){
   // ..."
   // We are interested by the 5th character (X)
   char c = req[URL_1];
-  Serial.println(c);
   // show settings hardCoded on the card
   if (c=='f') {
     //TODO
@@ -163,19 +159,19 @@ void parseRequest(Client* cl, char* req){
   } 
   // show i2c (wire) information
   else if (c=='i') { 
-#ifdef GAS_CTRL || I2C_LCD
-    wireInfo(cl);
-#elseif
-    (*cl).println("I2C Thread not activated");
-#endif
+    #ifdef GAS_CTRL || I2C_LCD
+      wireInfo(cl);
+    #elseif
+      (*cl).println("I2C Thread not activated");
+    #endif
   } 
   // show oneWire information
   else if (c=='o') {
-#ifdef ONE_WIRE_BUS1
-    oneWireInfo(cl);
-#elseif
-    (*cl).println("1-wire Thread not activated");
-#endif
+    #ifdef ONE_WIRE_BUS1
+      oneWireInfo(cl);
+    #elseif
+      (*cl).println("1-wire Thread not activated");
+    #endif
   }
   // show settings
   else if (c=='s') {
@@ -191,43 +187,43 @@ void parseRequest(Client* cl, char* req){
   }
   // The request is a parameter
   else if(c >= ASCII_A && c <= ASCII_Z){
+    
     //Here we read the second byte of the URL to differentiate the requests
     char d = req[URL_2];
-    
     switch(d){
-      //There is only one parameter in the GET
-    case ' ':
-      printParameter(cl, (byte) (c-ASCII_A));
-      break;
-    case '=':
-      { // { } Allow to declare variables inside the switch
-        int value = 0;
-        //We are interested by the 7th bit of the request
-        char i=URL_3;
-        //The request modifies a parameter
-        //We need to check if the value is correct
-        while(req[i] != ' '){
-          //The letters start at index 48 in ASCII
-          value = (req[i]-ASCII_0) + value*10;
-          i++;
-        }
-        setParameter((byte) (c-ASCII_A), value);
+       //There is only one parameter in the GET
+      case ' ':
         printParameter(cl, (byte) (c-ASCII_A));
+        break;
+      case '=':
+        { // { } Allow to declare variables inside the switch
+          int value = 0;
+          //We are interested by the 7th bit of the request
+          char i=URL_3;
+          //The request modifies a parameter
+          //We need to check if the value is correct
+          while(req[i] != ' '){
+            //The letters start at index 48 in ASCII
+            value = (req[i]-ASCII_0) + value*10;
+            i++;
+          }
+          setParameter((byte) (c-ASCII_A), value);
+          printParameter(cl, (byte) (c-ASCII_A));
+        }
+        break;
+        //We should get the number following before the case switch
+      case 's':
+        //sendLog(parameter, SECONDS, getNumber());
+        break;
+  
+      case 'm':
+        //sendLog(parameter, MINUTES, getNumber());
+        break;
+  
+      case 'h':
+        //sendLog(parameter, HOURS, getNumber());
+        break; 
       }
-      break;
-      //We should get the number following before the case switch
-    case 's':
-      //sendLog(parameter, SECONDS, getNumber());
-      break;
-
-    case 'm':
-      //sendLog(parameter, MINUTES, getNumber());
-      break;
-
-    case 'h':
-      //sendLog(parameter, HOURS, getNumber());
-      break; 
-    }
   } 
   //This request does not exist
   else {
