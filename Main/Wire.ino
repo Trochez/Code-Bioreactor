@@ -19,11 +19,13 @@
  - B????????
  */
 
-#define ANEMOMETER_WRITE 0b10110000
-#define ANEMOMETER_READ  0b10110001
+#ifdef GAS_CTRL
+  #define ANEMOMETER_WRITE 0b10110000
+  #define ANEMOMETER_READ  0b10110001
+#endif
 
 #define PUMP_BYTE 0
-#define PID_BYTE  1
+//#define PID_BYTE  1
 
 #define WIRE_MAX_DEVICES 10
 byte numberI2CDevices=0;

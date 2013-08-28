@@ -65,7 +65,7 @@ LOGGER AND DEBUGGER
 #define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
-#define PARAM_PUMP_STATUS         23
+#define FLAG_VECTOR               23
 
 
 
@@ -142,9 +142,7 @@ LOGGER AND DEBUGGER
     #define PARAM_FLUX_GAS1            3
     #define PARAM_FLUX_GAS2            4
     #define PARAM_FLUX_GAS3            5
-    #define PARAM_FLUX_GAS4            6
-    //#define PARAM_TAP_GAS1_2     
-    //#define PARAM_TAP_GAS3_4   
+    #define PARAM_FLUX_GAS4            6 
     #define PARAM_DESIRED_FLUX_GAS1            13
     #define PARAM_DESIRED_FLUX_GAS2            14
     #define PARAM_DESIRED_FLUX_GAS3            15
