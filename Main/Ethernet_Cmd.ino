@@ -40,6 +40,8 @@ EthernetServer server(80);
 
 IPAddress alix_server(172,17,0,10); // local NTP server 
 
+#define REQUEST_LENGTH 10
+String request = String(REQUEST_LENGTH); //string for fetching data from address
 /*---------------------------
   Ethernet Thread
 ---------------------------*/
@@ -62,6 +64,11 @@ NIL_THREAD(ThreadEthernet, arg) {
       if (client.available()) {
         char c = client.read();
         Serial.write(c);
+        if (request.length() < REQUEST_LENGTH) {
+          //store characters to string 
+          // += append a character to a string
+          request += c; 
+        } 
         // if you've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
         // so you can send a reply
@@ -74,7 +81,7 @@ NIL_THREAD(ThreadEthernet, arg) {
           client.println("<!DOCTYPE HTML>");
           client.println("<html>");
           
-          ethernetSendLog();
+          parseRequest(&client, request);
           
           client.println("</html>");
           break;
@@ -108,6 +115,36 @@ void ethernetSetup() {
   server.begin();
 }  
 
+void parseRequest(Client* cl, String req){
+  char c = req[0];
+  if (c=='e') { // show debug info
+
+  } else if (c=='f') { // show settings
+
+  } 
+  else if (c=='h') { //Show help menu
+    
+  } /*
+  else if (inChar=='l') { // show log
+    getLoggerLog(&Serial);
+    serialReset();
+  } */
+  else if (c=='i') { // show i2c (wire) information
+    #ifdef GAS_CTRL || STEPPER_CTRL || I2C_LCD
+      wireInfo(cl);
+    #elseif
+      cl.println("I2C Thread not activated");
+    #endif
+  } 
+  #ifdef ONE_WIRE_BUS1
+  else if (c=='o') { // show oneWire information
+    oneWireInfo(cl);
+  } 
+  #endif
+  else if (c=='s') { // show settings
+    printParameters(cl);
+  } 
+}
 /*
 //kept here as an example
 void ethernetPushStatus() {
