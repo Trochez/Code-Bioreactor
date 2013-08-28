@@ -19,6 +19,7 @@
  - B????????
  */
 
+
 #ifdef GAS_CTRL
   #define ANEMOMETER_WRITE 0b10110000
   #define ANEMOMETER_READ  0b10110001
@@ -56,8 +57,14 @@ NIL_THREAD(ThreadWire, arg) {
       RELAY
     *********/
     //
-    #ifdef PARAM_RELAY_PUMP
-      sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PUMP), wireFlag32);
+    #ifdef PARAM_RELAY_PUMP  //to be changed
+      if((getParameter(FLAG_VECTOR)&FLAG_PUMPING)==FLAG_PUMPING){
+        sendRelay(I2C_RELAY, , wireFlag32);
+      }
+      
+      else{
+        sendRelay(I2C_RELAY, , wireFlag32);
+      }
     #endif
 
     

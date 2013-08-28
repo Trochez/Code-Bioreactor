@@ -160,7 +160,7 @@ LOGGER AND DEBUGGER
   #define  STEPPER          {IO5,PWM5}
   //#define  TAP_FOOD       IO3
   //#define  TEMP_STEPPER   IO4
-  //#define  RELAY_PUMP     I2C_RELAY
+  #define  RELAY_PUMP     I2C_RELAY
   
   // Parameters stored in memory
   
@@ -182,10 +182,6 @@ LOGGER AND DEBUGGER
   
   #ifdef TAP_FOOD
     #define FOOD_SPEED_TAP            19              
-  #endif
-  
-  #ifdef RELAY_PUMP
-    #define PARAM_RELAY_PUMP     
   #endif
   
   #ifdef  STEPPER
