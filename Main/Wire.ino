@@ -58,13 +58,7 @@ NIL_THREAD(ThreadWire, arg) {
     *********/
     //
     #ifdef PARAM_RELAY_PUMP  //to be changed
-      if((getParameter(FLAG_VECTOR)&FLAG_PUMPING)==FLAG_PUMPING){
         sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PUMP), wireFlag32);
-      }
-      
-      else{
-        sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PUMP), wireFlag32);
-      }
     #endif
 
     

@@ -28,7 +28,7 @@ NIL_THREAD(ThreadStepper, arg) {
   while (1) {
     
      //first a check is performed on the motor status
-     if((getParameter(FLAG_VECTOR)&(FLAG_STEPPER_OFF))==FALSE){
+     if((getParameter(FLAG_VECTOR)&(FLAG_STEPPER_OFF))==false){
      
        executeStep(NB_STEP_CALL, forward, STEPPER_TAB[1],STEPPER_TAB[0]);
        //The final delay has to be decided 
