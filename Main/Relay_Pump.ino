@@ -15,7 +15,7 @@ void  level_ctrl(){
     unsigned long timer=now();
     
     //wait for sedimentation
-    while( (now() - timer) <getParameter(PARAM_WAIT_PUMP)){
+    while( (now() - timer) <getParameter(PARAM_WAIT_TIME_PUMP_MOTOR)){
        nilThdSleepMilliseconds(500); 
     }    
 
