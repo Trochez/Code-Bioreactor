@@ -22,7 +22,7 @@ NIL_THREAD(ThreadWeight, arg) {
           }
           //enable pumping
           setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)||FLAG_PUMPING));
-//          setParameter(PARAM_RELAY_PUMP,getParameter(PARAM_RELAY_PUMP)&(~(1<<3))); //redondant
+          setParameter(PARAM_RELAY_PUMP,getParameter(PARAM_RELAY_PUMP)&(~(1<<3))); //to discuss if we keep like that or not
           
         //add a sanity check here if the value is out of range of if the weight does not change after pumping for a while (ERROR_WGHT_CTRL)
         //condition would restart the mixing and disable pumping
@@ -36,7 +36,7 @@ NIL_THREAD(ThreadWeight, arg) {
         
         if(weight<=getParameter(PARAM_LVL_MIN_WATER)){
           //set the condition to disable the pumping sequence and re-anable stepper motor mixing
-//          setParameter(PARAM_RELAY_PUMP,getParameter(PARAM_RELAY_PUMP)||(1<<3));    //redondant
+          setParameter(PARAM_RELAY_PUMP,getParameter(PARAM_RELAY_PUMP)||(1<<3));    
           setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)&~(FLAG_STEPPER_OFF)));
           setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR)&~(FLAG_PUMPING)));
         }

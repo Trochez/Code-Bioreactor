@@ -128,6 +128,12 @@ LOGGER AND DEBUGGER
   #define PARAM_DESIRED_PH             12
 #endif
 
+//useful or not ?
+
+#ifdef TAP_ACID_BASE
+   #define PARAM_TAP_ACID_BASE  
+#endif
+
 //*************************************
 
 #ifdef     GAS_CTRL
@@ -176,8 +182,8 @@ LOGGER AND DEBUGGER
   
   #define PARAM_WAIT_TIME_PUMP_MOTOR   21 
   
-  #ifdef TAP_ACID_BASE
-    #define PARAM_TAP_ACID_BASE  
+  #ifdef RELAY_PUMP
+    #define PARAM_RELAY_PUMP          25
   #endif
   
   #ifdef TAP_FOOD
