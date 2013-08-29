@@ -1,3 +1,5 @@
+#include <SST.h>
+
 /**************
   LIBRAIRIES
 **************/
@@ -12,8 +14,6 @@
 //Ethernet libraries
 #include <Ethernet.h>
 #include <EthernetUdp.h>
-
-
 
 // The normal serial takes 200 bytes more but is buffered
 // And if we send a String for parameters it can not be understand ...
@@ -206,7 +206,7 @@ LOGGER AND DEBUGGER
 
 /*State FlagVector*/
 
-//#define FLAG_VECTOR          26           //possible out of the table ??
+//#define FLAG_VECTOR          22           //possible out of the table ??
 
 /*related masks*/
 
