@@ -1,4 +1,4 @@
-#ifdef GAS_CTRL || STEPPER_CTRL || I2C_LCD
+//#ifdef GAS_CTRL || STEPPER_CTRL || I2C_LCD
 
 #include <Wire.h>
 /*
@@ -25,7 +25,7 @@
   #define ANEMOMETER_READ  0b10110001
 #endif
 
-#define PUMP_BYTE 0
+//#define PUMP_BYTE 0
 //#define PID_BYTE  1
 
 #define WIRE_MAX_DEVICES 10
@@ -40,12 +40,13 @@ NIL_THREAD(ThreadWire, arg) {
   //boolean relayInitialized = false;
   //TODO: PLUG IN / OUT CRASH THE SYSTEM !!! {
   Wire.begin();
+
   
   #ifdef I2C_LCD
     LiquidCrystal lcd(I2C_LCD);
   #endif
 
-  while(TRUE) {
+  while(true) {
     
     wireEventStatus++;
     if (wireEventStatus%10==5) {
@@ -58,8 +59,9 @@ NIL_THREAD(ThreadWire, arg) {
     *********/
     //
     #ifdef PARAM_RELAY_PUMP  //to be changed
-        sendRelay(I2C_RELAY, getParameter(PARAM_RELAY_PUMP), wireFlag32);
+        sendRelay(I2C_RELAY,getParameter(PARAM_RELAY_PUMP), wireFlag32);
     #endif
+
 
     
     /*****************
@@ -244,7 +246,7 @@ int wireReadFourBytesToInt(uint8_t address) {
   int byteWithADD;
   int byteWithMSB;
   int byteWithLSB;
-  int byteWithCFG
+  int byteWithCFG;
 
   Wire.requestFrom(address, (uint8_t)4);
   while(Wire.available()) {
@@ -272,6 +274,7 @@ void wireInfo(Print* output) {
   }
 }
 
+
 void wireUpdateList() {
   // 16ms
   byte _data;
@@ -287,18 +290,18 @@ void wireUpdateList() {
       // there is a device, we need to check if we should add or remove a previous device
       if (currentPosition<numberI2CDevices && wireDeviceID[currentPosition]==i) { // it is still the same device that is at the same position, nothing to do
         currentPosition++;
-        //Serial.print("ok: ");
-        //Serial.println(i);
+//        Serial.print("ok: ");
+//        Serial.println(i);
       } 
       else if (currentPosition<numberI2CDevices && wireDeviceID[currentPosition]<i) { // some device(s) disappear, we need to delete them
-        //Serial.print("delete: ");
-        //Serial.println(wireDeviceID[currentPosition]);
+        Serial.print("delete: ");
+        Serial.println(wireDeviceID[currentPosition]);
         wireRemoveDevice(currentPosition);
         i--;
       } 
       else if (currentPosition>=numberI2CDevices || wireDeviceID[currentPosition]>i) { // we need to add a device
-        //Serial.print("add: ");
-        //Serial.println(i);
+//        Serial.print("add: ");
+//        Serial.println(i);
         wireInsertDevice(currentPosition, i);
         currentPosition++;
       }
@@ -306,10 +309,11 @@ void wireUpdateList() {
     }
   }
   while (currentPosition<numberI2CDevices) {
-    //Serial.print("delete: ");
-    //Serial.println(wireDeviceID[currentPosition]);
+//    Serial.print("delete: ");
+//    Serial.println(wireDeviceID[currentPosition]);
     wireRemoveDevice(currentPosition);
   }
+//  Serial.println("list updated");
 }
 
 void wireRemoveDevice(byte id) {
@@ -375,5 +379,5 @@ boolean wireFlagStatus(byte *aByte, byte address) {
 }
 
 
-#endif
+//#endif
 
