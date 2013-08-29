@@ -32,13 +32,24 @@ void setAndSaveParameter(byte number, int value) {
    EXROM.write(EE_PARAMETERS+number*2, value);
 }
 
+void printParameter(Print* output, byte number){
+  output->println("Parameter:<br/>");
+  output->print(number);
+  output->print("-");
+  output->print((char)(number + 65));
+  output->print(": ");
+  output->print(parameters[number]);
+  output->println("<br/>");
+}
+
 void printParameters(Print* output) {
-  output->println("Current settings:");
-  for (int i = 0; i <= MAX_PARAM; i++) {
+  output->println("Current settings:<br/>");
+  for (int i = 0; i < MAX_PARAM; i++) {
     output->print(i);
-    //output->print("-");
-    //output->print((char)(i + 65));
+    output->print("-");
+    output->print((char)(i + 65));
     output->print(": ");
-    output->println(parameters[i]);
+    output->print(parameters[i]);
+    output->println("<br/>");
   }
 }

@@ -49,7 +49,7 @@ LOGGER AND DEBUGGER
 #define IO4     22//A4
 #define IO5     18//A0
 
-#define I2C_RELAY  B00100100
+#define I2C_RELAY  B01000100
 #define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
 
 //Define here if the LCD screen is used or not
@@ -65,7 +65,7 @@ LOGGER AND DEBUGGER
 #define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
-#define PARAM_PUMP_STATUS         23
+#define FLAG_VECTOR               23
 
 
 
@@ -127,6 +127,12 @@ LOGGER AND DEBUGGER
   #define PARAM_DESIRED_PH             12
 #endif
 
+//useful or not ?
+
+#ifdef TAP_ACID_BASE
+   #define PARAM_TAP_ACID_BASE  
+#endif
+
 //*************************************
 
 #ifdef     GAS_CTRL
@@ -141,9 +147,7 @@ LOGGER AND DEBUGGER
     #define PARAM_FLUX_GAS1            3
     #define PARAM_FLUX_GAS2            4
     #define PARAM_FLUX_GAS3            5
-    #define PARAM_FLUX_GAS4            6
-    //#define PARAM_TAP_GAS1_2     
-    //#define PARAM_TAP_GAS3_4   
+    #define PARAM_FLUX_GAS4            6 
     #define PARAM_DESIRED_FLUX_GAS1            13
     #define PARAM_DESIRED_FLUX_GAS2            14
     #define PARAM_DESIRED_FLUX_GAS3            15
@@ -161,7 +165,7 @@ LOGGER AND DEBUGGER
   #define  STEPPER          {IO5,PWM5}
   //#define  TAP_FOOD       IO3
   //#define  TEMP_STEPPER   IO4
-  //#define  RELAY_PUMP     I2C_RELAY
+  #define  RELAY_PUMP     I2C_RELAY
   
   // Parameters stored in memory
   
@@ -177,16 +181,12 @@ LOGGER AND DEBUGGER
   
   #define PARAM_WAIT_TIME_PUMP_MOTOR   21 
   
-  #ifdef TAP_ACID_BASE
-    #define PARAM_TAP_ACID_BASE  
+  #ifdef RELAY_PUMP
+    #define PARAM_RELAY_PUMP          25
   #endif
   
   #ifdef TAP_FOOD
     #define FOOD_SPEED_TAP            19              
-  #endif
-  
-  #ifdef RELAY_PUMP
-    #define PARAM_RELAY_PUMP     
   #endif
   
   #ifdef  STEPPER

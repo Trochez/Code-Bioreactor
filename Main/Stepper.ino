@@ -26,12 +26,19 @@ NIL_THREAD(ThreadStepper, arg) {
     pinMode(STEPPER_TAB[i], OUTPUT);    
   }
   while (1) {
-     executeStep(NB_STEP_CALL, forward, STEPPER_TAB[1],STEPPER_TAB[0]);
-     //The final delay has to be decided 
-     if(!(count % 40)) {
-       forward = !forward;
-     }
-     count = (count + 1) % 40;
+    
+     //first a check is performed on the motor status
+     if((getParameter(FLAG_VECTOR)&(FLAG_STEPPER_OFF))==false){
+     
+       executeStep(NB_STEP_CALL, forward, STEPPER_TAB[1],STEPPER_TAB[0]);
+       //The final delay has to be decided 
+       if(!(count % 40)) {
+         forward = !forward;
+       }
+       count = (count + 1) % 40;
+     
+    }
+     
      nilThdSleepMilliseconds(10);
   }
 }
