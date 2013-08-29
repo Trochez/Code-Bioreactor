@@ -19,9 +19,10 @@ The conversion in 12 bits take 750ms, so we actually read the previous value :
 3. Issue the Read Scratchpad command (0xBE)
 4. Read the next two bytes which represent the temperature
 */
+#include <OneWire.h>
 
-#ifdef TEMP_LIQ || TEMP_PLATE || TEMP_STEPPER
-  #include <OneWire.h>
+#if defined(TEMP_LIQ) || defined(TEMP_PLATE) || defined(TEMP_STEPPER)
+
   
   void getTemperature(OneWire &ow, int parameter);
   
