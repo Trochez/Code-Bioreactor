@@ -2,7 +2,6 @@
 
 NIL_WORKING_AREA(waThreadWeight, 16);    
 NIL_THREAD(ThreadWeight, arg) {
-    uint16_t weight = 0;
     
     //quick init of the default parameters
     setParameter(PARAM_WAIT_TIME_PUMP_MOTOR,10);    //wait time of 10 seconds, to be changed then
@@ -12,7 +11,7 @@ NIL_THREAD(ThreadWeight, arg) {
     setParameter(FLAG_VECTOR,0);
     
     int leaky_wght;
-    int weight=analogRead(WGHT);
+    int weight = analogRead(WGHT);
     
     while(true){ 
  

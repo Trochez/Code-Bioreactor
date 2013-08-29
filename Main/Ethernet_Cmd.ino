@@ -41,15 +41,9 @@
 // CAUTION
 // Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
 // and a different MAC address
-<<<<<<< HEAD
 byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 byte ip[] = {172,17,0,100}; // reserved IP adress of the Arduino
-=======
-byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-byte ip[] = {
-  172,17,0,100}; // reserved IP adress of the Arduino
->>>>>>> 0939a2b3af6c826b045d217d0295e7b5db070de3
+
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server 
