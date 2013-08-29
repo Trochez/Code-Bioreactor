@@ -7,14 +7,19 @@ NIL_THREAD(ThreadWeight, arg) {
     //quick init of the default parameters
     setParameter(PARAM_WAIT_TIME_PUMP_MOTOR,10);    //wait time of 10 seconds, to be changed then
     setParameter(PARAM_LVL_MAX_WATER,420);
-    setParameter(PARAM_LVL_MIN_WATER,340);
+    setParameter(PARAM_LVL_MIN_WATER,360);
     setParameter(PARAM_RELAY_PUMP,0);
     setParameter(FLAG_VECTOR,0);
     
+    int leaky_wght;
+    int weight=analogRead(WGHT);
+    
     while(true){ 
  
-      //sensor read
-      int weight = analogRead(WGHT);
+      //sensor read 
+      leaky_wght=weight;
+      weight = 0.9*leaky_wght+0.1*analogRead(WGHT);
+      
       //implement a conversion to give the volume rather than analog read.
       setParameter(PARAM_WGHT, weight);
      
