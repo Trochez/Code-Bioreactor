@@ -34,9 +34,9 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadFlux, NULL, waThreadFlux, sizeof(waThreadFlu
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadTap, NULL, waThreadTap, sizeof(waThreadTap))
 #endif  
 
-#ifdef  TEMP_LIQ || TEMP_PLATE || TEMP_STEPPER
+//#ifdef  TEMP_LIQ || TEMP_PLATE || TEMP_STEPPER
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadTemp, NULL, waThreadTemp, sizeof(waThreadTemp))                        
-#endif
+//#endif
 
 #ifdef TRANS_PID
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay_PID, NULL, waThreadRelay_PID, sizeof(waThreadRelay_PID))      
