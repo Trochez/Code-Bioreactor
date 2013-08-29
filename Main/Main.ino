@@ -49,7 +49,7 @@ LOGGER AND DEBUGGER
 #define IO4     22//A4
 #define IO5     18//A0
 
-#define I2C_RELAY  B00100100
+#define I2C_RELAY  B01000100
 #define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
 
 //Define here if the LCD screen is used or not
