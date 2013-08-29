@@ -30,8 +30,8 @@
 LOGGER AND DEBUGGER
 ************************/
 
-//#define LOGGER 1
-//#define DEBUGGER 1
+#define LOGGER 1
+#define DEBUGGER 1
 
 
 /********************
@@ -49,7 +49,7 @@ LOGGER AND DEBUGGER
 #define IO4     22//A4
 #define IO5     18//A0
 
-#define I2C_RELAY  B01000100
+#define I2C_RELAY  32
 #define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
 
 //Define here if the LCD screen is used or not
@@ -164,7 +164,7 @@ LOGGER AND DEBUGGER
   
   #define  WGHT           IO1
   #define  STEPPER          {IO5,PWM5}
-  //#define  TAP_FOOD       IO3
+  #define  TAP_FOOD       I2C_RELAY
   //#define  TEMP_STEPPER   IO4
   #define  RELAY_PUMP     I2C_RELAY
   
