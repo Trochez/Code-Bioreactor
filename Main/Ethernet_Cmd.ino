@@ -1,20 +1,30 @@
-/*--------------------------------
+/*-------------------------------------------------
  
  This thread will take care of the Ethernet communications
  
  -Answer to request from the server (get logs, get parameters)
  -Get state updates from the server / other modules
  
- TODO:
- -Add parsing for the new commands
- !! Need to set the flag for CONFIG_MODIF in FLAG_VECTOR
  
- ASCII 
- A-Z : 65-90
- a-z : 97-122
- 0-9 : 48-57
+ The module has to be able to respond to several HTML request.
  
- --------------------------------*/
+ The first parameter defines the request type:
+ -Upper case letters are for setting parameters
+  Parameters range between A and Z
+ -Lower case letter are for actions:
+   p. Print Help Menu
+   f. Settings Hardcoded  : IP, MAC,...
+   i. i2c devices
+   o. 1-wire devices
+   g. Parameters in memory
+   {s,m,h,e}. last log of seconds,minutes,hours and events
+   {s.m.h,e}=X. log X of seconds,minutes,hours and events
+   l. return a vector of the last entry number:
+      #seconds #minutes #hours #events
+      
+ -------------------------------------------------*/
+ 
+ 
 #ifdef THR_ETHERNET
 
 #define DEBUG 0
@@ -22,10 +32,17 @@
 // (reserve space for the http header !AND! the JSON command string)
 #define MAX_COMMAND_STRING_LENGTH 400 // in bytes; max. JSON return string to read 
 
-//Define ASCII position Bytes
+/*************
+ ASCII 
+ A-Z : 65-90
+ a-z : 97-122
+ 0-9 : 48-57
+************/
 #define ASCII_A 65
 #define ASCII_Z 90
+
 #define ASCII_0 48
+#define ASCII_9 57
 
 #define ASCII_a 48
 #define ASCII_z 57
@@ -54,15 +71,16 @@ EthernetServer server(80);
 
 IPAddress alix_server(172,17,0,10); // local NTP server 
 
-#define REQUEST_LENGTH 20
-
+//The longest request possible is "GET /s=4294967295"
+#define REQUEST_LENGTH 17
+#define TABLE_SIZE 32
 /*---------------------------
  Ethernet Thread
  ---------------------------*/
 
 NIL_WORKING_AREA(waThreadEthernet, 250); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
-  char request[REQUEST_LENGTH];
+  
   // Initializate the connection with the server
   Ethernet.begin(mac,ip);
   server.begin();
@@ -76,13 +94,14 @@ NIL_THREAD(ThreadEthernet, arg) {
       boolean currentLineIsBlank = true;
       //Count the number of byte of the answer
       int count = 0;
+      uint8_t request[TABLE_SIZE];
       while (client.connected()) {
 
         if (client.available()) {
           char c = client.read();
           //Serial.write(c);
           //store characters to string           
-          if (count < 20) {
+          if (count < REQUEST_LENGTH) {
             // += append a character to a string
             request[count] = c;
             count++;
@@ -98,7 +117,7 @@ NIL_THREAD(ThreadEthernet, arg) {
             client.println();
             client.println(F("<!DOCTYPE HTML>"));
             client.println(F("<html>"));
-
+            client.write(request, HEX);
             parseRequest(&client, request);
 
             client.println(F("</html>"));
@@ -128,67 +147,80 @@ NIL_THREAD(ThreadEthernet, arg) {
  Ethernet related functions
  ----------------------------*/
 
-void parseRequest(Client* cl, char* req) {
-  /*---------------------------------------
-   The module has to be able to respond to 
-   several HTML request.
-   The first parameter defines the request type:
-   -Upper case letters are for setting parameters
-   -Lower case letter are for actions such as logging, info, ...
-   
-   1. Help menu (h)
-   2. Settings Hardcoded  : IP, MAC,... (f)
-   3. logs (to be defined)
-   4. i2c devices (i)
-   5. 1-wire devices (o)
-   6. set Parameter (A - Z + value)
-   ---------------------------------------*/
+void parseRequest(Client* cl, uint8_t* req) {
+  
   //The request has the form:
   //"GET /X HTTP/1.1 
   // ..."
   // We are interested by the 5th character (X)
-  char c = req[URL_1];
+  uint8_t c = req[URL_1];
+  
+  /****************************
+    PARSE REQUEST FIRST BYTE
+  *****************************/
+  
   // show settings hardCoded on the card
-  if (c=='f') {
-    //TODO
-  } 
-  //Show help menu
-  else if (c=='h') {
+  //Print help menu
+  if (c=='p') {
     printHelp(cl);
   } 
+  
+  // show settings hardCoded on the card
+  else if (c=='f') {
+    //TODO
+  } 
+  
   // show i2c (wire) information
   else if (c=='i') { 
-    #ifdef GAS_CTRL || I2C_LCD
+    #if defined(GAS_CTRL) || defined(I2C_LCD)
       wireInfo(cl);
-    #elseif
+    #else
       (*cl).println("I2C Thread not activated");
     #endif
   } 
+  
   // show oneWire information
   else if (c=='o') {
     #ifdef ONE_WIRE_BUS1
       oneWireInfo(cl);
-    #elseif
+    #else
       (*cl).println("1-wire Thread not activated");
     #endif
   }
+  
   // show settings
-  else if (c=='s') {
+  else if (c=='g') {
     printParameters(cl);
   } 
-  //return the log of all the sensors
-  else if (c == 'l'){
-    //TODO
+  
+  //return the log of the entry given
+  else if ( (c=='s') || (c=='m') || (c=='h') || (c='e')){
+    uint8_t d = req[URL_2];
+    switch(d){
+      //We return the last entry
+      case ' ':
+        readLastEntry(c, req);
+        client.write(req, 32, HEX);
+        break;
+      case '=':
+        {
+          uint32_t index = 0;
+          uint8_t i=URL_3;
+          while(req[i] != ' ' && i<REQUEST_LENGTH){
+            //The letters start at index 48 in ASCII
+            value = (req[i]-ASCII_0) + value*10;
+            i++;
+          }
+          readEntryN(c, req, index);
+          client.write(req, 32, HEX);
+        }
   }
-  //return the X last log of command
-  else if (c == 'e'){
-    //TODO
-  }
+  
   // The request is a parameter
   else if(c >= ASCII_A && c <= ASCII_Z){
     
     //Here we read the second byte of the URL to differentiate the requests
-    char d = req[URL_2];
+    uint8_t d = req[URL_2];
     switch(d){
        //There is only one parameter in the GET
       case ' ':
@@ -198,10 +230,10 @@ void parseRequest(Client* cl, char* req) {
         { // { } Allow to declare variables inside the switch
           int value = 0;
           //We are interested by the 7th bit of the request
-          char i=URL_3;
+          uint8_t i=URL_3;
           //The request modifies a parameter
           //We need to check if the value is correct
-          while(req[i] != ' '){
+          while(req[i] != ' ' && i<REQUEST_LENGTH){
             //The letters start at index 48 in ASCII
             value = (req[i]-ASCII_0) + value*10;
             i++;
@@ -210,20 +242,9 @@ void parseRequest(Client* cl, char* req) {
           printParameter(cl, (byte) (c-ASCII_A));
         }
         break;
-        //We should get the number following before the case switch
-      case 's':
-        //sendLog(parameter, SECONDS, getNumber());
-        break;
-  
-      case 'm':
-        //sendLog(parameter, MINUTES, getNumber());
-        break;
-  
-      case 'h':
-        //sendLog(parameter, HOURS, getNumber());
-        break; 
       }
   } 
+  
   //This request does not exist
   else {
     (*cl).println("No such command"); 
