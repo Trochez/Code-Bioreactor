@@ -1,5 +1,5 @@
 
-#ifdef  TAP_GAS1_2 || TAP_GAS3_4 || TAP_ACID_BASE || TAP_FOOD 
+#if defined(TAP_GAS1_2) || defined(TAP_GAS3_4) || defined(TAP_ACID_BASE) || defined(TAP_FOOD)
 
 
 
