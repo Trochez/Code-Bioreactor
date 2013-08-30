@@ -16,7 +16,7 @@
         turnOn=true;
         digitalWrite(THR_MONITORING,LOW);
       }
-      nilThdSleepMilliseconds(1);
+      nilThdSleepMilliseconds(500);
     }
   }
 #endif
