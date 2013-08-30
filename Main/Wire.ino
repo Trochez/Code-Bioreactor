@@ -18,15 +18,10 @@
    PH METER
  - B????????
  */
-
-
-#ifdef GAS_CTRL
+ 
   #define ANEMOMETER_WRITE 0b10110000
   #define ANEMOMETER_READ  0b10110001
-#endif
-
-//#define PUMP_BYTE 0
-//#define PID_BYTE  1
+  
 
 #define WIRE_MAX_DEVICES 10
 byte numberI2CDevices=0;
@@ -58,7 +53,7 @@ NIL_THREAD(ThreadWire, arg) {
       RELAY
     *********/
     //
-    #ifdef PARAM_RELAY_PUMP  //to be changed
+    #ifdef PARAM_RELAY_PUMP  
         sendRelay(I2C_RELAY,getParameter(PARAM_RELAY_PUMP), wireFlag32);
     #endif
 
@@ -143,25 +138,26 @@ NIL_THREAD(ThreadWire, arg) {
     
     
     // check if a conditionnal test on the ready bit of the config word is mandatory or not (indicate end of conversion) voir fonction wireReadFourBytesToInt
+    // results given in mV
     
     #ifdef  PARAM_FLUX_GAS1
       wireWrite(ANEMOMETER_WRITE,0b10010000);
-      setParameter(PARAMETER_FLUX_GAS1,wireReadFourBytesToInt(ANEMOMETER_READ));
+      setParameter(PARAM_FLUX_GAS1,wireReadFourBytesToInt(ANEMOMETER_READ));
     #endif
     
     #ifdef  PARAM_FLUX_GAS2
       wireWrite(ANEMOMETER_WRITE,0b10110000);
-      setParameter(PARAMETER_FLUX_GAS2,wireReadFourBytesToInt(ANEMOMETER_READ));
+      setParameter(PARAM_FLUX_GAS2,wireReadFourBytesToInt(ANEMOMETER_READ));
     #endif
     
     #ifdef  PARAM_FLUX_GAS3
       wireWrite(ANEMOMETER_WRITE,0b11010000);
-      setParameter(PARAMETER_FLUX_GAS3,wireReadFourBytesToInt(ANEMOMETER_READ));
+      setParameter(PARAM_FLUX_GAS3,wireReadFourBytesToInt(ANEMOMETER_READ));
     #endif
     
     #ifdef  PARAM_FLUX_GAS4
       wireWrite(ANEMOMETER_WRITE,0b11110000);
-      setParameter(PARAMETER_FLUX_GAS4,wireReadFourBytesToInt(ANEMOMETER_READ));
+      setParameter(PARAM_FLUX_GAS4,wireReadFourBytesToInt(ANEMOMETER_READ));
     #endif
     
     

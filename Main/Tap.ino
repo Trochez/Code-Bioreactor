@@ -6,6 +6,7 @@
 NIL_WORKING_AREA(waThreadTap, 50);
 NIL_THREAD(ThreadTap, arg) { 
 
+  /*
   #ifdef  TAP_GAS1_2
   #endif
   
@@ -17,7 +18,7 @@ NIL_THREAD(ThreadTap, arg) {
   
   #ifdef  TAP_ACID_BASE
   #endif
-  
+  */
 }
 
 #endif

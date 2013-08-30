@@ -50,7 +50,7 @@ LOGGER AND DEBUGGER
 #define IO5     18//A0
 
 #define I2C_RELAY  32
-#define I2C_FLUX   B00100101   //probably wrong (depends on how the address is set by hardware)
+#define I2C_FLUX   104 
 
 //Define here if the LCD screen is used or not
 //#define I2C_LCD B00100111
@@ -61,8 +61,8 @@ LOGGER AND DEBUGGER
   THREADS AND PARAMETERS PRESENT IN EACH CARD 
 *******************************/  
 
-#define THR_LINEAR_LOGS       1
-#define THR_ETHERNET          1
+//#define THR_LINEAR_LOGS       1
+//#define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
 #define FLAG_VECTOR               23
@@ -75,8 +75,8 @@ LOGGER AND DEBUGGER
 
 //#define TEMP_CTRL     1
 //#define PH_CTRL       1
-//#define GAS_CTRL      1
-#define STEPPER_CTRL   1
+#define GAS_CTRL      1
+//#define STEPPER_CTRL   1
 
 
 /*******************************
@@ -117,7 +117,8 @@ LOGGER AND DEBUGGER
   
   // Input/Output  
   #define PH              IO1
-  #define TAP_ACID_BASE   {I02,PWM2}
+  #define TAP_ACID_BASE   I2C_RELAY
+  #define  TAP_FOOD       I2C_RELAY
   
   // Parameters stored in memory
   #ifdef PH
@@ -136,11 +137,12 @@ LOGGER AND DEBUGGER
 //*************************************
 
 #ifdef     GAS_CTRL
+
   // Input/Output
   
   #define  FLUX           I2C_FLUX
-  #define  TAP_GAS1_2     {IO1,PWM1}
-  #define  TAP_GAS3_4     {IO2,PWM2}
+//  #define  TAP_GAS1_2     {IO1,PWM1}
+//  #define  TAP_GAS3_4     {IO2,PWM2}
   
   // Parameters stored in memory
   #ifdef FLUX  
@@ -162,9 +164,8 @@ LOGGER AND DEBUGGER
   // Input/Output
   
   #define  WGHT           IO1
-  #define  STEPPER          {IO5,PWM5}
-  #define  TAP_FOOD       I2C_RELAY
-  //#define  TEMP_STEPPER   IO4
+  #define  STEPPER        {IO5,PWM5}
+//  #define  TEMP_STEPPER   IO4
   #define  RELAY_PUMP     I2C_RELAY
   
   // Parameters stored in memory
