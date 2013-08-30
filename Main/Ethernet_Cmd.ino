@@ -150,9 +150,10 @@ NIL_THREAD(ThreadEthernet, arg) {
 void parseRequest(Client* cl, uint8_t* req) {
   
   //The request has the form:
-  //"GET /X HTTP/1.1 
+  //"GET /XYZ HTTP/1.1 
   // ..."
   // We are interested by the 5th character (X)
+  
   uint8_t c = req[URL_1];
   
   /****************************
@@ -179,7 +180,7 @@ void parseRequest(Client* cl, uint8_t* req) {
     #endif
   } 
   
-  // show oneWire information
+  //show oneWire information
   else if (c=='o') {
     #ifdef ONE_WIRE_BUS1
       oneWireInfo(cl);
@@ -216,7 +217,7 @@ void parseRequest(Client* cl, uint8_t* req) {
         }
   }
   
-  // The request is a parameter
+  // The request is a parameter A-Z
   else if(c >= ASCII_A && c <= ASCII_Z){
     
     //Here we read the second byte of the URL to differentiate the requests
@@ -251,39 +252,9 @@ void parseRequest(Client* cl, uint8_t* req) {
   }
 }
 
-/*void ethernetSendLog(){
- //TODO
- client.println("Test 1 <p> test 2 ");
- for (int analogChannel = 0; analogChannel < 6; analogChannel++) {
- int sensorReading = analogRead(analogChannel);
- client.print("analog input ");
- client.print(analogChannel);
- client.print(" is ");
- client.print(sensorReading);
- client.println("<br />");       
- }
- }
- */
-
 /****************************************
  * Parameter & requests related functions
  *****************************************/
-
-void ethernetSendStatus(){
-  //return the parameters corresponding to the vector state
-}
-
-void ethernetSendPlugStatus(){
-  //return the state of all the module plug on the device 
-}
-
-void ethernetSendSensorLog(uint8_t device){
-  //return the logs of a specific sensor
-}
-
-void ethernetSendGeneralLog(){
-  //return the last X entry in the command log
-}
 
 void printHelp(Print* output) {
   //return the menu
@@ -298,36 +269,6 @@ void printHelp(Print* output) {
 
 }
 
-void ethernetPrintI2C(){
-  //return the I2C devices plugged on the device
-}
-
-void ethernetPrintOneWire(){
-  //return the One-Wire devices pluggedf on the device
-}
-/*
-void ethernetParseCommandValue(char *fieldName, double extractedValueFloat)
- {
- int extractedValueInt=(int)extractedValueFloat;
- if (strcmp(fieldName,"liquidTemp")==0) {
- else if (strcmp(fieldName,"liquidLevelMax")==0) {
- else if (strcmp(fieldName,"liquidLevelMin")==0) {
- else if (strcmp(fieldName,"pH")==0) {
- else if (strcmp(fieldName,"waitTime")==0) {
- else if (strcmp(fieldName,"methaneIn")==0) {
- else if (strcmp(fieldName,"carbonDioxideIn")==0) {
- else if (strcmp(fieldName,"nitrogenIn")==0) {
- else if (strcmp(fieldName,"liquidIn")==0) {
- else if (strcmp(fieldName,"liquidOut")==0) {
- else if (strcmp(fieldName,"mode")==0) {
- else if (strcmp(fieldName,"pumpOut")==0) {
- else if (strcmp(fieldName,"pumpIn")==0) {
- else if (strcmp(fieldName,"motor")==0) {
- else if (strcmp(fieldName,"methane")==0) {
- else if (strcmp(fieldName,"carbonDioxide")==0) {
- else if (strcmp(fieldName,"nitrogen")==0) {
- }
- */
 /*
 //JSON PARSING
  void ethernetReadCommand() {
