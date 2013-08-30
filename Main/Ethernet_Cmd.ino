@@ -128,7 +128,7 @@ NIL_THREAD(ThreadEthernet, arg) {
  Ethernet related functions
  ----------------------------*/
 
-void parseRequest(Client* cl, char* req){
+void parseRequest(Client* cl, char* req) {
   /*---------------------------------------
    The module has to be able to respond to 
    several HTML request.

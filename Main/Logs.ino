@@ -13,14 +13,14 @@
 #include <Log.h>
 
 //Prototypes
-void writeLog(uint8_t log_type, SST sst, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
-void readLastEntry(uint8_t log_type, SST sst, uint8_t* result, uint32_t* entryN);
-uint8_t readEntryN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN);
+void writeLog(uint8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
+void readLastEntry(uint8_t log_type, uint8_t* result, uint32_t* entryN);
+uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN);
 uint8_t getLogsN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN);
 uint16_t findSectorOfN(uint8_t log_type, uint32_t entryNb);
 void updateEntryN(uint8_t log_type, uint32_t* entryN);
 uint32_t findAddressOfEntryN(uint8_t logs_type, uint32_t entryN);
-uint32_t findLastEntryN(SST sst, uint8_t log_type);
+uint32_t findLastEntryN(uint8_t log_type);
 uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN);
 uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
 
@@ -58,9 +58,8 @@ uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
 
 NIL_WORKING_AREA(waThreadLinearLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
 NIL_THREAD(ThreadLinearLog, arg) {
-    //The memory is on PORTD4
-  SST sst = SST(4);
-  setupMemory(sst); 
+
+  
   //entry = 0;
   /*----------------------------------
     Memory setup
@@ -74,10 +73,10 @@ NIL_THREAD(ThreadLinearLog, arg) {
   //uint32_t* addrRRDSec   = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSec   = findAddress(RRD_SEC_LOGS);
   //uint32_t* addrRRDSMin  = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSMin  = findAddress(RRD_MIN_LOGS);
   //uint32_t* addrRRDSHour = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSHour = findAddress(RRD_HOUR_LOGS);
-  uint32_t* newEntryCmd      = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryCmd  = findLastEntryN(sst, COMMAND_LOGS);
-  uint32_t* newEntryRRDSec   = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSec   = findLastEntryN(sst, RRD_SEC_LOGS);
-  uint32_t* newEntryRRDSMin  = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSMin  = findLastEntryN(sst, RRD_MIN_LOGS);
-  uint32_t* newEntryRRDSHour = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSHour = findLastEntryN(sst, RRD_HOUR_LOGS);
+  uint32_t* newEntryCmd      = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryCmd  = findLastEntryN(COMMAND_LOGS);
+  uint32_t* newEntryRRDSec   = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSec   = findLastEntryN(RRD_SEC_LOGS);
+  uint32_t* newEntryRRDSMin  = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSMin  = findLastEntryN(RRD_MIN_LOGS);
+  uint32_t* newEntryRRDSHour = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
   
   /*----------------------------------
     ethernet & NTP Setup
@@ -113,7 +112,8 @@ NIL_THREAD(ThreadLinearLog, arg) {
       *****************************/
       time_now = now();
       
-      if(!waitPacket && time_now - previousNTP >= 24*60*60) {
+      
+      if(!waitPacket && ((time_now - previousNTP ) >= 24*60*60)) {
         sendPacket(Udp,alix_server, packetBuffer);
         waitPacket = true;
       } 
@@ -122,7 +122,7 @@ NIL_THREAD(ThreadLinearLog, arg) {
         boolean success = updateNTP(Udp,alix_server, packetBuffer);
         if(!success) {
           Serial.println("Fail NTP update");  // A virer
-           writeLog(COMMAND_LOGS, sst, newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
+           writeLog(COMMAND_LOGS, newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
         }
         previousNTP = time_now;
         waitPacket = false;
@@ -132,7 +132,7 @@ NIL_THREAD(ThreadLinearLog, arg) {
       // this is the linear logs
       // 
       if(time_now - previousLog > 1) {
-        writeLog(RRD_SEC_LOGS, sst, newEntryRRDSec , time_now, 0, 0);
+        writeLog(RRD_SEC_LOGS, newEntryRRDSec , time_now, 0, 0);
         Serial.println("Log");  // A Virer
         previousLog = time_now;
       }
@@ -147,8 +147,6 @@ NIL_THREAD(ThreadLinearLog, arg) {
   
   log_type:        The type of logs that should be stored (RRD_SEC_LOGS, RRD_MIN_LOGS, 
                    RRD_HOUR_LOGS, COMMAND_LOGS)
-  sst:             The object where is defined the operations to manipulate 
-                   the flash memory
   entryNb:         Correspond to the log ID, the entry number in the memory
   timestamp:       The time when the event happend
   event_number:    If the log_type is COMMAND_LOGS, then this parameter should be set with the
@@ -158,7 +156,11 @@ NIL_THREAD(ThreadLinearLog, arg) {
   parameter_value: If the log_type is COMMAND_LOGS, this value add information of the event_number
                    If the log_type is other, this parameter should be set to 0
 */
-void writeLog(uint8_t log_type, SST sst, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value) {
+void writeLog(uint8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value) {
+  
+  SST sst = SST(4);
+  setupMemory(sst);
+  
   uint16_t param = 0;
   
   // test if it is the begining of one sector, and erase the sector of 4094 bytes if needed
@@ -207,15 +209,17 @@ void writeLog(uint8_t log_type, SST sst, uint32_t* entryNb, uint32_t timestamp, 
   
   log_type:        The type of logs that should be stored (RRD_SEC_LOGS, RRD_MIN_LOGS, 
                    RRD_HOUR_LOGS, COMMAND_LOGS)
-  sst:             The object where is defined the operations to manipulate 
-                   the flash memory
   result:          Array of uint8_t where the logs are stored. It should be a 32 bytes array
                    for the 3 RRD logs and 12 bytes for the commands/events logs.  
   *entryN:         Pointer that gives the log ID that will correspond to the logs address to
                    be read and stored in result
   
 */
-void readLastEntry(uint8_t log_type, SST sst, uint8_t* result, uint32_t* entryN) {
+void readLastEntry(uint8_t log_type, uint8_t* result, uint32_t* entryN) {
+  
+  SST sst = SST(4);
+  setupMemory(sst); 
+  
   uint32_t address = NULL;
   
   //compute the address of the last row (4 byte for the timestamp)
@@ -260,8 +264,6 @@ void readLastEntry(uint8_t log_type, SST sst, uint8_t* result, uint32_t* entryN)
 
   log_type:        The type of logs that should be stored (RRD_SEC_LOGS, RRD_MIN_LOGS, 
                    RRD_HOUR_LOGS, COMMAND_LOGS)
-  sst:             The object where is defined the operations to manipulate 
-                   the flash memory
   result:          Array of uint8_t where the logs are stored. It should be a 32 bytes array
                    for the 3 RRD logs and 12 bytes for the commands/events logs.  
   *entryN:         Log ID that will correspond to the logs address to be read and stored in
@@ -272,8 +274,11 @@ void readLastEntry(uint8_t log_type, SST sst, uint8_t* result, uint32_t* entryN)
                    ERROR_NOT_FOUND_ENTRY_N: The log ID (entryN) was not found in the
                    flash memory
 */
-uint8_t readEntryN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN)
+uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN)
 {
+  SST sst = SST(4);
+  setupMemory(sst); 
+  
   uint32_t temp = 0;
   uint32_t addressOfEntryN = 0;
   switch(log_type)
@@ -334,7 +339,7 @@ uint8_t getLogsN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN)
       break;
   }
   
-  for(index; index < restOfByte;index++)
+  for(index; index < restOfByte;index++) 
     result[index] = sst.flashReadNextInt8();
   sst.flashReadFinish();
   return 0;
@@ -433,16 +438,17 @@ uint32_t findAddressOfEntryN(uint8_t logs_type, uint32_t entryN)
 /*
   Function that return the last log ID stored in the memory corresponding
   to the right log type in memory (seconds, minutes, hours, commands/event)
-  
-  sst:         The object where is defined the operations to manipulate 
-               the flash memory
+ 
   log_type:    The type of logs (RRD_SEC_LOGS, RRD_MIN_LOGS, RRD_HOUR_LOGS, COMMAND_LOGS)
   
   return:      The last log ID stored in the memory corresponding to a log type
 */
 
-uint32_t findLastEntryN(SST sst, uint8_t log_type) 
+uint32_t findLastEntryN(uint8_t log_type) 
 {
+  SST sst = SST(4);
+  setupMemory(sst); 
+  
   uint32_t lastEntry = 0;
   uint32_t temp = 0;
   uint32_t addressEntryN = 0;
@@ -590,7 +596,10 @@ unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char 
   // you can send a packet requesting a timestamp:         
   Udp.beginPacket(address, 123); //NTP requests are to port 123
   Udp.write(packetBuffer,NTP_PACKET_SIZE);
-  Udp.endPacket(); 
+  Udp.endPacket();
+  
+  // TODO: implement error detection
+  return 0;
 }
 
 /*--------------------------
