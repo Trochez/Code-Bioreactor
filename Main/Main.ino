@@ -52,6 +52,21 @@ LOGGER AND DEBUGGER
 #define I2C_RELAY  32
 #define I2C_FLUX   104 
 
+/*related masks*/
+
+#define FLAG_STEPPER_OFF   (1<<0)   //motor turned off
+#define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
+
+#define ERROR_SERVER_DWN   (1<<10)   //set the condition for individual data control (alert useless here)
+#define ERROR_PID          (1<<11)   //set the condition to stop temperature control + alert message
+#define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
+#define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
+#define ERROR_MEMORY       (1<<14)   //set the condition to disable 
+#define MODE_STDBY         (1<<13)   //motor and temperature PID On only
+#define MODE_MANUAL        (1<<14)   //everything is set manually
+#define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed                                    
+
+
 //Define here if the LCD screen is used or not
 //#define I2C_LCD B00100111
 //WIRE_LCD_16_2 B00100111
@@ -204,25 +219,6 @@ LOGGER AND DEBUGGER
 //#define PARAM_GAS_MIX          //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), 
                                  //lookup table to be implemented by calibrating for each gas
 //#define PARAM_GAS_RATIO   
-
-/*State FlagVector*/
-
-//#define FLAG_VECTOR          22           //possible out of the table ??
-
-/*related masks*/
-
-#define FLAG_STEPPER_OFF   (1<<0)   //motor turned off
-#define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
-
-#define ERROR_SERVER_DWN   (1<<10)   //set the condition for individual data control (alert useless here)
-#define ERROR_PID          (1<<11)   //set the condition to stop temperature control + alert message
-#define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
-#define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
-#define ERROR_MEMORY       (1<<14)   //set the condition to disable 
-#define MODE_STDBY         (1<<13)   //motor and temperature PID On only
-#define MODE_MANUAL        (1<<14)   //everything is set manually
-#define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed                                    
-
 
 /*********
   SETUP
