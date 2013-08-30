@@ -2,6 +2,8 @@
   This thread will take care of the logs and manage the time and its synchronisation 
   The thread write the logs at a definite fixed interval of time in the SST25VF064 chip of the main boards
   The time synchronization works through the NTP protocol and our server
+
+	// TODO: change the time now() in global?
 */
 #ifdef THR_LINEAR_LOGS
 
@@ -14,15 +16,19 @@
 
 //Prototypes
 void writeLog(uint8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
-void readLastEntry(uint8_t log_type, uint8_t* result, uint32_t* entryN);
+void readLastEntry(uint8_t log_type, uint8_t* result);
 uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN);
 uint8_t getLogsN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN);
 uint16_t findSectorOfN(uint8_t log_type, uint32_t entryNb);
-void updateEntryN(uint8_t log_type, uint32_t* entryN);
+void updateEntryN(uint8_t log_type);
 uint32_t findAddressOfEntryN(uint8_t logs_type, uint32_t entryN);
 uint32_t findLastEntryN(uint8_t log_type);
 uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN);
 uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
+uint32_t getLastEntrySec();
+uint32_t getLastEntryMin();
+uint32_t getLastEntryHour();
+uint32_t getLastEntryCmd();
 
 #define NTP_PACKET_SIZE (48)
 
@@ -49,34 +55,30 @@ uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
 #define SET_MODE_1             16
 #define SET_MODE_2             17
 #define SET_MODE_3             18
-#
+
 #define ERROR_ERASE_SECTOR     140
 #define PARAMETER_SET          130
 #define ERROR_NOT_FOUND_ENTRY_N  150
-#
+
+//Determine the position of the last logs in the memory for
+// all type of logs (linear, RRD, commands/event)
+// If we don't have enough memory in the RAM, let's use directly the function findAddress
+// but it will be slower to call this function every seconds for log processes
+uint32_t newEntryCmd;    
+uint32_t newEntryRRDSec;
+uint32_t newEntryRRDSMin;
+uint32_t newEntryRRDSHour;
 
 
 NIL_WORKING_AREA(waThreadLinearLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
 NIL_THREAD(ThreadLinearLog, arg) {
-
+	
+	// update the entry where the new log should be written.
+	newEntryCmd = findLastEntryN(COMMAND_LOGS);
+	newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
+	//newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
+	//newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
   
-  //entry = 0;
-  /*----------------------------------
-    Memory setup
-  ----------------------------------*/
-  
-   //Determine the position of the last logs in the memory for
-   // all type of logs (linear, RRD, commands/event)
-   // If we don't have enough memory in the RAM, let's use directly the function findAddress
-   // but it will be slower to call this function every seconds for log processes
-  //uint32_t* addrCommand  = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrCommand  = findAddress(COMMAND_LOGS);
-  //uint32_t* addrRRDSec   = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSec   = findAddress(RRD_SEC_LOGS);
-  //uint32_t* addrRRDSMin  = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSMin  = findAddress(RRD_MIN_LOGS);
-  //uint32_t* addrRRDSHour = (uint32_t*)calloc(1,sizeof(uint32_t)); *addrRRDSHour = findAddress(RRD_HOUR_LOGS);
-  uint32_t* newEntryCmd      = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryCmd  = findLastEntryN(COMMAND_LOGS);
-  uint32_t* newEntryRRDSec   = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSec   = findLastEntryN(RRD_SEC_LOGS);
-  uint32_t* newEntryRRDSMin  = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSMin  = findLastEntryN(RRD_MIN_LOGS);
-  uint32_t* newEntryRRDSHour = (uint32_t*)calloc(1,sizeof(uint32_t)); *newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
   
   /*----------------------------------
     ethernet & NTP Setup
@@ -156,7 +158,7 @@ NIL_THREAD(ThreadLinearLog, arg) {
   parameter_value: If the log_type is COMMAND_LOGS, this value add information of the event_number
                    If the log_type is other, this parameter should be set to 0
 */
-void writeLog(uint8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value) {
+void writeLog(uint8_t log_type, uint32_t entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value) {
   
   SST sst = SST(4);
   setupMemory(sst);
@@ -201,7 +203,7 @@ void writeLog(uint8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t 
   sst.flashWriteFinish();
   
   //Update the value of the next event log position in the memory
-  updateEntryN(log_type, entryNb);
+  updateEntryN(log_type);
 }
 
 /*
@@ -215,7 +217,7 @@ void writeLog(uint8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t 
                    be read and stored in result
   
 */
-void readLastEntry(uint8_t log_type, uint8_t* result, uint32_t* entryN) {
+void readLastEntry(uint8_t log_type, uint8_t* result) {
   
   SST sst = SST(4);
   setupMemory(sst); 
@@ -226,16 +228,16 @@ void readLastEntry(uint8_t log_type, uint8_t* result, uint32_t* entryN) {
   switch(log_type)
   {
     case COMMAND_LOGS:
-      address = findAddressOfEntryN(log_type ,findPreviousEntryN(log_type, *entryN));
+      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryCmd));
       break;
     case RRD_SEC_LOGS: 
-      address = findAddressOfEntryN(log_type ,findPreviousEntryN(log_type, *entryN));
+      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntrySec));
       break;
     case RRD_MIN_LOGS:
-      address = findAddressOfEntryN(log_type ,findPreviousEntryN(log_type, *entryN));
+      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryMin));
       break;
     case RRD_HOUR_LOGS:
-      address = findAddressOfEntryN(log_type ,findPreviousEntryN(log_type, *entryN));
+      address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryHour));
       break;
   } 
   
@@ -386,20 +388,20 @@ uint16_t findSectorOfN(uint8_t log_type, uint32_t entryNb) {
                    corresponding new log
   
 */
-void updateEntryN(uint8_t log_type, uint32_t* entryN) {
+void updateEntryN(uint8_t log_type) {
    switch(log_type) 
   {
     case COMMAND_LOGS:
-      *entryN = (*entryN + 1) % NB_ENTRIES_CMD;
+      newEntryCmd = (newEntryCmd + 1) % NB_ENTRIES_CMD;
       break;
     case RRD_SEC_LOGS: 
-      *entryN = (*entryN + 1) % NB_ENTRIES_SEC;
+      newEntrySec = (newEntrySec + 1) % NB_ENTRIES_SEC;
       break;
     case RRD_MIN_LOGS: 
-      *entryN = (*entryN + 1) % NB_ENTRIES_MIN;
+      newEntryMin = (newEntryMin + 1) % NB_ENTRIES_MIN;
       break;
     case RRD_HOUR_LOGS: 
-      *entryN = (*entryN + 1) % NB_ENTRIES_HOUR;
+      newEntryHour = (newEntryHour + 1) % NB_ENTRIES_HOUR;
       break;
   }
 }
@@ -540,6 +542,11 @@ uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN)
   }
   return PreviousEntry;
 }
+
+uint32_t getLastEntrySec() {return findPreviousEntryN(COMMAND_LOGS, );}
+uint32_t getLastEntryMin() {return findPreviousEntryN(RRD_SEC_LOGS, );}
+uint32_t getLastEntryHour() {return findPreviousEntryN(RRD_MIN_LOGS, );}
+uint32_t getLastEntryCmd() {return findPreviousEntryN(RRD_HOUR_LOGS, );}
 
 /*-----------------------
   NTP related functions
