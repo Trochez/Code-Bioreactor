@@ -19,8 +19,10 @@
  - B????????
  */
  
-  #define ANEMOMETER_WRITE 0b10110000
-  #define ANEMOMETER_READ  0b10110001
+//  #define ANEMOMETER_WRITE 0b10110000
+  #define ANEMOMETER_WRITE 104 
+//  #define ANEMOMETER_READ  0b10110001
+  #define ANEMOMETER_READ 104
   
 
 #define WIRE_MAX_DEVICES 10
@@ -29,6 +31,8 @@ byte wireDeviceID[WIRE_MAX_DEVICES];
 
 NIL_WORKING_AREA(waThreadWire, 150);
 NIL_THREAD(ThreadWire, arg) {
+  
+  
   byte aByte=0;
   byte* wireFlag32=&aByte;
   unsigned int wireEventStatus=0;
@@ -139,6 +143,7 @@ NIL_THREAD(ThreadWire, arg) {
     
     // check if a conditionnal test on the ready bit of the config word is mandatory or not (indicate end of conversion) voir fonction wireReadFourBytesToInt
     // results given in mV
+
     
     #ifdef  PARAM_FLUX_GAS1
       wireWrite(ANEMOMETER_WRITE,0b10010000);
@@ -249,10 +254,20 @@ int wireReadFourBytesToInt(uint8_t address) {
     if (i > 4) return 0; // security mechanism, see if sufficient or not (give false info about the FLUX if the case !!!!)
     else i++;
     byteWithADD = Wire.read();
+    Serial.print("address: ");
+    Serial.println(byteWithADD);
     byteWithMSB = Wire.read();
+    Serial.print("MSB: ");
+    Serial.println(byteWithADD);
     byteWithLSB = Wire.read();
+    Serial.print("LSB: ");
+    Serial.println(byteWithADD);
     byteWithCFG = Wire.read();
+    Serial.print("CFG: ");
+    Serial.println(byteWithADD);
     _data = (byteWithMSB<<8) | byteWithLSB;
+    Serial.print("data: ");
+    Serial.println(_data);
   }
   return _data;
 }
@@ -296,8 +311,8 @@ void wireUpdateList() {
         i--;
       } 
       else if (currentPosition>=numberI2CDevices || wireDeviceID[currentPosition]>i) { // we need to add a device
-//        Serial.print("add: ");
-//        Serial.println(i);
+        Serial.print("add: ");
+        Serial.println(i);
         wireInsertDevice(currentPosition, i);
         currentPosition++;
       }
@@ -305,11 +320,10 @@ void wireUpdateList() {
     }
   }
   while (currentPosition<numberI2CDevices) {
-//    Serial.print("delete: ");
-//    Serial.println(wireDeviceID[currentPosition]);
+    Serial.print("delete: ");
+    Serial.println(wireDeviceID[currentPosition]);
     wireRemoveDevice(currentPosition);
   }
-//  Serial.println("list updated");
 }
 
 void wireRemoveDevice(byte id) {
