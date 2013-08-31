@@ -243,7 +243,7 @@ int wireReadTwoBytesToInt(uint8_t address) {
 
 int wireReadFourBytesToInt(uint8_t address) {
   int i = 0;
-  int _data = 0;
+  unsigned int _data = 0;
   int byteWithADD;
   int byteWithMSB;
   int byteWithLSB;
@@ -258,10 +258,10 @@ int wireReadFourBytesToInt(uint8_t address) {
     Serial.println(byteWithADD);
     byteWithMSB = Wire.read();
     Serial.print("MSB: ");
-    Serial.println(byteWithADD);
+    Serial.println(byteWithMSB);
     byteWithLSB = Wire.read();
     Serial.print("LSB: ");
-    Serial.println(byteWithADD);
+    Serial.println(byteWithLSB);
     byteWithCFG = Wire.read();
     Serial.print("CFG: ");
     Serial.println(byteWithADD);
