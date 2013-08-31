@@ -19,9 +19,7 @@
  - B????????
  */
  
-//  #define ANEMOMETER_WRITE 0b10110000
-  #define ANEMOMETER_WRITE 104 
-//  #define ANEMOMETER_READ  0b10110001
+  #define ANEMOMETER_WRITE 104
   #define ANEMOMETER_READ 104
   
 
@@ -143,28 +141,32 @@ NIL_THREAD(ThreadWire, arg) {
     
     // check if a conditionnal test on the ready bit of the config word is mandatory or not (indicate end of conversion) voir fonction wireReadFourBytesToInt
     // results given in mV
-
-    
+  
     #ifdef  PARAM_FLUX_GAS1
       wireWrite(ANEMOMETER_WRITE,0b10010000);
+      delay(6);
       setParameter(PARAM_FLUX_GAS1,wireReadFourBytesToInt(ANEMOMETER_READ));
     #endif
-    
+   
     #ifdef  PARAM_FLUX_GAS2
       wireWrite(ANEMOMETER_WRITE,0b10110000);
+      delay(6);
       setParameter(PARAM_FLUX_GAS2,wireReadFourBytesToInt(ANEMOMETER_READ));
     #endif
     
     #ifdef  PARAM_FLUX_GAS3
       wireWrite(ANEMOMETER_WRITE,0b11010000);
+      delay(6);
       setParameter(PARAM_FLUX_GAS3,wireReadFourBytesToInt(ANEMOMETER_READ));
     #endif
     
     #ifdef  PARAM_FLUX_GAS4
       wireWrite(ANEMOMETER_WRITE,0b11110000);
+      delay(6);
       setParameter(PARAM_FLUX_GAS4,wireReadFourBytesToInt(ANEMOMETER_READ));
     #endif
-    
+   
+   
     
     /*****************
       EXT DEVICE (We don't use it)
@@ -189,7 +191,7 @@ NIL_THREAD(ThreadWire, arg) {
       }
     }*/    
     
-    nilThdSleepMilliseconds(100);
+    nilThdSleepMilliseconds(1000);
 
   }
 }
@@ -236,7 +238,7 @@ int wireReadTwoBytesToInt(uint8_t address) {
     byteWithMSB = Wire.read();
     byteWithLSB = Wire.read();
     _data = (byteWithMSB<<8) | byteWithLSB;
-  }
+  }  
   return _data;
 }
 
@@ -244,30 +246,22 @@ int wireReadTwoBytesToInt(uint8_t address) {
 int wireReadFourBytesToInt(uint8_t address) {
   int i = 0;
   unsigned int _data = 0;
-  int byteWithADD;
-  int byteWithMSB;
-  int byteWithLSB;
-  int byteWithCFG;
+  uint8_t byteWithADD;
+  uint8_t byteWithMSB;
+  uint8_t byteWithLSB;
+  uint8_t byteWithCFG;
 
   Wire.requestFrom(address, (uint8_t)4);
   while(Wire.available()) {
     if (i > 4) return 0; // security mechanism, see if sufficient or not (give false info about the FLUX if the case !!!!)
     else i++;
-    byteWithADD = Wire.read();
-    Serial.print("address: ");
-    Serial.println(byteWithADD);
     byteWithMSB = Wire.read();
-    Serial.print("MSB: ");
-    Serial.println(byteWithMSB);
     byteWithLSB = Wire.read();
-    Serial.print("LSB: ");
-    Serial.println(byteWithLSB);
     byteWithCFG = Wire.read();
-    Serial.print("CFG: ");
-    Serial.println(byteWithADD);
+    byteWithADD = Wire.read();
     _data = (byteWithMSB<<8) | byteWithLSB;
-    Serial.print("data: ");
-    Serial.println(_data);
+//    Serial.print("_data: ");
+//    Serial.println(_data); 
   }
   return _data;
 }
