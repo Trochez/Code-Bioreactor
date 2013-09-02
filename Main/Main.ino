@@ -50,10 +50,6 @@ LOGGER AND DEBUGGER
 #define I2C_RELAY  32
 #define I2C_FLUX   104 
 
-#define IP {172, 17, 0 ,100}
-#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
-
-#define ALIX {172,17,0,10}
 /*related masks*/
 
 #define FLAG_STEPPER_OFF   (1<<0)   //motor turned off
@@ -222,9 +218,25 @@ LOGGER AND DEBUGGER
                                  //lookup table to be implemented by calibrating for each gas
 //#define PARAM_GAS_RATIO   
 
+
+/**********************
+  Network parameters
+  
+// Enter a MAC address and IP address for the Arduino controller below.
+// The IP address is reserved on the routher for this Arduino controller.
+// CAUTION
+// Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
+// and a different MAC address
+***********************/
+
+const char IP[] = {172, 17, 0 ,100};
+const char MAC[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+const char ALIX[] = {172,17,0,10};
+
 /*********
   SETUP
 *********/
+
 
 byte IO[] = {
   IO1, IO2, IO3, IO4};

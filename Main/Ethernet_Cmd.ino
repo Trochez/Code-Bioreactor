@@ -52,12 +52,6 @@
 #define URL_2 6
 #define URL_3 7
 
-// THIS SHOULD BE DEFINED GLOBALLY SO THREADS CAN ACCESS IT 
-// Enter a MAC address and IP address for the Arduino controller below.
-// The IP address is reserved on the routher for this Arduino controller.
-// CAUTION
-// Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
-// and a different MAC address
 byte mac[] = MAC;
 byte ip[] = IP; // reserved IP adress of the Arduino
 
@@ -67,7 +61,6 @@ byte ip[] = IP; // reserved IP adress of the Arduino
 // that you want to connect to (port 80 is default for HTTP):
 
 EthernetServer server(80);
-
 IPAddress alix_server(ALIX[0],ALIX[1],ALIX[2],ALIX[3]); // local NTP server 
 
 //The longest request possible is "GET /s=4294967295"
