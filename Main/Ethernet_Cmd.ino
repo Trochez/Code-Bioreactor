@@ -193,7 +193,7 @@ void parseRequest(Client* cl, uint8_t* req) {
     switch(d){
       //We return the last entry
       case ' ':
-        //readLastEntry(c, req);
+        readLastEntry(c, req);
         (*cl).write(req, 32, HEX);
         break;
       case '=':
@@ -205,7 +205,7 @@ void parseRequest(Client* cl, uint8_t* req) {
             index = (req[i]-ASCII_0) + index*10;
             i++;
           }
-          //readEntryN(c, req, index);
+          readEntryN(c, req, index);
           (*cl).write(req, 32, HEX);
         }
      }
