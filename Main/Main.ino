@@ -1,5 +1,3 @@
-#include <SST.h>
-
 /**************
   LIBRAIRIES
 **************/
@@ -23,7 +21,7 @@
 // http://www.arduino.cc/playground/Code/Time
 #include <Time.h>
 
-#define THR_MONITORING 13
+//#define THR_MONITORING 13
 /*define the IN/OUT ports of the card*/
 
 /***********************
@@ -66,25 +64,6 @@ LOGGER AND DEBUGGER
 //#define THR_LINEAR_LOGS       1
 //#define THR_ETHERNET          1
 
-#define PARAM_ERROR_CODE          22  
-#define FLAG_VECTOR               23
-
-/*related masks*/
-
-#define FLAG_STEPPER_OFF   (1<<0)   //motor turned off
-#define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
-
-#define ERROR_SERVER_DWN   (1<<10)   //set the condition for individual data control (alert useless here)
-#define ERROR_PID          (1<<11)   //set the condition to stop temperature control + alert message
-#define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
-#define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
-#define ERROR_MEMORY       (1<<14)   //set the condition to disable 
-#define MODE_STDBY         (1<<13)   //motor and temperature PID On only
-#define MODE_MANUAL        (1<<14)   //everything is set manually
-#define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed                                    
-
-
-
 /******************
   DEFINE CARD TYPE
 ******************/
@@ -93,6 +72,20 @@ LOGGER AND DEBUGGER
 #define PH_CTRL       1
 //#define GAS_CTRL      1
 //#define STEPPER_CTRL   1
+
+
+/**********************
+  NETWORK PARAMETERS
+// Enter a MAC address and IP address for the Arduino controller below.
+// The IP address is reserved on the routher for this Arduino controller.
+// CAUTION
+// Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
+// and a different MAC address
+***********************/
+
+#define IP {172, 17, 0 ,100}
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
+#define ALIX {172,17,0,10} 
 
 
 /*******************************
@@ -118,7 +111,6 @@ LOGGER AND DEBUGGER
   #define PARAM_DESIRED_LIQUID_TEMP    9  
   #define PARAM_TEMP_MIN               10
   #define PARAM_TEMP_MAX               11
-  
   
   #ifdef TRANS_PID
     #define  RELAY_PID      200
@@ -162,8 +154,6 @@ LOGGER AND DEBUGGER
 #ifdef     GAS_CTRL
 
   // Input/Output
-  
-  
   #define ANEMOMETER_WRITE  I2C_FLUX
   #define ANEMOMETER_READ   I2C_FLUX
   #define  TAP_GAS1     PWM1
@@ -174,8 +164,6 @@ LOGGER AND DEBUGGER
   // Parameters stored in memory
   #ifdef FLUX  
     // define time windows for duty cycle
-
-  
     #define PARAM_FLUX_GAS1            3
     #define PARAM_FLUX_GAS2            4
     #define PARAM_FLUX_GAS3            5
@@ -195,11 +183,10 @@ LOGGER AND DEBUGGER
   
   #define  WGHT           IO1
   #define  STEPPER        {IO5,PWM5}
-//  #define  TEMP_STEPPER   IO4
+  //#define  TEMP_STEPPER   IO4
   #define  RELAY_PUMP     I2C_RELAY
   
   // Parameters stored in memory
-  
   #ifdef WGHT         
     #define PARAM_WGHT                 7
     #define PARAM_LVL_MAX_WATER        17        
@@ -220,6 +207,29 @@ LOGGER AND DEBUGGER
   #endif 
   
 #endif  
+
+
+/******************
+  ERROR DEFINITION
+******************/
+
+#define PARAM_ERROR_CODE          22  
+#define FLAG_VECTOR               23
+
+/*related masks*/
+
+#define FLAG_STEPPER_OFF   (1<<0)   //motor turned off
+#define FLAG_PUMPING       (1<<1)   //set the condition to disable targeted modules when pumping is performed
+
+#define ERROR_SERVER_DWN   (1<<10)   //set the condition for individual data control (alert useless here)
+#define ERROR_PID          (1<<11)   //set the condition to stop temperature control + alert message
+#define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
+#define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
+#define ERROR_MEMORY       (1<<14)   //set the condition to disable 
+#define MODE_STDBY         (1<<13)   //motor and temperature PID On only
+#define MODE_MANUAL        (1<<14)   //everything is set manually
+#define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed                                    
+
 
 /*********
   SETUP
