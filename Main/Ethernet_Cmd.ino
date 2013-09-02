@@ -167,8 +167,8 @@ void parseRequest(Client* cl, uint8_t* req) {
   
   // show settings hardCoded on the card
   else if (c=='f') {
-    //TODO
-  } 
+    printHardCodedParameters(cl);
+  }
   
   // show i2c (wire) information
   else if (c=='i') { 
@@ -195,12 +195,13 @@ void parseRequest(Client* cl, uint8_t* req) {
   
   //return the log of the entry given
   else if ( (c=='s') || (c=='m') || (c=='h') || (c='e')){
+    #ifdef THR_LINEAR_LOGS
     uint8_t d = req[URL_2];
     switch(d){
       //We return the last entry
       case ' ':
-        readLastEntry(c, req);
-        client.write(req, 32, HEX);
+        //readLastEntry(c, req);
+        (*cl).write(req, 32, HEX);
         break;
       case '=':
         {
@@ -208,14 +209,17 @@ void parseRequest(Client* cl, uint8_t* req) {
           uint8_t i=URL_3;
           while(req[i] != ' ' && i<REQUEST_LENGTH){
             //The letters start at index 48 in ASCII
-            value = (req[i]-ASCII_0) + value*10;
+            index = (req[i]-ASCII_0) + index*10;
             i++;
           }
-          readEntryN(c, req, index);
-          client.write(req, 32, HEX);
+          //readEntryN(c, req, index);
+          (*cl).write(req, 32, HEX);
         }
+     }
+     #else
+     (*cl).println("Thread log not activated");
+     #endif
   }
-  
   // The request is a parameter A-Z
   else if(c >= ASCII_A && c <= ASCII_Z){
     
@@ -266,6 +270,24 @@ void printHelp(Print* output) {
   output->println(F("(o)ne wire<br/>"));
   output->println(F("(s)ettings<br/>"));
 
+}
+
+void printHardCodedParameters(Print* output){
+   output->println(F("Hardcoded Parameters :")); 
+   output->print(F("IP : "));
+   output->println(IP); 
+   output->print(F("MAC : "));
+   output->println(MAC); 
+   output->print(F("ALIX : "));
+   output->println(ALIX); 
+   #ifdef RELAY_PUMP
+     output->print(F("I2C relay : "));
+     output->println(I2C_RELAY); 
+   #endif
+   #ifdef FLUX
+     output->print(F("I2C Flux : "));
+     output->println(I2C_FLUX); 
+   #endif
 }
 
 /*
