@@ -1,5 +1,3 @@
-#include <SST.h>
-
 /**************
   LIBRAIRIES
 **************/
@@ -49,25 +47,8 @@ LOGGER AND DEBUGGER
 #define IO4     22//A4
 #define IO5     18//A0
 
-#define I2C_RELAY         32
-#define I2C_RELAY_TAP     36
-#define I2C_FLUX          104
-
-
-//Define here if the LCD screen is used or not
-//#define I2C_LCD B00100111
-//WIRE_LCD_16_2 B00100111
-//WIRE_LCD_20_4 B00100110
-
-/*******************************
-  THREADS AND PARAMETERS PRESENT IN EACH CARD 
-*******************************/  
-
-//#define THR_LINEAR_LOGS       1
-//#define THR_ETHERNET          1
-
-#define PARAM_ERROR_CODE          22  
-#define FLAG_VECTOR               23
+#define I2C_RELAY  32
+#define I2C_FLUX   104 
 
 /*related masks*/
 
@@ -84,13 +65,29 @@ LOGGER AND DEBUGGER
 #define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed                                    
 
 
+//Define here if the LCD screen is used or not
+//#define I2C_LCD B00100111
+//WIRE_LCD_16_2 B00100111
+//WIRE_LCD_20_4 B00100110
+
+/*******************************
+  THREADS AND PARAMETERS PRESENT IN EACH CARD 
+*******************************/  
+
+//#define THR_LINEAR_LOGS       1
+#define THR_ETHERNET          1
+
+#define PARAM_ERROR_CODE          22  
+#define FLAG_VECTOR               23
+
+
 
 /******************
   DEFINE CARD TYPE
 ******************/
 
 //#define TEMP_CTRL     1
-#define PH_CTRL       1
+//#define PH_CTRL       1
 //#define GAS_CTRL      1
 //#define STEPPER_CTRL   1
 
@@ -104,7 +101,7 @@ LOGGER AND DEBUGGER
   // Input/Output
   #define  TEMP_LIQ       IO1
   //#define  TEMP_PLATE     IO2
-  #define  TRANS_PID      PWM5
+  //#define  TRANS_PID      PWM5
   
   // Parameters stored in memory
   #ifdef TEMP_LIQ
@@ -132,29 +129,22 @@ LOGGER AND DEBUGGER
 #ifdef    PH_CTRL
   
   // Input/Output  
-  
   #define PH              IO1
-  #define TAP_ACID        I2C_RELAY_TAP
-  #define TAP_BASE        I2C_RELAY_TAP
-  #define TAP_FOOD        I2C_RELAY_TAP
+  #define TAP_ACID_BASE   I2C_RELAY
+  #define  TAP_FOOD       I2C_RELAY
   
   // Parameters stored in memory
-  
-  #if defined(TAP_ACID) || defined(TAP_BASE) || defined (TAP_FOOD)
-      //same value as for PARAM_RELAY_PUMP but used with a bit shift >>8
-      #define PARAM_RELAY_TAP            25       
-  #endif
-  
   #ifdef PH
-    #define PARAM_DESIRED_PH           12 
-    #define PARAM_PH                   2
+    #define  PARAM_PH                  2
   #endif
+  
+  #define PARAM_DESIRED_PH             12
+#endif
 
-  #ifdef TAP_FOOD
-    #define OPENING_TIME               1000 //hard coded 1 sec opening time
-    #define FOOD_SPEED                 19  //frequency of the droplet supply
-  #endif
+//useful or not ?
 
+#ifdef TAP_ACID_BASE
+   #define PARAM_TAP_ACID_BASE  
 #endif
 
 //*************************************
@@ -163,19 +153,12 @@ LOGGER AND DEBUGGER
 
   // Input/Output
   
-  
-  #define ANEMOMETER_WRITE  I2C_FLUX
-  #define ANEMOMETER_READ   I2C_FLUX
-  #define  TAP_GAS1     PWM1
-  #define  TAP_GAS2     PWM2
-  #define  TAP_GAS3     PWM3
-  #define  TAP_GAS4     PWM4
+  #define  FLUX           I2C_FLUX
+//  #define  TAP_GAS1_2     {IO1,PWM1}
+//  #define  TAP_GAS3_4     {IO2,PWM2}
   
   // Parameters stored in memory
   #ifdef FLUX  
-  
-    // define time windows for duty cycle
-  
     #define PARAM_FLUX_GAS1            3
     #define PARAM_FLUX_GAS2            4
     #define PARAM_FLUX_GAS3            5
@@ -210,20 +193,50 @@ LOGGER AND DEBUGGER
     #define PARAM_TEMP_STEPPER         8
   #endif
   
+  #define PARAM_WAIT_TIME_PUMP_MOTOR   21 
+  
   #ifdef RELAY_PUMP
-    #define PARAM_WAIT_TIME_PUMP_MOTOR   21
-    #define PARAM_RELAY_PUMP             25
+    #define PARAM_RELAY_PUMP          25
+  #endif
+  
+  #ifdef TAP_FOOD
+    #define FOOD_SPEED_TAP            19              
   #endif
   
   #ifdef  STEPPER
     #define  PARAM_STEPPER_SPEED    20        
   #endif 
   
-#endif  
+#endif
+
+
+/**********************
+  Control parameters
+***********************/
+
+//#define PARAM_GAS_MIX          //contains the indication on the 4 input gases (nothing, O2, Air, N2, ...), 
+                                 //lookup table to be implemented by calibrating for each gas
+//#define PARAM_GAS_RATIO   
+
+
+/**********************
+  Network parameters
+  
+// Enter a MAC address and IP address for the Arduino controller below.
+// The IP address is reserved on the routher for this Arduino controller.
+// CAUTION
+// Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
+// and a different MAC address
+***********************/
+
+#define IP {172, 17, 0 ,100}
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
+#define ALIX {172,17,0,10} 
 
 /*********
   SETUP
 *********/
+
 
 byte IO[] = {
   IO1, IO2, IO3, IO4};

@@ -249,7 +249,7 @@ void parseRequest(Client* cl, uint8_t* req) {
     #if defined(GAS_CTRL) || defined(I2C_LCD)
       wireInfo(cl);
     #else
-      (*cl).println("I2C Thread not activated");
+      noThread(cl);
     #endif
   } 
   
@@ -258,7 +258,7 @@ void parseRequest(Client* cl, uint8_t* req) {
     #ifdef ONE_WIRE_BUS1
       oneWireInfo(cl);
     #else
-      (*cl).println("1-wire Thread not activated");
+      noThread(cl);
     #endif
   }
   
@@ -268,17 +268,24 @@ void parseRequest(Client* cl, uint8_t* req) {
   } 
   
   //return the log of the entry given
-  else if ( (c=='s') || (c=='m') || (c=='h') || (c=='e')){
+  else if ( (c=='s') || /*(c=='m') || (c=='h') ||*/ (c=='e')){
     #ifdef THR_LINEAR_LOGS
+    
+    //We parse the second character of the GET
     uint8_t d = req[URL_2];
+    
     switch(d){
       (*cl).println("char :" + d);
+      
       //We return the last entry
       case ' ':
         (*cl).println("get log");
         readLastEntry(c, req);
-        (*cl).write(req, 32);
+        if(c=='e') (*cl).write(req, ENTRY_SIZE_COMMAND_LOGS);
+        else (*cl).write(req, ENTRY_SIZE_LINEAR_LOGS);
         break;
+        
+      //We have a log entry number given
       case '=':
         {
           uint32_t index = 0;
@@ -290,11 +297,15 @@ void parseRequest(Client* cl, uint8_t* req) {
           }
           (*cl).println("get log");
           readEntryN(c, req, index);
-          (*cl).write(req, 32);
+          if(c=='e') (*cl).write(req, ENTRY_SIZE_COMMAND_LOGS);
+          else (*cl).write(req, ENTRY_SIZE_LINEAR_LOGS);
         }
+       default:
+         noSuchCommand();
+         break;
      }
      #else
-     (*cl).println("Thread log not activated");
+       noThread(cl);
      #endif
   }
   // The request is a parameter A-Z
@@ -303,10 +314,12 @@ void parseRequest(Client* cl, uint8_t* req) {
     //Here we read the second byte of the URL to differentiate the requests
     uint8_t d = req[URL_2];
     switch(d){
+      
        //There is only one parameter in the GET
       case ' ':
         printParameter(cl, (byte) (c-ASCII_A));
         break;
+        
       case '=':
         { // { } Allow to declare variables inside the switch
           int value = 0;
@@ -323,46 +336,55 @@ void parseRequest(Client* cl, uint8_t* req) {
           printParameter(cl, (byte) (c-ASCII_A));
         }
         break;
+        
+      default:
+        noSuchCommand(cl);
+        break;
       }
   } 
   
   //This request does not exist
   else {
-    (*cl).println("No such command"); 
+    noSuchCommand(cl); 
   }
 }
 
 /****************************************
  * Parameter & requests related functions
  *****************************************/
+void noSuchCommand(Print* output){
+  output->println(F("No Such Command<br/>"));
+}
+
+void noThread(Print* output){
+  output->println(F("Thread not activated<br/>"));
+}
 
 void printHelp(Print* output) {
   //return the menu
-  //output->println(F("(d)ebug<br/>"));
-  //output->println(F("(e)eprom<br/>"));
-  output->println(F("(f)ree mem<br/>"));
-  output->println(F("(h)elp<br/>"));
+  output->println(F("(f)hard coded parameter<br/>"));
+  output->println(F("(p)rint help<br/>"));
   output->println(F("(i)2c<br/>"));
   output->println(F("(l)og<br/>"));
   output->println(F("(o)ne wire<br/>"));
-  output->println(F("(s)ettings<br/>"));
+  output->println(F("(g)et parameters<br/>"));
 
 }
 
 void printHardCodedParameters(Print* output){
-   output->println(F("Hardcoded Parameters :")); 
-   output->print(F("IP : "));
+   output->println(F("Hardcoded Parameters :<br/>")); 
+   output->print(F("IP : <br/>"));
    //output->print(ip[0] + " " + ip[1] + " " + ip[2] + " " + ip[3]);
-   output->print(F("MAC : "));
+   output->print(F("MAC : <br/>"));
    //output->println(mac[0] + " " + mac[1] + " " + mac[2] + " " + mac[3]); 
-   output->print(F("ALIX : "));
+   output->print(F("ALIX : <br/>"));
    //output->println(alix[0] + " " + alix[1] + " " + alix[2] + " " + alix[3]); 
    #ifdef RELAY_PUMP
-     output->print(F("I2C relay : "));
+     output->print(F("I2C relay : <br/>"));
      output->println(I2C_RELAY); 
    #endif
    #ifdef FLUX
-     output->print(F("I2C Flux : "));
+     output->print(F("I2C Flux : <br/>"));
      output->println(I2C_FLUX); 
    #endif
 }
