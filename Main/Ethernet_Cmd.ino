@@ -58,18 +58,17 @@
 // CAUTION
 // Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
 // and a different MAC address
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-byte ip[] = {172,17,0,100}; // reserved IP adress of the Arduino
+byte mac[] = MAC;
+byte ip[] = IP; // reserved IP adress of the Arduino
 
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server 
 // that you want to connect to (port 80 is default for HTTP):
 
-unsigned int localPort = 8888;      // local port to listen for UDP packets
 EthernetServer server(80);
 
-IPAddress alix_server(172,17,0,10); // local NTP server 
+IPAddress alix_server(ALIX[0],ALIX[1],ALIX[2],ALIX[3]); // local NTP server 
 
 //The longest request possible is "GET /s=4294967295"
 #define REQUEST_LENGTH 17

@@ -50,6 +50,10 @@ LOGGER AND DEBUGGER
 #define I2C_RELAY  32
 #define I2C_FLUX   104 
 
+#define IP {172, 17, 0 ,100}
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
+
+#define ALIX {172,17,0,10}
 /*related masks*/
 
 #define FLAG_STEPPER_OFF   (1<<0)   //motor turned off
