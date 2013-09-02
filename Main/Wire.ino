@@ -18,16 +18,13 @@
    PH METER
  - B????????
  */
- 
-  #define ANEMOMETER_WRITE 104
-  #define ANEMOMETER_READ 104
   
 
 #define WIRE_MAX_DEVICES 10
 byte numberI2CDevices=0;
 byte wireDeviceID[WIRE_MAX_DEVICES];
 
-NIL_WORKING_AREA(waThreadWire, 64);
+NIL_WORKING_AREA(waThreadWire, 150);
 NIL_THREAD(ThreadWire, arg) {
   
   
@@ -56,7 +53,11 @@ NIL_THREAD(ThreadWire, arg) {
     *********/
     //
     #ifdef PARAM_RELAY_PUMP  
-        sendRelay(I2C_RELAY,getParameter(PARAM_RELAY_PUMP), wireFlag32);
+      sendRelay(I2C_RELAY,getParameter(PARAM_RELAY_PUMP), wireFlag32);
+    #endif
+    
+    #ifdef PARAM_RELAY_TAP
+      sendRelay(I2C_RELAY_TAP,(getParameter(PARAM_RELAY_TAP)>>8), wireFlag32);
     #endif
 
 
