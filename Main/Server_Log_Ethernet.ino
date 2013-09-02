@@ -25,7 +25,7 @@
  -------------------------------------------------*/
  
  
-#ifdef THR_ETHERNET
+#if defined(THR_ETHERNET) || defined(THR_LINEAR_LOGS)
 
 #define DEBUG 0
 #define MAX_HTTP_STRING_LENGTH 2048    // in bytes; max. http return string to read  
@@ -60,8 +60,10 @@ uint8_t ip[] = IP;
 uint8_t mac[] = MAC;
 const uint8_t alix[] = ALIX;
 
+unsigned int localPort = 8888;      // local port to listen for UDP packets
+
+IPAddress alix_server(alix[0],alix[1],alix[2],alix[3]); // local NTP server
 EthernetServer server(80);
-IPAddress alix_server(alix[0],alix[1],alix[2],alix[3]); // local NTP server 
 
 //The longest request possible is "GET /s=4294967295"
 #define REQUEST_LENGTH 17
@@ -72,65 +74,143 @@ IPAddress alix_server(alix[0],alix[1],alix[2],alix[3]); // local NTP server
 
 NIL_WORKING_AREA(waThreadEthernet, 296); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
+    //This is needed by both NTP and ethernet server
+    Ethernet.begin(mac, ip);
+    
+    
+   /****************************
+    LOG & NTP Setup
+   *****************************/
+   #ifdef THR_LINEAR_LOGS
+     // update the entry where the new log should be written.
+     newEntryCmd = findLastEntryN(COMMAND_LOGS);
+     newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
+     //newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
+     //newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
   
-  // Initializate the connection with the server
-  Ethernet.begin(mac,ip);
-  server.begin();
+    //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
+    unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
+  
+    // Boolean variable to test a t the first place several times the actuall
+    // time of the arduino. Count 5 times the arduino time before synchronization
+    time_t time_now = 0;
+    time_t previousNTP = 0;
+    time_t previousLog = 0;
+    boolean waitPacket = false;
+    // A UDP instance to let us send and receive packets over UDP
+    EthernetUDP Udp;
+    Udp.begin(localPort);
+  #endif
+  
+  /****************************
+      SETUP ETHERNET SERVER
+   *****************************/
+  #ifdef THR_ETHERNET
+    server.begin();
+  #endif
+  
+  
+  Serial.println(Ethernet.localIP());
 
   while (TRUE) {
-    // listen for client request
-    EthernetClient client = server.available();
-    if (client) {
-      Serial.println("new client");
-      // an http request ends with a blank line
-      boolean currentLineIsBlank = true;
-      //Count the number of byte of the answer
-      int count = 0;
-      uint8_t request[TABLE_SIZE];
-      while (client.connected()) {
-
-        if (client.available()) {
-          char c = client.read();
-          //Serial.write(c);
-          //store characters to string           
-          if (count < REQUEST_LENGTH) {
-            // += append a character to a string
-            request[count] = c;
-            count++;
+    
+    /****************************
+      THREAD LOG & TIME : STRUCTURE    
+      - Update NTP all days
+      Send packet
+        2sec later check if answer
+          answer -> update
+          no answer -> log in event + try again in 3600 seconds
+      - Log parameter every 1 second
+      *****************************/
+      #ifdef THR_LINEAR_LOGS
+        time_now = now();
+        
+        if(!waitPacket && ((time_now - previousNTP ) >= 24*60*60)) {
+          sendPacket(Udp,alix_server, packetBuffer);
+          waitPacket = true;
+        } 
+        // 2 seconds later we check if we have an answer from the server and update the time if possible
+        else if(waitPacket && time_now - previousNTP >= 3602) {
+          boolean success = updateNTP(Udp,alix_server, packetBuffer);
+          if(!success) {
+            Serial.println("Fail NTP update");  // A virer
+             writeLog(COMMAND_LOGS, newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
           }
-          // if you've gotten to the end of the line (received a newline
-          // character) and the line is blank, the http request has ended,
-          // so you can send a reply
-          if (c == '\n' && currentLineIsBlank) {
-            // send a standard http response header
-            client.println(F("HTTP/1.1 200 OK"));
-            client.println(F("Content-Type: text/html"));
-            client.println(F("Connection: close"));  // the connection will be closed after completion of the response
-            client.println();
-            client.println(F("<!DOCTYPE HTML>"));
-            client.println(F("<html>"));
-            client.write(request, HEX);
-            parseRequest(&client, request);
-
-            client.println(F("</html>"));
-            break;
-          }
-          if (c == '\n') {
-            // you're starting a new line
-            currentLineIsBlank = true;
-          } 
-          else if (c != '\r') {
-            // you've gotten a character on the current line
-            currentLineIsBlank = false;
+          previousNTP = time_now;
+          waitPacket = false;
+        }
+        
+        // This function suppose that the thread is called very regularly (at least 1 time every seconds)
+        // this is the linear logs
+        // 
+        if(time_now - previousLog > 1) {
+          writeLog(RRD_SEC_LOGS, newEntryRRDSec , time_now, 0, 0);
+          Serial.println("Log");  // A Virer
+          previousLog = time_now;
+        }
+      #endif
+    
+   /****************************
+      THREAD ETHERNET 
+      - Receive request from clients
+   *****************************/
+   #ifdef THR_ETHERNET
+      EthernetClient client = server.available();
+      if (client) {
+        Serial.println("new client");
+        // an http request ends with a blank line
+        boolean currentLineIsBlank = true;
+        //Count the number of byte of the answer
+        int count = 0;
+        uint8_t request[TABLE_SIZE] = 
+        while (client.connected()) {
+  
+          if (client.available()) {
+            char c = client.read();
+            //Serial.write(c);
+            //store characters to string           
+            if (count < REQUEST_LENGTH) {
+              // += append a character to a string
+              request[count] = c;
+              count++;
+            }
+            // if you've gotten to the end of the line (received a newline
+            // character) and the line is blank, the http request has ended,
+            // so you can send a reply
+            if (c == '\n' && currentLineIsBlank) {
+              // send a standard http response header
+              client.println(F("HTTP/1.1 200 OK"));
+              client.println(F("Content-Type: text/html"));
+              client.println(F("Connection: close"));  // the connection will be closed after completion of the response
+              client.println();
+              client.println(F("<!DOCTYPE HTML>"));
+              client.println(F("<html>"));
+              client.write(request, HEX);
+              parseRequest(&client, request);
+  
+              client.println(F("</html>"));
+              break;
+            }
+            if (c == '\n') {
+              // you're starting a new line
+              currentLineIsBlank = true;
+            } 
+            else if (c != '\r') {
+              // you've gotten a character on the current line
+              currentLineIsBlank = false;
+            }
           }
         }
-      }
-      // give the web browser time to receive the data
-      delay(1);
-      // close the connection:
-      client.stop();
-      Serial.println("client disconnected");
-    }  
+        // give the web browser time to receive the data
+        delay(1);
+        // close the connection:
+        client.stop();
+        Serial.println("client disconnected");
+      } 
+    #endif
+    
+    
     nilThdSleepMilliseconds(200);
   }
 }
@@ -194,7 +274,7 @@ void parseRequest(Client* cl, uint8_t* req) {
       //We return the last entry
       case ' ':
         readLastEntry(c, req);
-        (*cl).write(req, 32, HEX);
+        (*cl).write(req, 32);
         break;
       case '=':
         {
@@ -206,7 +286,7 @@ void parseRequest(Client* cl, uint8_t* req) {
             i++;
           }
           readEntryN(c, req, index);
-          (*cl).write(req, 32, HEX);
+          (*cl).write(req, 32);
         }
      }
      #else

@@ -33,13 +33,13 @@ uint32_t getLastEntryCmd();
 #define NTP_PACKET_SIZE (48)
 
 // the different types of logs
-//#define COMMAND_LOGS               1  //
-//#define RRD_SEC_LOGS               2  // If Needed
-//#define RRD_MIN_LOGS               3  // If Needed
-//#define RRD_HOUR_LOGS              4  // If Needed
+#define COMMAND_LOGS               1  //
+#define RRD_SEC_LOGS               2  // If Needed
+#define RRD_MIN_LOGS               3  // If Needed
+#define RRD_HOUR_LOGS              4  // If Needed
 
-//#define ENTRY_SIZE_LINEAR_LOGS     32
-//#define ENTRY_SIZE_COMMAND_LOGS    12
+#define ENTRY_SIZE_LINEAR_LOGS     32
+#define ENTRY_SIZE_COMMAND_LOGS    12
 #define NB_PARAMETERS_LINEAR_LOGS  12
 #define SIZE_TIMESTAMPS            4
 #define SIZE_COUNTER_ENTRY         4
@@ -91,79 +91,6 @@ uint32_t newEntryRRDSec;
 uint32_t newEntryRRDSMin;
 uint32_t newEntryRRDSHour;
 
-
-NIL_WORKING_AREA(waThreadLinearLog, 100); //TODO : Check the actual memory requirement : 70 Bytes might be a bit short
-NIL_THREAD(ThreadLinearLog, arg) {
-	
-	// update the entry where the new log should be written.
-	newEntryCmd = findLastEntryN(COMMAND_LOGS);
-	newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
-	//newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
-	//newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
-  
-  
-  /*----------------------------------
-    ethernet & NTP Setup
-  ----------------------------------*/
-  
-  //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
-  unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
-
-  // Boolean variable to test a t the first place several times the actuall
-  // time of the arduino. Count 5 times the arduino time before synchronization
-  time_t time_now = 0;
-  time_t previousNTP = 0;
-  time_t previousLog = 0;
-  boolean waitPacket = false;
-  // A UDP instance to let us send and receive packets over UDP
-  EthernetUDP Udp;
-  Ethernet.begin(mac, ip);
-  Udp.begin(localPort);
-    
-  /*--------------------------------
-    Thread Main Loop
-  --------------------------------*/
-  while(true) {
-      Serial.println("test!");
-      /****************************
-      THREAD LOG & TIME : STRUCTURE    
-      - Update NTP all days
-      Send packet
-        2sec later check if answer
-          answer -> update
-          no answer -> log in event + try again in 3600 seconds
-      - Log parameter every 1 second
-      *****************************/
-      time_now = now();
-      
-      
-      if(!waitPacket && ((time_now - previousNTP ) >= 24*60*60)) {
-        sendPacket(Udp,alix_server, packetBuffer);
-        waitPacket = true;
-      } 
-      // 2 seconds later we check if we have an answer from the server and update the time if possible
-      else if(waitPacket && time_now - previousNTP >= 3602) {
-        boolean success = updateNTP(Udp,alix_server, packetBuffer);
-        if(!success) {
-          Serial.println("Fail NTP update");  // A virer
-           writeLog(COMMAND_LOGS, newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
-        }
-        previousNTP = time_now;
-        waitPacket = false;
-      }
-      
-      // This function suppose that the thread is called very regularly (at least 1 time every seconds)
-      // this is the linear logs
-      // 
-      if(time_now - previousLog > 1) {
-        writeLog(RRD_SEC_LOGS, newEntryRRDSec , time_now, 0, 0);
-        Serial.println("Log");  // A Virer
-        previousLog = time_now;
-      }
-      
-      nilThdSleepMilliseconds(500);
-  }
-}
 
 /* 
   Function to save logs in the Flash memory. Linear logs and command logs need to be logged
@@ -541,7 +468,7 @@ uint32_t findLastEntryN(uint8_t log_type)
   uint32_t lastEntry = 0;
   uint32_t temp = 0;
   uint32_t addressEntryN = 0;
-  boolean found = true;
+  boolean found = false;
   switch(log_type) 
   {
     case COMMAND_LOGS:
@@ -557,7 +484,7 @@ uint32_t findLastEntryN(uint8_t log_type)
       addressEntryN = ADDRESS_HOUR_BEG;
       break;
   }
-  while(found) {
+  while(!found) {
     sst.flashReadInit(addressEntryN);    
     temp = sst.flashReadNextInt32();
     if(temp == 0xFFFFFFFF || temp != lastEntry + 1) {// A Vérifier

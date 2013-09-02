@@ -231,7 +231,7 @@ LOGGER AND DEBUGGER
 
 #define IP {172, 17, 0 ,100}
 #define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
-#define ALIX {172,17,0,10}
+#define ALIX {172,17,0,10} 
 
 /*********
   SETUP
