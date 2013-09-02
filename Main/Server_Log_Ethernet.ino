@@ -162,8 +162,9 @@ NIL_THREAD(ThreadEthernet, arg) {
         // an http request ends with a blank line
         boolean currentLineIsBlank = true;
         //Count the number of byte of the answer
+        
+        uint8_t request[TABLE_SIZE];
         int count = 0;
-        uint8_t request[TABLE_SIZE] = 
         while (client.connected()) {
   
           if (client.available()) {
@@ -186,7 +187,7 @@ NIL_THREAD(ThreadEthernet, arg) {
               client.println();
               client.println(F("<!DOCTYPE HTML>"));
               client.println(F("<html>"));
-              client.write(request, HEX);
+              //client.write(request, HEX);
               parseRequest(&client, request);
   
               client.println(F("</html>"));
@@ -267,12 +268,14 @@ void parseRequest(Client* cl, uint8_t* req) {
   } 
   
   //return the log of the entry given
-  else if ( (c=='s') || (c=='m') || (c=='h') || (c='e')){
+  else if ( (c=='s') || (c=='m') || (c=='h') || (c=='e')){
     #ifdef THR_LINEAR_LOGS
     uint8_t d = req[URL_2];
     switch(d){
+      (*cl).println("char :" + d);
       //We return the last entry
       case ' ':
+        (*cl).println("get log");
         readLastEntry(c, req);
         (*cl).write(req, 32);
         break;
@@ -280,11 +283,12 @@ void parseRequest(Client* cl, uint8_t* req) {
         {
           uint32_t index = 0;
           uint8_t i=URL_3;
-          while(req[i] != ' ' && i<REQUEST_LENGTH){
+          while(req[i] >= ASCII_0  && req[i] <= ASCII_9 && i<REQUEST_LENGTH){
             //The letters start at index 48 in ASCII
             index = (req[i]-ASCII_0) + index*10;
             i++;
           }
+          (*cl).println("get log");
           readEntryN(c, req, index);
           (*cl).write(req, 32);
         }
@@ -295,7 +299,7 @@ void parseRequest(Client* cl, uint8_t* req) {
   }
   // The request is a parameter A-Z
   else if(c >= ASCII_A && c <= ASCII_Z){
-    
+    (*cl).println("Parameter");
     //Here we read the second byte of the URL to differentiate the requests
     uint8_t d = req[URL_2];
     switch(d){
