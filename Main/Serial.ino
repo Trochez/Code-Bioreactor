@@ -27,10 +27,10 @@ void serialPrintHelp() {
 }
 
 
-NIL_WORKING_AREA(waThreadSerial, 100);
+NIL_WORKING_AREA(waThreadSerial, 96);
 NIL_THREAD(ThreadSerial, arg) {
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   /*
   SerialEvent occurs whenever a new data comes in the

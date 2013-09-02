@@ -27,7 +27,7 @@ The conversion in 12 bits take 750ms, so we actually read the previous value :
   void getTemperature(OneWire &ow, int parameter);
   
   
-  NIL_WORKING_AREA(waThreadTemp, 70);
+  NIL_WORKING_AREA(waThreadTemp, 64);
   NIL_THREAD(ThreadTemp, arg) {
     #ifdef TEMP_CTRL
   

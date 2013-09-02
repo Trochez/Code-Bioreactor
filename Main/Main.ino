@@ -1,5 +1,3 @@
-#include <SST.h>
-
 /**************
   LIBRAIRIES
 **************/
@@ -90,7 +88,7 @@ LOGGER AND DEBUGGER
 
 //#define TEMP_CTRL     1
 //#define PH_CTRL       1
-#define GAS_CTRL      1
+//#define GAS_CTRL      1
 //#define STEPPER_CTRL   1
 
 

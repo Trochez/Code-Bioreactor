@@ -78,7 +78,7 @@ IPAddress alix_server(172,17,0,10); // local NTP server
  Ethernet Thread
  ---------------------------*/
 
-NIL_WORKING_AREA(waThreadEthernet, 250); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 296); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   
   // Initializate the connection with the server

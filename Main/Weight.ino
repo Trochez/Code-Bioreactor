@@ -1,6 +1,6 @@
 #ifdef WGHT
 
-NIL_WORKING_AREA(waThreadWeight, 16);    
+NIL_WORKING_AREA(waThreadWeight, 32);    
 NIL_THREAD(ThreadWeight, arg) {
     
     //quick init of the default parameters
