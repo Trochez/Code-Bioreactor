@@ -75,7 +75,7 @@ LOGGER AND DEBUGGER
 *******************************/  
 
 //#define THR_LINEAR_LOGS       1
-//#define THR_ETHERNET          1
+#define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
 #define FLAG_VECTOR               23
@@ -229,9 +229,9 @@ LOGGER AND DEBUGGER
 // and a different MAC address
 ***********************/
 
-const char IP[] = {172, 17, 0 ,100};
-const char MAC[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-const char ALIX[] = {172,17,0,10};
+#define IP {172, 17, 0 ,100}
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
+#define ALIX {172,17,0,10}
 
 /*********
   SETUP

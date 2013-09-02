@@ -52,16 +52,16 @@
 #define URL_2 6
 #define URL_3 7
 
-byte mac[] = MAC;
-byte ip[] = IP; // reserved IP adress of the Arduino
-
-
 // Initialize the Ethernet client library
 // with the IP address and port of the server 
 // that you want to connect to (port 80 is default for HTTP):
 
+uint8_t ip[] = IP;
+uint8_t mac[] = MAC;
+const uint8_t alix[] = ALIX;
+
 EthernetServer server(80);
-IPAddress alix_server(ALIX[0],ALIX[1],ALIX[2],ALIX[3]); // local NTP server 
+IPAddress alix_server(alix[0],alix[1],alix[2],alix[3]); // local NTP server 
 
 //The longest request possible is "GET /s=4294967295"
 #define REQUEST_LENGTH 17
@@ -268,11 +268,11 @@ void printHelp(Print* output) {
 void printHardCodedParameters(Print* output){
    output->println(F("Hardcoded Parameters :")); 
    output->print(F("IP : "));
-   output->println(IP); 
+   //output->print(ip[0] + " " + ip[1] + " " + ip[2] + " " + ip[3]);
    output->print(F("MAC : "));
-   output->println(MAC); 
+   //output->println(mac[0] + " " + mac[1] + " " + mac[2] + " " + mac[3]); 
    output->print(F("ALIX : "));
-   output->println(ALIX); 
+   //output->println(alix[0] + " " + alix[1] + " " + alix[2] + " " + alix[3]); 
    #ifdef RELAY_PUMP
      output->print(F("I2C relay : "));
      output->println(I2C_RELAY); 
