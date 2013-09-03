@@ -20,7 +20,7 @@ void readLastEntry(uint8_t log_type, uint8_t* result);
 uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN);
 uint8_t getLogsN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN);
 uint16_t findSectorOfN(uint8_t log_type, uint32_t entryNb);
-void updateEntryN(uint8_t log_type);
+void updateEntryN(uint8_t log_type, uint32_t* entryN);
 uint32_t findAddressOfEntryN(uint8_t logs_type, uint32_t entryN);
 uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN);
 uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
@@ -67,6 +67,12 @@ uint32_t getLastEntryCmd();
 #define ADDRESS_HOUR_BEG  0x5EE000
 #define ADDRESS_CMD_BEG   0x620000
 
+#define ADDRESS_SEC_LAST  (ADDRESS_MIN_BEG - ENTRY_SIZE_LINEAR_LOGS)
+#define ADDRESS_MIN_LAST  (ADDRESS_HOUR_BEG - ENTRY_SIZE_LINEAR_LOGS)
+#define ADDRESS_HOUR_LAST (ADDRESS_CMD_BEG - ENTRY_SIZE_LINEAR_LOGS)
+#define ADDRESS_CMD_LAST  (ADDRESS_CMD_BEG + ADDRESS_CMD_SIZE - ENTRY_SIZE_LINEAR_LOGS)
+
+
 #define SECTOR_SIZE       4096
 
 // Size of the log sectors in bytes
@@ -86,10 +92,10 @@ uint32_t getLastEntryCmd();
 // all type of logs (linear, RRD, commands/event)
 // If we don't have enough memory in the RAM, let's use directly the function findAddress
 // but it will be slower to call this function every seconds for log processes
-uint32_t newEntryCmd;    
-uint32_t newEntryRRDSec;
-uint32_t newEntryRRDSMin;
-uint32_t newEntryRRDSHour;
+uint32_t newEntryCmd = 0;
+uint32_t newEntryRRDSec = 0;
+//uint32_t newEntryRRDSMin;
+//uint32_t newEntryRRDSHour;
 
 
 /* 
@@ -107,7 +113,7 @@ uint32_t newEntryRRDSHour;
   parameter_value: If the log_type is COMMAND_LOGS, this value add information of the event_number
                    If the log_type is other, this parameter should be set to 0
 */
-void writeLog(uint8_t log_type, uint32_t entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value) {
+void writeLog(uint8_t log_type, uint32_t * entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value) {
   
   SST sst = SST(4);
   setupMemory(sst);
@@ -115,18 +121,19 @@ void writeLog(uint8_t log_type, uint32_t entryNb, uint32_t timestamp, uint16_t e
   uint16_t param = 0;
   
   // test if it is the begining of one sector, and erase the sector of 4094 bytes if needed
-  if(!(entryNb % SECTOR_SIZE))
-    sst.flashSectorErase(findSectorOfN(log_type, entryNb));
+  if(!(*entryNb % SECTOR_SIZE)) {
+    sst.flashSectorErase(findSectorOfN(log_type, *entryNb)); Serial.println("Erase");} // A virer
       
   // Initialized the flash memory with the rigth address in the memory
-  sst.flashWriteInit(findAddressOfEntryN(log_type, entryNb));
+  sst.flashWriteInit(findAddressOfEntryN(log_type, *entryNb));
   
   // Write the 4 bytes of the entry number
-  sst.flashWriteNextInt32(entryNb);
+  Serial.print("entry Nb: "); Serial.println(*entryNb);// A virer
+  sst.flashWriteNextInt32(*entryNb);
   
   // Write the 4 bytes of the timestamp in the memory using a mask
   sst.flashWriteNextInt32(timestamp);
-  
+  Serial.print("timestamp"); Serial.println(timestamp);// A virer
   switch(log_type)
   {
     case COMMAND_LOGS:
@@ -152,7 +159,7 @@ void writeLog(uint8_t log_type, uint32_t entryNb, uint32_t timestamp, uint16_t e
   sst.flashWriteFinish();
   
   //Update the value of the next event log position in the memory
-  updateEntryN(log_type);
+  updateEntryN(log_type, entryNb);
 }
 
 /*
@@ -248,7 +255,7 @@ uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN)
       addressOfEntryN = findAddressOfEntryN(log_type, entryN);
       break;
   }
-  
+  Serial.print("addressOfEntryN: ");Serial.println(addressOfEntryN);
   sst.flashReadInit(addressOfEntryN);
   temp = sst.flashReadNextInt32();
   if(temp == entryN)
@@ -323,8 +330,8 @@ uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN)
     case RRD_HOUR_LOGS: 
       lastEntry = (entryN + 1) % NB_ENTRIES_HOUR;
       break;
-  return lastEntry;
   }
+  return lastEntry;
 }
 
 /*
@@ -400,14 +407,16 @@ uint16_t findSectorOfN(uint8_t log_type, uint32_t entryNb) {
                    corresponding new log
   
 */
-void updateEntryN(uint8_t log_type) {
+void updateEntryN(uint8_t log_type, uint32_t * entryNb) {
    switch(log_type) 
   {
     case COMMAND_LOGS:
-      newEntryCmd = (newEntryCmd + 1) % NB_ENTRIES_CMD;
+      *entryNb = (*entryNb + 1) % NB_ENTRIES_CMD;
+      Serial.print("newEntryCmd: ");Serial.println(newEntryCmd);
       break;
     case RRD_SEC_LOGS: 
-      newEntryRRDSec = (newEntryRRDSec + 1) % NB_ENTRIES_SEC;
+      *entryNb = (*entryNb + 1) % NB_ENTRIES_SEC;
+      Serial.print("newEntryRRDSec: ");Serial.println(newEntryRRDSec);
       break;
       /*
     case RRD_MIN_LOGS: 
@@ -466,42 +475,83 @@ uint32_t findLastEntryN(uint8_t log_type)
   setupMemory(sst); 
   
   uint32_t lastEntry = 0;
-  uint32_t temp = 0;
+  uint32_t ID_temp = 0;
   uint32_t addressEntryN = 0;
+  uint32_t addressLastEntryN = 0;
   boolean found = false;
   switch(log_type) 
   {
     case COMMAND_LOGS:
       addressEntryN = ADDRESS_CMD_BEG;
+      addressLastEntryN = ADDRESS_CMD_LAST;
+      Serial.print("addressEntryN: ");Serial.println(ADDRESS_SEC_BEG);
+      Serial.print("addressLastEntryN: ");Serial.println(ADDRESS_SEC_LAST);
       break;
     case RRD_SEC_LOGS:
       addressEntryN = ADDRESS_SEC_BEG;
+      addressLastEntryN = ADDRESS_SEC_LAST;
+      Serial.print("addressEntryN: ");Serial.println(ADDRESS_SEC_BEG);
+      Serial.print("addressLastEntryN: ");Serial.println(ADDRESS_SEC_LAST);
       break;
     case RRD_MIN_LOGS: 
       addressEntryN = ADDRESS_MIN_BEG;
+      addressLastEntryN = ADDRESS_MIN_LAST;
       break;
     case RRD_HOUR_LOGS: 
       addressEntryN = ADDRESS_HOUR_BEG;
+      addressLastEntryN = ADDRESS_HOUR_LAST;
       break;
   }
-  while(!found) {
+  while(!found) 
+  {
+    delay(200);
     sst.flashReadInit(addressEntryN);    
-    temp = sst.flashReadNextInt32();
-    if(temp == 0xFFFFFFFF || temp != lastEntry + 1) {// A Vérifier
-      found = true;
+    ID_temp = sst.flashReadNextInt32();  
+    sst.flashReadFinish();               
+    Serial.print("ID_temp1: ");Serial.println(ID_temp);
+    Serial.print("lastEntry: ");Serial.println(lastEntry);
+    // Test if first memory slot contains any information
+    if(ID_temp == 0xFFFFFFFF)
+    {
+      sst.flashReadInit(addressLastEntryN);    
+      ID_temp = sst.flashReadNextInt32();
+      sst.flashReadFinish();
+      Serial.print("ID_temp2: ");Serial.println(ID_temp);
+      // Test if the last slot of the memory contains any information
+      if(ID_temp == 0xFFFFFFFF && lastEntry == 0)
+      {
+        // This is the initialisation step, the first entry should be 0
+        lastEntry = 0;
+        found = true;
+        continue;
+      }
+      else if (lastEntry != 0 && ID_temp != lastEntry + 1)
+      {
+        found = true;
+        continue;
+      }
+      
     }
-    sst.flashReadFinish();
-    lastEntry = temp;
-    addressEntryN = findAddressOfEntryN(log_type, findNextEntryN(log_type, lastEntry));
+    else if(lastEntry != 0 && ID_temp != lastEntry + 1)
+    {
+        found = true;
+        continue;
+    }
+    Serial.print("findNextEntryN :"); Serial.println(findNextEntryN(log_type, ID_temp));
+    addressEntryN = findAddressOfEntryN(log_type, findNextEntryN(log_type, ID_temp));
+    lastEntry = ID_temp;
+    Serial.print("address Entry N :"); Serial.println(addressEntryN);
   }
+  Serial.print("Last Entry 2:"); Serial.println(lastEntry);
   return lastEntry;
 }
 
 uint32_t getLastEntrySec() {return findPreviousEntryN(COMMAND_LOGS, newEntryRRDSec );}
-uint32_t getLastEntryMin() {return findPreviousEntryN(RRD_SEC_LOGS, newEntryRRDSMin);}
+uint32_t getLastEntryCmd() {return findPreviousEntryN(RRD_HOUR_LOGS, newEntryCmd);}
 /*
+uint32_t getLastEntryMin() {return findPreviousEntryN(RRD_SEC_LOGS, newEntryRRDSMin);}
 uint32_t getLastEntryHour() {return findPreviousEntryN(RRD_MIN_LOGS, newEntryRRDHour);}
-uint32_t getLastEntryCmd() {return findPreviousEntryN(RRD_HOUR_LOGS, newEntryRRDSCmd);}
+
 */
 
 /*-----------------------

@@ -74,13 +74,8 @@ LOGGER AND DEBUGGER
   THREADS AND PARAMETERS PRESENT IN EACH CARD 
 *******************************/  
 
-<<<<<<< HEAD
 
 #define THR_LINEAR_LOGS       1
-
-=======
-#define THR_LINEAR_LOGS       1
->>>>>>> 9084117a56a60ea2c9ce4b7f3395796e74c942ef
 #define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
@@ -254,6 +249,10 @@ void setup() {
   //setupLogger();
   //setupDebugger();
   setupParameters();
+  while(!Serial)
+  { ; 
+  }
+  
   
   
   nilSysBegin();

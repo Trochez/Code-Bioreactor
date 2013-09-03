@@ -72,19 +72,26 @@ EthernetServer server(80);
  Ethernet Thread
  ---------------------------*/
 
+
 NIL_WORKING_AREA(waThreadEthernet, 296); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
     //This is needed by both NTP and ethernet server
     Ethernet.begin(mac, ip);
-    
-    
+    /*
+       SST sst = SST(4);
+      setupMemory(sst);
+      sst.flashTotalErase();   A Virer !!!
+      free(&sst);
+    */
    /****************************
     LOG & NTP Setup
    *****************************/
    #ifdef THR_LINEAR_LOGS
      // update the entry where the new log should be written.
      newEntryCmd = findLastEntryN(COMMAND_LOGS);
+     Serial.println("find Cmd");
      newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
+     Serial.println("find Sec");
      //newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
      //newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
   
@@ -113,7 +120,7 @@ NIL_THREAD(ThreadEthernet, arg) {
   Serial.println(Ethernet.localIP());
 
   while (TRUE) {
-    
+    Serial.println("Begining thread Ethernet/logs"); // A virer
     /****************************
       THREAD LOG & TIME : STRUCTURE    
       - Update NTP all days
@@ -135,7 +142,7 @@ NIL_THREAD(ThreadEthernet, arg) {
           boolean success = updateNTP(Udp,alix_server, packetBuffer);
           if(!success) {
             Serial.println("Fail NTP update");  // A virer
-             writeLog(COMMAND_LOGS, newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
+             writeLog(COMMAND_LOGS, &newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
           }
           previousNTP = time_now;
           waitPacket = false;
@@ -145,12 +152,18 @@ NIL_THREAD(ThreadEthernet, arg) {
         // this is the linear logs
         // 
         if(time_now - previousLog > 1) {
-          writeLog(RRD_SEC_LOGS, newEntryRRDSec , time_now, 0, 0);
+          
+          //writeLog(RRD_SEC_LOGS, &newEntryRRDSec , time_now, 0, 0);
+          uint8_t data[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//A Virer
+          readEntryN(RRD_SEC_LOGS, data, 0);// A virer
+          for(int i = 0; i < 32;i++){  //
+            Serial.print(data[i]);Serial.print(' '); }Serial.println();
+          
           Serial.println("Log");  // A Virer
           previousLog = time_now;
         }
       #endif
-    Serial.println(newEntryCmd);
+    Serial.println(newEntryRRDSec);
     
    /****************************
       THREAD ETHERNET 
@@ -213,7 +226,7 @@ NIL_THREAD(ThreadEthernet, arg) {
     #endif
     
     
-    nilThdSleepMilliseconds(200);
+    nilThdSleepMilliseconds(2000);
   }
 }
 
