@@ -40,8 +40,8 @@ uint32_t getLastEntryCmd();
 #define COMMAND_LOGS               1
 #define RRD_SEC_LOGS               2
 #ifdef RRD_ON
-	#define RRD_MIN_LOGS               3
-	#define RRD_HOUR_LOGS              4
+  #define RRD_MIN_LOGS               3
+  #define RRD_HOUR_LOGS              4
 #endif
 #define ENTRY_SIZE_LINEAR_LOGS     32
 #define ENTRY_SIZE_COMMAND_LOGS    12

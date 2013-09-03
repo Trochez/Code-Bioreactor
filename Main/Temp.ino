@@ -73,6 +73,8 @@ The conversion in 12 bits take 750ms, so we actually read the previous value :
     ow.reset();
     ow.write(0xCC);
     ow.write(0x44);   
+    //Can be use to check for a device
+    //TODO: add error if device not present
     byte present = ow.reset();
     ow.write(0xCC);
     ow.write(0xBE);

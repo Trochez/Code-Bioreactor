@@ -5,6 +5,11 @@
 //MultiThread
 #include <NilRTOS.h>
 
+//Memory Lib
+#include <SST.h>
+#include <SPI.h>
+
+
 //Ethernet libraries
 #include <Ethernet.h>
 #include <EthernetUdp.h>
@@ -72,9 +77,7 @@ SERIAL, LOGGER AND DEBUGGER
 ******************/
 
 //#define TEMP_CTRL     1
-
 //#define PH_CTRL       1
-
 //#define GAS_CTRL      1
 //#define STEPPER_CTRL   1
 
@@ -101,7 +104,7 @@ SERIAL, LOGGER AND DEBUGGER
 
   // Input/Output
   #define  TEMP_LIQ       IO1
-  //#define  TEMP_PLATE     IO2
+  #define  TEMP_PLATE     IO2
   #define  TRANS_PID      PWM5
   
   // Parameters stored in memory
@@ -247,20 +250,19 @@ SERIAL, LOGGER AND DEBUGGER
   SETUP
 *********/
 
-byte IO[] = {
-  IO1, IO2, IO3, IO4};
+byte IO[] = {IO1, IO2, IO3, IO4};
 
 void setup() {
   delay(1000);
   //setupLogger();
   //setupDebugger();
   setupParameters();
-  while(!Serial)
+  /*while(!Serial)
   { ; 
-  }
+  }*/
   
   
-  
+
   nilSysBegin();
 }
 

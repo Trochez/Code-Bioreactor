@@ -33,6 +33,7 @@
 #define MAX_HTTP_STRING_LENGTH 2048    // in bytes; max. http return string to read  
 // (reserve space for the http header !AND! the JSON command string)
 #define MAX_COMMAND_STRING_LENGTH 400 // in bytes; max. JSON return string to read 
+#define NTP_UPDATE_TIME 7200
 
 /*************
  ASCII 
@@ -89,20 +90,20 @@ NIL_THREAD(ThreadEthernet, arg) {
     LOG & NTP Setup
    *****************************/
    #ifdef THR_LINEAR_LOGS
-			// update the entry where the new log should be written.
-			newEntryCmd = findLastEntryN(COMMAND_LOGS);
-			#ifdef DEBUG_LOGS
-				Serial.println("find Cmd");
-			#endif
-			newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
-			#ifdef DEBUG_LOGS
-				Serial.println("find Sec");
-			#endif
-			//newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
-			//newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
+    // update the entry where the new log should be written.
+    newEntryCmd = findLastEntryN(COMMAND_LOGS);
+    #ifdef DEBUG_LOGS
+      Serial.println("find Cmd");
+    #endif
+    newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
+    #ifdef DEBUG_LOGS
+      Serial.println("find Sec");
+    #endif
+    //newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
+    //newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
 
-			//const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
-			unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
+    //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
+    unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
   
     // Boolean variable to test a t the first place several times the actuall
     // time of the arduino. Count 5 times the arduino time before synchronization
@@ -123,12 +124,12 @@ NIL_THREAD(ThreadEthernet, arg) {
   #endif
   
   #ifdef DEBUG_LOGS
-  	Serial.println(Ethernet.localIP());
-	#endif
+    Serial.println(Ethernet.localIP());
+  #endif
   while (TRUE) {
-		#ifdef DEBUG_LOGS
-    	Serial.println("Begining thread Ethernet/logs");
-		#endif
+    #ifdef DEBUG_LOGS
+      Serial.println("Begining thread Ethernet/logs");
+    #endif
     /****************************
       THREAD LOG & TIME : STRUCTURE    
       - Update NTP all days
@@ -137,63 +138,63 @@ NIL_THREAD(ThreadEthernet, arg) {
           answer -> update
           no answer -> log in event + try again in 3600 seconds
       - Log parameter every 1 second
-      *****************************/
-      #ifdef THR_LINEAR_LOGS
-        time_now = now();
+    *****************************/
+    #ifdef THR_LINEAR_LOGS
+      time_now = now();
         
-        if(!waitPacket && ((time_now - previousNTP ) >= 24*60*60)) {
-          sendPacket(Udp,alix_server, packetBuffer);
-          waitPacket = true;
-        } 
-        // 2 seconds later we check if we have an answer from the server and update the time if possible
-        else if(waitPacket && time_now - previousNTP >= 3602) {
-          boolean success = updateNTP(Udp,alix_server, packetBuffer);
-          if(!success) {
-<<<<<<< HEAD
+      if(!waitPacket && ((time_now - previousNTP ) >= NTP_UPDATE_TIME)) {
+        sendPacket(Udp,alix_server, packetBuffer);
+        waitPacket = true;
+      } 
+      // 2 seconds later we check if we have an answer from the server and update the time if possible
+      else if(waitPacket && time_now - previousNTP >= NTP_UPDATE_TIME+2) {
+        boolean success = updateNTP(Udp,alix_server, packetBuffer);
+        if(!success) {
+          Serial.println("Fail NTP update");  // A virer
+           writeLog(COMMAND_LOGS, &newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
+           
+          #ifdef SERIAL 
             Serial.println("Fail NTP update");  // A virer
-             writeLog(COMMAND_LOGS, &newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
-=======
-            #ifdef SERIAL 
-              Serial.println("Fail NTP update");  // A virer
-            #endif
-             writeLog(COMMAND_LOGS, newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
->>>>>>> a8ac428f2f195af001d5a33791d2fbd47a637139
-          }
-          previousNTP = time_now;
-          waitPacket = false;
-        }
-        
-        // This function suppose that the thread is called very regularly (at least 1 time every seconds)
-        // this is the linear logs
-        // 
-        if(time_now - previousLog > 1) {
-<<<<<<< HEAD
+          #endif
           
-        	writeLog(RRD_SEC_LOGS, &newEntryRRDSec , time_now, 0, 0);
-        
-          #ifdef DEBUG_LOGS
-				    uint8_t data[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//A Virer
-				    readLastEntry(RRD_SEC_LOGS, data);
-				    for(int i = 0; i < 32;i++){ 
-				        Serial.print(data[i]);Serial.print(' '); }Serial.println();
-				      
-			      readEntryN(RRD_SEC_LOGS, data, 10);
-			      for(int i = 0; i < 32;i++){ 
-			        Serial.print(data[i]);Serial.print(' '); }Serial.println();
-			      	Serial.println("Log");
-		      #endif
-		      previousLog = time_now;
-		      }
-		    #endif
-		#ifdef DEBUG_LOGS
-    	Serial.println(newEntryRRDSec);
-		#endif
-=======
-          writeLog(RRD_SEC_LOGS, newEntryRRDSec , time_now, 0, 0);
-          previousLog = time_now;
+          writeLog(COMMAND_LOGS, &newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
         }
-      #endif
->>>>>>> a8ac428f2f195af001d5a33791d2fbd47a637139
+        previousNTP = time_now;
+        waitPacket = false;
+      }
+        
+      // This function suppose that the thread is called very regularly (at least 1 time every seconds)
+      // this is the linear logs
+       
+      if(time_now - previousLog > 1) {
+   
+        writeLog(RRD_SEC_LOGS, &newEntryRRDSec , time_now, 0, 0);
+        #ifdef DEBUG_LOGS
+          uint8_t data[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//A Virer
+  	  readLastEntry(RRD_SEC_LOGS, data);
+  	  for(int i = 0; i < 32;i++){ 
+  	    Serial.print(data[i]);Serial.print(' '); 
+          }
+          Serial.println();
+  		      
+  	  readEntryN(RRD_SEC_LOGS, data, 10);
+  	  for(int i = 0; i < 32;i++){ 
+            Serial.print(data[i]);Serial.print(' '); 
+          }
+          Serial.println();
+  	  Serial.println("Log");
+	#endif
+        previousLog = time_now;
+      }
+   
+     #ifdef DEBUG_LOGS
+       Serial.println(newEntryRRDSec);
+     #endif
+   
+     writeLog(RRD_SEC_LOGS, &newEntryRRDSec , time_now, 0, 0);
+     previousLog = time_now;
+   
+   #endif
     
    /****************************
       THREAD ETHERNET 
@@ -248,7 +249,6 @@ NIL_THREAD(ThreadEthernet, arg) {
               currentLineIsBlank = false;
             }
           }
-        }
         // give the web browser time to receive the data
         delay(1);
         // close the connection:
@@ -256,12 +256,13 @@ NIL_THREAD(ThreadEthernet, arg) {
         #ifdef SERIAL 
           Serial.println("client disconnected");
         #endif
-      } 
+        }
+    } 
     #endif
     
     
-    nilThdSleepMilliseconds(2000);
-  }
+    nilThdSleepMilliseconds(200);
+
 }
 
 /*----------------------------
@@ -362,7 +363,7 @@ void parseRequest(Client* cl, uint8_t* req) {
           uint32_t value = getNumber(URL_3, req);
           byte p = (byte) (c-ASCII_A);
           //writeLog(int8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
-          //writeLog(COMMAND_LOGS, newEntryCmd, time_now, (uint16_t) (p+OFFSET) , index);
+          //writeLog(COMMAND_LOGS, &newEntryCmd, time_now, (uint16_t) (p+OFFSET) , index);
           setAndSaveParameter(p, value);
           printParameter(cl, p);
         }
