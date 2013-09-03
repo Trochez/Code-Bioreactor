@@ -34,13 +34,13 @@ NIL_THREAD(ThreadTap, arg) {
     
       if( ((now()-previous_time_food) >= OPENING_TIME) & (food_state==OPEN))
       {
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(8<<8)); //open the tap
+        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)&~(8<<8)); //open the tap
         food_state=CLOSE;
       }
     
       else if( ((now()-previous_time_food) >= getParameter(FOOD_PERIOD)) & (food_state==CLOSE))
       {
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)&~(8<<8)); //close the tap
+        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(8<<8)); //close the tap
         previous_time_food=now();
         food_state=OPEN;   
       }
@@ -58,8 +58,6 @@ NIL_THREAD(ThreadTap, arg) {
     
   /*  
     #ifdef TAP_ACID
-        
-       getParameter(PARAM_PH);
     
        if( (getParameter(PARAM_PH)>getParameter(PARAM_DESIRED_PH)) & ((now()-previous-ph-check)>=PH_ADJUST_DELAY))
        {
