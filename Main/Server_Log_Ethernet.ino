@@ -295,8 +295,8 @@ void parseRequest(Client* cl, uint8_t* req) {
       case ' ':
         (*cl).println("get log");
         readLastEntry(c, req);
-        if(c=='e') (*cl).write(req, ENTRY_SIZE_COMMAND_LOGS);
-        else (*cl).write(req, ENTRY_SIZE_LINEAR_LOGS);
+        if(c=='e') printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
+        else printTab(cl, req, ENTRY_SIZE_LINEAR_LOGS);
         break;
         
       //We have a log entry number given
@@ -305,8 +305,8 @@ void parseRequest(Client* cl, uint8_t* req) {
           (*cl).println("get log");
           //We get the number in the url with the function getNumber
           readEntryN(c, req, getNumber(URL_3, req));
-          if(c=='e') (*cl).write(req, ENTRY_SIZE_COMMAND_LOGS);
-          else (*cl).write(req, ENTRY_SIZE_LINEAR_LOGS);
+          if(c=='e') printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
+          else printTab(cl, req, ENTRY_SIZE_LINEAR_LOGS);
         }
        default:
          noSuchCommand(cl);
@@ -364,6 +364,13 @@ uint32_t getNumber(uint8_t start, uint8_t* tab){
 /****************************************
  * Parameter & requests related functions
  *****************************************/
+void printTab(Print* output, uint8_t* tab, char s) {
+  for(int i=0; i<s; i++){
+    output->print(tab[i], HEX);
+  }
+  output->println();
+} 
+ 
 void noSuchCommand(Print* output){
   output->println(F("No Such Command<br/>"));
 }

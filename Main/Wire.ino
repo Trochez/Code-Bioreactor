@@ -1,4 +1,4 @@
-#if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
+#if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD) || defined(PH_CTRL)
 
 #include <Wire.h>
 /*
@@ -20,11 +20,11 @@
  */
   
 
-#define WIRE_MAX_DEVICES 10
+#define WIRE_MAX_DEVICES 5
 byte numberI2CDevices=0;
 byte wireDeviceID[WIRE_MAX_DEVICES];
 
-NIL_WORKING_AREA(waThreadWire, 150);
+NIL_WORKING_AREA(waThreadWire, 96);
 NIL_THREAD(ThreadWire, arg) {
   
   
@@ -322,7 +322,9 @@ void wireUpdateList() {
 }
 
 void wireRemoveDevice(byte id) {
-  debugger(DEBUG_WIRE_REMOVED_DEVICE,wireDeviceID[id]);
+  #ifdef DEBUGGER
+    debugger(DEBUG_WIRE_REMOVED_DEVICE,wireDeviceID[id]);
+  #endif
   for (byte i=id; i<numberI2CDevices-1; i++) {
     wireDeviceID[i]=wireDeviceID[i+1];
   }
@@ -331,7 +333,10 @@ void wireRemoveDevice(byte id) {
 
 void wireInsertDevice(byte id, byte newDevice) {
   //Serial.println(id);
-  debugger(DEBUG_WIRE_ADDED_DEVICE,newDevice);
+  #ifdef DEBUGGER
+    debugger(DEBUG_WIRE_ADDED_DEVICE,newDevice);
+  #endif
+  
   if (numberI2CDevices<WIRE_MAX_DEVICES) {
     for (byte i=id+1; i<numberI2CDevices-1; i++) {
       wireDeviceID[i]=wireDeviceID[i+1];
@@ -340,7 +345,9 @@ void wireInsertDevice(byte id, byte newDevice) {
     numberI2CDevices++;
   } 
   else {
-    logger(LOGGER_I2C_CAPACITY_EXCEEDED);
+    #ifdef LOGGER
+      logger(LOGGER_I2C_CAPACITY_EXCEEDED);
+    #endif
   }
 }
 
