@@ -27,6 +27,8 @@
  
 #if defined(THR_ETHERNET) || defined(THR_LINEAR_LOGS)
 
+
+
 #define DEBUG 0
 #define MAX_HTTP_STRING_LENGTH 2048    // in bytes; max. http return string to read  
 // (reserve space for the http header !AND! the JSON command string)
@@ -72,24 +74,35 @@ EthernetServer server(80);
  Ethernet Thread
  ---------------------------*/
 
+
 NIL_WORKING_AREA(waThreadEthernet, 296); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
     //This is needed by both NTP and ethernet server
     Ethernet.begin(mac, ip);
-    
-    
+    /*
+       SST sst = SST(4);
+      setupMemory(sst);
+      sst.flashTotalErase();   A Virer !!!
+      free(&sst);
+    */
    /****************************
     LOG & NTP Setup
    *****************************/
    #ifdef THR_LINEAR_LOGS
-     // update the entry where the new log should be written.
-     newEntryCmd = findLastEntryN(COMMAND_LOGS);
-     newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
-     //newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
-     //newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
-  
-    //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
-    unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
+			// update the entry where the new log should be written.
+			newEntryCmd = findLastEntryN(COMMAND_LOGS);
+			#ifdef DEBUG_LOGS
+				Serial.println("find Cmd");
+			#endif
+			newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
+			#ifdef DEBUG_LOGS
+				Serial.println("find Sec");
+			#endif
+			//newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
+			//newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
+
+			//const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
+			unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
   
     // Boolean variable to test a t the first place several times the actuall
     // time of the arduino. Count 5 times the arduino time before synchronization
@@ -109,11 +122,13 @@ NIL_THREAD(ThreadEthernet, arg) {
     server.begin();
   #endif
   
-  
-  Serial.println(Ethernet.localIP());
-
+  #ifdef DEBUG_LOGS
+  	Serial.println(Ethernet.localIP());
+	#endif
   while (TRUE) {
-    
+		#ifdef DEBUG_LOGS
+    	Serial.println("Begining thread Ethernet/logs");
+		#endif
     /****************************
       THREAD LOG & TIME : STRUCTURE    
       - Update NTP all days
@@ -134,8 +149,15 @@ NIL_THREAD(ThreadEthernet, arg) {
         else if(waitPacket && time_now - previousNTP >= 3602) {
           boolean success = updateNTP(Udp,alix_server, packetBuffer);
           if(!success) {
+<<<<<<< HEAD
             Serial.println("Fail NTP update");  // A virer
+             writeLog(COMMAND_LOGS, &newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
+=======
+            #ifdef SERIAL 
+              Serial.println("Fail NTP update");  // A virer
+            #endif
              writeLog(COMMAND_LOGS, newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
+>>>>>>> a8ac428f2f195af001d5a33791d2fbd47a637139
           }
           previousNTP = time_now;
           waitPacket = false;
@@ -145,11 +167,33 @@ NIL_THREAD(ThreadEthernet, arg) {
         // this is the linear logs
         // 
         if(time_now - previousLog > 1) {
+<<<<<<< HEAD
+          
+        	writeLog(RRD_SEC_LOGS, &newEntryRRDSec , time_now, 0, 0);
+        
+          #ifdef DEBUG_LOGS
+				    uint8_t data[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//A Virer
+				    readLastEntry(RRD_SEC_LOGS, data);
+				    for(int i = 0; i < 32;i++){ 
+				        Serial.print(data[i]);Serial.print(' '); }Serial.println();
+				      
+			      readEntryN(RRD_SEC_LOGS, data, 10);
+			      for(int i = 0; i < 32;i++){ 
+			        Serial.print(data[i]);Serial.print(' '); }Serial.println();
+			      	Serial.println("Log");
+		      #endif
+		      previousLog = time_now;
+		      }
+		    #endif
+		#ifdef DEBUG_LOGS
+    	Serial.println(newEntryRRDSec);
+		#endif
+=======
           writeLog(RRD_SEC_LOGS, newEntryRRDSec , time_now, 0, 0);
-          Serial.println("Log");  // A Virer
           previousLog = time_now;
         }
       #endif
+>>>>>>> a8ac428f2f195af001d5a33791d2fbd47a637139
     
    /****************************
       THREAD ETHERNET 
@@ -158,7 +202,9 @@ NIL_THREAD(ThreadEthernet, arg) {
    #ifdef THR_ETHERNET
       EthernetClient client = server.available();
       if (client) {
-        Serial.println("new client");
+        #ifdef SERIAL 
+          Serial.println("new client");
+        #endif
         // an http request ends with a blank line
         boolean currentLineIsBlank = true;
         //Count the number of byte of the answer
@@ -207,12 +253,14 @@ NIL_THREAD(ThreadEthernet, arg) {
         delay(1);
         // close the connection:
         client.stop();
-        Serial.println("client disconnected");
+        #ifdef SERIAL 
+          Serial.println("client disconnected");
+        #endif
       } 
     #endif
     
     
-    nilThdSleepMilliseconds(200);
+    nilThdSleepMilliseconds(2000);
   }
 }
 
@@ -275,11 +323,8 @@ void parseRequest(Client* cl, uint8_t* req) {
     uint8_t d = req[URL_2];
     
     switch(d){
-      (*cl).println("char :" + d);
-      
       //We return the last entry
       case ' ':
-        (*cl).println("get log");
         readLastEntry(c, req);
         if(c=='e') printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
         else printTab(cl, req, ENTRY_SIZE_LINEAR_LOGS);
@@ -288,7 +333,6 @@ void parseRequest(Client* cl, uint8_t* req) {
       //We have a log entry number given
       case '=':
         {
-          (*cl).println("get log");
           //We get the number in the url with the function getNumber
           readEntryN(c, req, getNumber(URL_3, req));
           if(c=='e') printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
@@ -304,7 +348,6 @@ void parseRequest(Client* cl, uint8_t* req) {
   }
   // The request is a parameter A-Z
   else if(c >= ASCII_A && c <= ASCII_Z){
-    (*cl).println("Parameter");
     //Here we read the second byte of the URL to differentiate the requests
     uint8_t d = req[URL_2];
     switch(d){
@@ -316,8 +359,12 @@ void parseRequest(Client* cl, uint8_t* req) {
         
       case '=':
         { // { } Allow to declare variables inside the switch
-          setParameter((byte) (c-ASCII_A), getNumber(URL_3, req));
-          printParameter(cl, (byte) (c-ASCII_A));
+          uint32_t value = getNumber(URL_3, req);
+          byte p = (byte) (c-ASCII_A);
+          //writeLog(int8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
+          //writeLog(COMMAND_LOGS, newEntryCmd, time_now, (uint16_t) (p+OFFSET) , index);
+          setAndSaveParameter(p, value);
+          printParameter(cl, p);
         }
         break;
         
@@ -350,6 +397,10 @@ uint32_t getNumber(uint8_t start, uint8_t* tab){
 /****************************************
  * Parameter & requests related functions
  *****************************************/
+void printNewLine(Print* output){
+  output->println(F("<br/>"));
+}
+ 
 void printTab(Print* output, uint8_t* tab, char s) {
   for(int i=0; i<s; i++){
     output->print(tab[i], HEX);
@@ -358,39 +409,53 @@ void printTab(Print* output, uint8_t* tab, char s) {
 } 
  
 void noSuchCommand(Print* output){
-  output->println(F("No Such Command<br/>"));
+  output->println(F("No Such Command"));
+  printNewLine(output);
 }
 
 void noThread(Print* output){
-  output->println(F("Thread not activated<br/>"));
+  output->println(F("No Thread"));
+  printNewLine(output);
 }
 
 void printHelp(Print* output) {
   //return the menu
-  output->println(F("(f)hard coded parameter<br/>"));
-  output->println(F("(p)rint help<br/>"));
-  output->println(F("(i)2c<br/>"));
-  output->println(F("(l)og<br/>"));
-  output->println(F("(o)ne wire<br/>"));
-  output->println(F("(g)et parameters<br/>"));
+  output->println(F("(f)hard"));
+  printNewLine(output);
+  output->println(F("(p)help"));
+  printNewLine(output);
+  output->println(F("(i)2c"));
+  printNewLine(output);
+  output->println(F("(l)og"));
+  printNewLine(output);
+  output->println(F("(o)1-wire"));
+  printNewLine(output);
+  output->println(F("(g)param"));
+  printNewLine(output);
 
 }
 
 void printHardCodedParameters(Print* output){
-   output->println(F("Hardcoded Parameters :<br/>")); 
-   output->print(F("IP : <br/>"));
+   output->println(F("Hardcoded:")); 
+   printNewLine(output);
+   output->print(F("IP:"));
    //output->print(ip[0] + " " + ip[1] + " " + ip[2] + " " + ip[3]);
-   output->print(F("MAC : <br/>"));
+   printNewLine(output);
+   output->print(F("MAC:"));
    //output->println(mac[0] + " " + mac[1] + " " + mac[2] + " " + mac[3]); 
-   output->print(F("ALIX : <br/>"));
+   printNewLine(output);
+   output->print(F("ALIX:"));
    //output->println(alix[0] + " " + alix[1] + " " + alix[2] + " " + alix[3]); 
+   printNewLine(output);
    #ifdef RELAY_PUMP
-     output->print(F("I2C relay : <br/>"));
+     output->print(F("I2C relay:"));
      output->println(I2C_RELAY); 
+     printNewLine(output);
    #endif
    #ifdef FLUX
-     output->print(F("I2C Flux : <br/>"));
+     output->print(F("I2C Flux:"));
      output->println(I2C_FLUX); 
+     printNewLine(output);
    #endif
 }
 

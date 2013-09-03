@@ -5,10 +5,6 @@
 //MultiThread
 #include <NilRTOS.h>
 
-//Memory
-#include <SST.h>
-#include <SPI.h>
-
 //Ethernet libraries
 #include <Ethernet.h>
 #include <EthernetUdp.h>
@@ -25,10 +21,11 @@
 /*define the IN/OUT ports of the card*/
 
 /***********************
-LOGGER AND DEBUGGER
+SERIAL, LOGGER AND DEBUGGER
 ************************/
 
-#define LOGGER 1
+//#define SERIAL 1
+//#define LOGGER 1
 #define DEBUGGER 1
 
 
@@ -61,15 +58,23 @@ LOGGER AND DEBUGGER
   THREADS AND PARAMETERS PRESENT IN EACH CARD 
 *******************************/  
 
-//#define THR_LINEAR_LOGS       1
-//#define THR_ETHERNET          1
+
+
+#define THR_LINEAR_LOGS       1
+#define THR_ETHERNET          1
+
+#define PARAM_ERROR_CODE          22  
+#define FLAG_VECTOR               23
+
 
 /******************
   DEFINE CARD TYPE
 ******************/
 
 //#define TEMP_CTRL     1
-#define PH_CTRL       1
+
+//#define PH_CTRL       1
+
 //#define GAS_CTRL      1
 //#define STEPPER_CTRL   1
 
@@ -250,6 +255,10 @@ void setup() {
   //setupLogger();
   //setupDebugger();
   setupParameters();
+  while(!Serial)
+  { ; 
+  }
+  
   
   
   nilSysBegin();

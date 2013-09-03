@@ -24,8 +24,9 @@
 
 NIL_THREADS_TABLE_BEGIN()
 
-
+#ifdef SERIAL
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThreadSerial))
+#endif
 
 #if defined(THR_ETHERNET) || defined(THR_LINEAR_LOGS)
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadEthernet, NULL, waThreadEthernet, sizeof(waThreadEthernet))
