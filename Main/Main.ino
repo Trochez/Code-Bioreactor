@@ -143,7 +143,7 @@ LOGGER AND DEBUGGER
   #endif
 
   #ifdef TAP_FOOD
-    #define OPENING_TIME               1000 //hard coded 1 sec opening time
+    #define OPENING_TIME                1 //hard coded 1 sec opening time
     #define FOOD_PERIOD                 19   //time between openings
   #endif
 

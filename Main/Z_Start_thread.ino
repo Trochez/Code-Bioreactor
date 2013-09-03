@@ -52,7 +52,7 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay_PID, NULL, waThreadRelay_PID, sizeof(w
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
 #endif
 
-#if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
+#if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD) || defined(PH_CTRL)
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
 #endif
 

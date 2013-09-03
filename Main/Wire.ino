@@ -1,4 +1,4 @@
-#if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
+#if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD) || defined(PH_CTRL)
 
 #include <Wire.h>
 /*

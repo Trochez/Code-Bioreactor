@@ -12,7 +12,7 @@ NIL_THREAD(ThreadTap, arg) {
   #ifdef TAP_FOOD
     unsigned long previous_time_food=now();
     boolean food_state=CLOSE;
-    setParameter(FOOD_PERIOD,10000);        //one pulse every 10 sec, default config
+    setParameter(FOOD_PERIOD,10);        //one pulse every 10 sec, default config
   #endif
   
   
@@ -26,21 +26,23 @@ NIL_THREAD(ThreadTap, arg) {
  FOOD SUPPLY
 ************/
 
+
     #ifdef TAP_FOOD
     
-      if( ((now()-previous_time_food) >= getParameter(FOOD_PERIOD)) & (food_state==CLOSE))
+      if( ((now()-previous_time_food) >= OPENING_TIME) & (food_state==OPEN))
       {
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(8<<8)); //open the tap
-        previous_time_food=now();
-        food_state=OPEN;
-      }
-      
-      else if( ((now()-previous_time_food) >= OPENING_TIME) & (food_state==OPEN))
-      {
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(8<<0)); //close the tap
+        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(8<<8)); //close the tap
         food_state=CLOSE;
       }
+    
+      else if( ((now()-previous_time_food) >= getParameter(FOOD_PERIOD)) & (food_state==CLOSE))
+      {
+        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)&~(8<<8)); //open the tap
+        previous_time_food=now();
+        food_state=OPEN;   
+      }
       
+
     #endif
     
     /*PH implementation 
@@ -70,6 +72,8 @@ NIL_THREAD(ThreadTap, arg) {
     
     #ifdef  TAP_GAS4
     #endif
+    
+    nilThdSleepMilliseconds(300); 
   }
   
 }
