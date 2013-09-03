@@ -140,11 +140,18 @@ LOGGER AND DEBUGGER
   #ifdef PH
     #define PARAM_DESIRED_PH           12 
     #define PARAM_PH                   2
+    //not parameters, hard coded values, set the minimal delay between pH adjustements to 10 seconds
+    #define PH_ADJUST_DELAY      10    //delay between acid or base supplies
+    #define PH_OPENING_TIME      1     //1sec TAP opening when adjusting
+    #define PH_TOLERANCE         10    //correspond to a pH variation of 0.1
+    
   #endif
 
   #ifdef TAP_FOOD
-    #define OPENING_TIME                1 //hard coded 1 sec opening time
-    #define FOOD_PERIOD                 19   //time between openings
+    #define PARAM_FOOD_PERIOD                 19   //time between openings
+    //not a parameter, hard coded 1 sec opening time
+    #define FOOD_OPENING_TIME                1 
+
   #endif
 
 #endif

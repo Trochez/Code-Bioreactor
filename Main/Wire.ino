@@ -24,7 +24,7 @@
 byte numberI2CDevices=0;
 byte wireDeviceID[WIRE_MAX_DEVICES];
 
-NIL_WORKING_AREA(waThreadWire, 150);
+NIL_WORKING_AREA(waThreadWire, 196);
 NIL_THREAD(ThreadWire, arg) {
   
   
