@@ -4,7 +4,7 @@
 
 #define MAX_PARAM 26   // If the MAX_PARAM change you need to change the pointer in the EEPROM
 
-int parameters[MAX_PARAM];
+uint16_t parameters[MAX_PARAM];
 
 void setupParameters() {
   EXROM.read(EE_PARAMETERS, parameters, MAX_PARAM*2);
@@ -14,7 +14,7 @@ int getParameter(byte number) {
   return parameters[number];
 }
 
-int* getParametersTable(){
+uint16_t* getParametersTable(){
    return parameters; 
 }
 
