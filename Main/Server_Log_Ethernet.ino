@@ -134,7 +134,9 @@ NIL_THREAD(ThreadEthernet, arg) {
         else if(waitPacket && time_now - previousNTP >= 3602) {
           boolean success = updateNTP(Udp,alix_server, packetBuffer);
           if(!success) {
-            Serial.println("Fail NTP update");  // A virer
+            #ifdef SERIAL 
+              Serial.println("Fail NTP update");  // A virer
+            #endif
              writeLog(COMMAND_LOGS, newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
           }
           previousNTP = time_now;
@@ -146,7 +148,6 @@ NIL_THREAD(ThreadEthernet, arg) {
         // 
         if(time_now - previousLog > 1) {
           writeLog(RRD_SEC_LOGS, newEntryRRDSec , time_now, 0, 0);
-          Serial.println("Log");  // A Virer
           previousLog = time_now;
         }
       #endif
@@ -158,7 +159,9 @@ NIL_THREAD(ThreadEthernet, arg) {
    #ifdef THR_ETHERNET
       EthernetClient client = server.available();
       if (client) {
-        Serial.println("new client");
+        #ifdef SERIAL 
+          Serial.println("new client");
+        #endif
         // an http request ends with a blank line
         boolean currentLineIsBlank = true;
         //Count the number of byte of the answer
@@ -207,7 +210,9 @@ NIL_THREAD(ThreadEthernet, arg) {
         delay(1);
         // close the connection:
         client.stop();
-        Serial.println("client disconnected");
+        #ifdef SERIAL 
+          Serial.println("client disconnected");
+        #endif
       } 
     #endif
     
@@ -275,11 +280,8 @@ void parseRequest(Client* cl, uint8_t* req) {
     uint8_t d = req[URL_2];
     
     switch(d){
-      (*cl).println("char :" + d);
-      
       //We return the last entry
       case ' ':
-        (*cl).println("get log");
         readLastEntry(c, req);
         if(c=='e') printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
         else printTab(cl, req, ENTRY_SIZE_LINEAR_LOGS);
@@ -288,7 +290,6 @@ void parseRequest(Client* cl, uint8_t* req) {
       //We have a log entry number given
       case '=':
         {
-          (*cl).println("get log");
           //We get the number in the url with the function getNumber
           readEntryN(c, req, getNumber(URL_3, req));
           if(c=='e') printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
@@ -304,7 +305,6 @@ void parseRequest(Client* cl, uint8_t* req) {
   }
   // The request is a parameter A-Z
   else if(c >= ASCII_A && c <= ASCII_Z){
-    (*cl).println("Parameter");
     //Here we read the second byte of the URL to differentiate the requests
     uint8_t d = req[URL_2];
     switch(d){
@@ -350,6 +350,10 @@ uint32_t getNumber(uint8_t start, uint8_t* tab){
 /****************************************
  * Parameter & requests related functions
  *****************************************/
+void printNewLine(Print* output){
+  output->println(F("<br/>"));
+}
+ 
 void printTab(Print* output, uint8_t* tab, char s) {
   for(int i=0; i<s; i++){
     output->print(tab[i], HEX);
@@ -358,39 +362,53 @@ void printTab(Print* output, uint8_t* tab, char s) {
 } 
  
 void noSuchCommand(Print* output){
-  output->println(F("No Such Command<br/>"));
+  output->println(F("No Such Command"));
+  printNewLine(output);
 }
 
 void noThread(Print* output){
-  output->println(F("Thread not activated<br/>"));
+  output->println(F("No Thread"));
+  printNewLine(output);
 }
 
 void printHelp(Print* output) {
   //return the menu
-  output->println(F("(f)hard coded parameter<br/>"));
-  output->println(F("(p)rint help<br/>"));
-  output->println(F("(i)2c<br/>"));
-  output->println(F("(l)og<br/>"));
-  output->println(F("(o)ne wire<br/>"));
-  output->println(F("(g)et parameters<br/>"));
+  output->println(F("(f)hard"));
+  printNewLine(output);
+  output->println(F("(p)help"));
+  printNewLine(output);
+  output->println(F("(i)2c"));
+  printNewLine(output);
+  output->println(F("(l)og"));
+  printNewLine(output);
+  output->println(F("(o)1-wire"));
+  printNewLine(output);
+  output->println(F("(g)param"));
+  printNewLine(output);
 
 }
 
 void printHardCodedParameters(Print* output){
-   output->println(F("Hardcoded Parameters :<br/>")); 
-   output->print(F("IP : <br/>"));
+   output->println(F("Hardcoded:")); 
+   printNewLine(output);
+   output->print(F("IP:"));
    //output->print(ip[0] + " " + ip[1] + " " + ip[2] + " " + ip[3]);
-   output->print(F("MAC : <br/>"));
+   printNewLine(output);
+   output->print(F("MAC:"));
    //output->println(mac[0] + " " + mac[1] + " " + mac[2] + " " + mac[3]); 
-   output->print(F("ALIX : <br/>"));
+   printNewLine(output);
+   output->print(F("ALIX:"));
    //output->println(alix[0] + " " + alix[1] + " " + alix[2] + " " + alix[3]); 
+   printNewLine(output);
    #ifdef RELAY_PUMP
-     output->print(F("I2C relay : <br/>"));
+     output->print(F("I2C relay:"));
      output->println(I2C_RELAY); 
+     printNewLine(output);
    #endif
    #ifdef FLUX
-     output->print(F("I2C Flux : <br/>"));
+     output->print(F("I2C Flux:"));
      output->println(I2C_FLUX); 
+     printNewLine(output);
    #endif
 }
 

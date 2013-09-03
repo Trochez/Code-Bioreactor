@@ -49,7 +49,7 @@ void getDebuggerLog(Print* output) {
       output->print(i);
       output->print(" ");
       output->print(debugTime[i]);
-      output->print("s - type: ");
+      output->print(F("s - type: "));
       output->print(debugTypes[i]);
       if (debugParameters[i]!=INT_MIN_VALUE) {
         output->print(": ");
