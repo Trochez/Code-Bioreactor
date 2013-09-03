@@ -316,8 +316,12 @@ void parseRequest(Client* cl, uint8_t* req) {
         
       case '=':
         { // { } Allow to declare variables inside the switch
-          setParameter((byte) (c-ASCII_A), getNumber(URL_3, req));
-          printParameter(cl, (byte) (c-ASCII_A));
+          uint32_t value = getNumber(URL_3, req);
+          byte p = (byte) (c-ASCII_A);
+          //writeLog(int8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
+          //writeLog(COMMAND_LOGS, newEntryCmd, time_now, (uint16_t) (p+OFFSET) , index);
+          setAndSaveParameter(p, value);
+          printParameter(cl, p);
         }
         break;
         
