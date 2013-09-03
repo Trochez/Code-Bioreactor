@@ -263,6 +263,7 @@ NIL_THREAD(ThreadEthernet, arg) {
     
     nilThdSleepMilliseconds(200);
 
+  }
 }
 
 /*----------------------------

@@ -54,9 +54,9 @@ void logger(byte eventType, float parameter) {
   eventTimestamps[MAX_NUMBER_EVENTS-1]=now();
   eventParameters[MAX_NUMBER_EVENTS-1]=parameter;
 
-  EXROM.write(EE_TARGET_EVENT_TYPES, eventTypes, MAX_NUMBER_EVENTS);
-  EXROM.write(EE_TARGET_EVENT_TIMES, eventTimestamps, MAX_NUMBER_EVENTS*4);
-  EXROM.write(EE_TARGET_EVENT_PARAMS, eventParameters, MAX_NUMBER_EVENTS*4);
+  //EXROM.write(EE_TARGET_EVENT_TYPES, eventTypes, MAX_NUMBER_EVENTS);
+  //EXROM.write(EE_TARGET_EVENT_TIMES, eventTimestamps, MAX_NUMBER_EVENTS*4);
+  //EXROM.write(EE_TARGET_EVENT_PARAMS, eventParameters, MAX_NUMBER_EVENTS*4);
 }
 
 
@@ -64,9 +64,9 @@ void logger(byte eventType, float parameter) {
 void setupLogger() {
   // We should load from EEPROM all the events
 
-  EXROM.read(EE_TARGET_EVENT_TYPES, eventTypes, MAX_NUMBER_EVENTS);
-  EXROM.read(EE_TARGET_EVENT_TIMES, eventTimestamps, MAX_NUMBER_EVENTS*4);
-  EXROM.read(EE_TARGET_EVENT_PARAMS, eventParameters, MAX_NUMBER_EVENTS*4);
+  //EXROM.read(EE_TARGET_EVENT_TYPES, eventTypes, MAX_NUMBER_EVENTS);
+  //EXROM.read(EE_TARGET_EVENT_TIMES, eventTimestamps, MAX_NUMBER_EVENTS*4);
+  //EXROM.read(EE_TARGET_EVENT_PARAMS, eventParameters, MAX_NUMBER_EVENTS*4);
 }
 
 void getLoggerLog(Print* output) {
