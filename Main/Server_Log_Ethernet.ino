@@ -27,6 +27,8 @@
  
 #if defined(THR_ETHERNET) || defined(THR_LINEAR_LOGS)
 
+
+
 #define DEBUG 0
 #define MAX_HTTP_STRING_LENGTH 2048    // in bytes; max. http return string to read  
 // (reserve space for the http header !AND! the JSON command string)
@@ -87,16 +89,20 @@ NIL_THREAD(ThreadEthernet, arg) {
     LOG & NTP Setup
    *****************************/
    #ifdef THR_LINEAR_LOGS
-     // update the entry where the new log should be written.
-     newEntryCmd = findLastEntryN(COMMAND_LOGS);
-     Serial.println("find Cmd");
-     newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
-     Serial.println("find Sec");
-     //newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
-     //newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
-  
-    //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
-    unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
+			// update the entry where the new log should be written.
+			newEntryCmd = findLastEntryN(COMMAND_LOGS);
+			#ifdef DEBUG_LOGS
+				Serial.println("find Cmd");
+			#endif
+			newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
+			#ifdef DEBUG_LOGS
+				Serial.println("find Sec");
+			#endif
+			//newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
+			//newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
+
+			//const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
+			unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
   
     // Boolean variable to test a t the first place several times the actuall
     // time of the arduino. Count 5 times the arduino time before synchronization
@@ -116,11 +122,13 @@ NIL_THREAD(ThreadEthernet, arg) {
     server.begin();
   #endif
   
-  
-  Serial.println(Ethernet.localIP());
-
+  #ifdef DEBUG_LOGS
+  	Serial.println(Ethernet.localIP());
+	#endif
   while (TRUE) {
-    Serial.println("Begining thread Ethernet/logs"); // A virer
+		#ifdef DEBUG_LOGS
+    	Serial.println("Begining thread Ethernet/logs");
+		#endif
     /****************************
       THREAD LOG & TIME : STRUCTURE    
       - Update NTP all days
@@ -153,17 +161,25 @@ NIL_THREAD(ThreadEthernet, arg) {
         // 
         if(time_now - previousLog > 1) {
           
-          //writeLog(RRD_SEC_LOGS, &newEntryRRDSec , time_now, 0, 0);
-          uint8_t data[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//A Virer
-          readEntryN(RRD_SEC_LOGS, data, 0);// A virer
-          for(int i = 0; i < 32;i++){  //
-            Serial.print(data[i]);Serial.print(' '); }Serial.println();
-          
-          Serial.println("Log");  // A Virer
-          previousLog = time_now;
-        }
-      #endif
-    Serial.println(newEntryRRDSec);
+        	writeLog(RRD_SEC_LOGS, &newEntryRRDSec , time_now, 0, 0);
+        
+          #ifdef DEBUG_LOGS
+				    uint8_t data[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//A Virer
+				    readLastEntry(RRD_SEC_LOGS, data);
+				    for(int i = 0; i < 32;i++){ 
+				        Serial.print(data[i]);Serial.print(' '); }Serial.println();
+				      
+			      readEntryN(RRD_SEC_LOGS, data, 10);
+			      for(int i = 0; i < 32;i++){ 
+			        Serial.print(data[i]);Serial.print(' '); }Serial.println();
+			      	Serial.println("Log");
+		      #endif
+		      previousLog = time_now;
+		      }
+		    #endif
+		#ifdef DEBUG_LOGS
+    	Serial.println(newEntryRRDSec);
+		#endif
     
    /****************************
       THREAD ETHERNET 

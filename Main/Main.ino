@@ -5,10 +5,6 @@
 //MultiThread
 #include <NilRTOS.h>
 
-//Memory
-#include <SST.h>
-#include <SPI.h>
-
 //Ethernet libraries
 #include <Ethernet.h>
 #include <EthernetUdp.h>
@@ -62,7 +58,7 @@ SERIAL, LOGGER AND DEBUGGER
   THREADS AND PARAMETERS PRESENT IN EACH CARD 
 *******************************/  
 
-<<<<<<< HEAD
+
 
 #define THR_LINEAR_LOGS       1
 #define THR_ETHERNET          1
@@ -71,23 +67,14 @@ SERIAL, LOGGER AND DEBUGGER
 #define FLAG_VECTOR               23
 
 
-=======
-//#define THR_LINEAR_LOGS       1
-//#define THR_ETHERNET          1
->>>>>>> c7b930c8360815f9a4bb995e1a311c9a6d1ef78f
-
 /******************
   DEFINE CARD TYPE
 ******************/
 
 //#define TEMP_CTRL     1
-<<<<<<< HEAD
 
 //#define PH_CTRL       1
 
-=======
-#define PH_CTRL       1
->>>>>>> c7b930c8360815f9a4bb995e1a311c9a6d1ef78f
 //#define GAS_CTRL      1
 //#define STEPPER_CTRL   1
 
