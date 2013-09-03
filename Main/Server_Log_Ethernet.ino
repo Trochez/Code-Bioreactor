@@ -12,15 +12,18 @@
  -Upper case letters are for setting parameters
   Parameters range between A and Z
  -Lower case letter are for actions:
+ 
    p. Print Help Menu
    f. Settings Hardcoded  : IP, MAC,...
    i. i2c devices
    o. 1-wire devices
    g. Parameters in memory
+   {A-Z}. print value of parameter given
+   {A-Z}=X set parameter to the value given and save it to EEPROm
    {s,m,h,e}. last log of seconds,minutes,hours and events
    {s.m.h,e}=X. log X of seconds,minutes,hours and events
    l. return a vector of the last entry number:
-      #seconds #minutes #hours #events
+      #events #seconds #minutes #hours
       
  -------------------------------------------------*/
  
@@ -317,6 +320,10 @@ void parseRequest(Client* cl, uint8_t* req) {
     printParameters(cl);
   } 
   
+  else if (c=='l'){
+    printIndexes(cl); 
+  }
+  
   //return the log of the entry given
   else if ( (c=='s') || /*(c=='m') || (c=='h') ||*/ (c=='e')){
     #ifdef THR_LINEAR_LOGS
@@ -399,7 +406,7 @@ uint32_t getNumber(uint8_t start, uint8_t* tab){
 /****************************************
  * Parameter & requests related functions
  *****************************************/
-void printNewLine(Print* output){
+void newLine(Print* output){
   output->println(F("<br/>"));
 }
  
@@ -409,55 +416,70 @@ void printTab(Print* output, uint8_t* tab, char s) {
   }
   output->println();
 } 
+
+void printIndexes(Print* output){
+   output->println(getLastEntryCmd());
+   newLine(output);
+   
+   output->println(getLastEntrySec());
+   newLine(output);
+   
+   #ifdef RRD_ON
+     output->println(getLastEntryMin());
+     newLine(output);
+     
+     output->println(getLastEntryHour());
+  #endif
+}
  
 void noSuchCommand(Print* output){
   output->println(F("No Such Command"));
-  printNewLine(output);
+  newLine(output);
 }
 
 void noThread(Print* output){
   output->println(F("No Thread"));
-  printNewLine(output);
+  newLine(output);
 }
 
 void printHelp(Print* output) {
   //return the menu
   output->println(F("(f)hard"));
-  printNewLine(output);
+  newLine(output);
   output->println(F("(p)help"));
-  printNewLine(output);
+  newLine(output);
   output->println(F("(i)2c"));
-  printNewLine(output);
+  newLine(output);
   output->println(F("(l)og"));
-  printNewLine(output);
+  newLine(output);
   output->println(F("(o)1-wire"));
-  printNewLine(output);
+  newLine(output);
   output->println(F("(g)param"));
-  printNewLine(output);
+  newLine(output);
 
 }
 
 void printHardCodedParameters(Print* output){
    output->println(F("Hardcoded:")); 
-   printNewLine(output);
+   newLine(output);
    output->print(F("IP:"));
    //output->print(ip[0] + " " + ip[1] + " " + ip[2] + " " + ip[3]);
-   printNewLine(output);
+   newLine(output);
    output->print(F("MAC:"));
    //output->println(mac[0] + " " + mac[1] + " " + mac[2] + " " + mac[3]); 
-   printNewLine(output);
+   newLine(output);
    output->print(F("ALIX:"));
    //output->println(alix[0] + " " + alix[1] + " " + alix[2] + " " + alix[3]); 
-   printNewLine(output);
+   newLine(output);
    #ifdef RELAY_PUMP
      output->print(F("I2C relay:"));
      output->println(I2C_RELAY); 
-     printNewLine(output);
+     newLine(output);
    #endif
    #ifdef FLUX
      output->print(F("I2C Flux:"));
      output->println(I2C_FLUX); 
-     printNewLine(output);
+     newLine(output);
    #endif
 }
 

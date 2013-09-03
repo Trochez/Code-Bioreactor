@@ -30,9 +30,12 @@ uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN);
 uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
 uint32_t findLastEntryN(uint8_t log_type);
 uint32_t getLastEntrySec();
-uint32_t getLastEntryMin();
-uint32_t getLastEntryHour();
+#ifdef RRD_ON
+  uint32_t getLastEntryMin();
+  uint32_t getLastEntryHour();
+#endif
 uint32_t getLastEntryCmd();
+
 
 #define NTP_PACKET_SIZE (48)
 
@@ -124,8 +127,8 @@ uint32_t newEntryCmd = 0;
 uint32_t newEntryRRDSec = 0;
 
 #ifdef RRD_ON
-	uint32_t newEntryRRDSMin;
-	uint32_t newEntryRRDSHour;
+  uint32_t newEntryRRDSMin;
+  uint32_t newEntryRRDSHour;
 #endif
 
 
