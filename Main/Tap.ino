@@ -12,12 +12,13 @@ NIL_THREAD(ThreadTap, arg) {
   #ifdef TAP_FOOD
     unsigned long previous_time_food=now();
     boolean food_state=CLOSE;
-    setParameter(FOOD_PERIOD,10);        //one pulse every 10 sec, default config
+    setParameter(PARAM_FOOD_PERIOD,10);        //one pulse every 10 sec, default config
   #endif
   
   #if defined(TAP_ACID) | defined(TAP_BASE)
-    unsigned long previous_ph_check=now();
-  
+    unsigned long previous_ph_adjust=now();
+    boolean ph_state=CLOSE;
+    setParameter(PARAM_DESIRED_PH,700);      //in fact corresponds to 7.0
   #endif
 //  unsigned long previous_time_ph=now();
 //  unsigned long previous_time_gas=now();
@@ -29,22 +30,20 @@ NIL_THREAD(ThreadTap, arg) {
  FOOD SUPPLY
 ************/
 
-
     #ifdef TAP_FOOD
     
-      if( ((now()-previous_time_food) >= OPENING_TIME) & (food_state==OPEN))
+      if( ((now()-previous_time_food) >= FOOD_OPENING_TIME) & (food_state==OPEN))
       {
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)&~(8<<8)); //open the tap
+        setParameter(PARAM_RELAY_TAP,(getParameter(PARAM_RELAY_TAP)&~(8<<8))); //close the tap
         food_state=CLOSE;
       }
     
-      else if( ((now()-previous_time_food) >= getParameter(FOOD_PERIOD)) & (food_state==CLOSE))
+      else if( ((now()-previous_time_food) >= getParameter(PARAM_FOOD_PERIOD)) & (food_state==CLOSE))
       {
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(8<<8)); //close the tap
+        setParameter(PARAM_RELAY_TAP,(getParameter(PARAM_RELAY_TAP)|(8<<8))); //open the tap
         previous_time_food=now();
         food_state=OPEN;   
-      }
-      
+      }    
 
     #endif
     
@@ -54,28 +53,41 @@ NIL_THREAD(ThreadTap, arg) {
       3) wait for a certain delay before to recheck the PH
     */
     
-    /* add here the additionnal conditions (desired PH, opening time for the TAP, delay before next adjestement) */
-    
-  /*  
+    /* add here the additionnal conditions (desired PH, opening time for the TAP, delay before next adjustment) */
+    /*  
     #ifdef TAP_ACID
     
-       if( (getParameter(PARAM_PH)>getParameter(PARAM_DESIRED_PH)) & ((now()-previous-ph-check)>=PH_ADJUST_DELAY))
+       if( (getParameter(PARAM_PH)> (getParameter(PARAM_DESIRED_PH)+PH_TOLERANCE) ) & ((now()-previous_ph_adjust)>=PH_ADJUST_DELAY) & (ph_state==CLOSE))
        {
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(8<<4)); //open the tap
+         setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(4<<8));    //open the tap
+         previous_ph_adjust=now();
+         ph_state=OPEN;
        }
-       
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)&~(8<<4)); //close the tap
-        
+       else if( (previous_ph_adjust>=PH_OPENING_TIME) & (ph_state==OPEN))
+       {
+         setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP) & ~(4<<8)); //close the tap
+         ph_state=CLOSE;
+       }
+  
         
     #endif 
     
     #ifdef TAP_BASE
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)|(8<<2)); //open the tap
-        setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)&~(8<<2)); //close the tap
+    
+       if( (getParameter(PARAM_PH)< (getParameter(PARAM_DESIRED_PH)-PH_TOLERANCE) ) & ((now()-previous_ph_adjust)>=PH_ADJUST_DELAY) & (ph_state==CLOSE))
+       {
+         setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP) | (2<<8));    //open the tap
+         previous_ph_adjust=now();
+         ph_state=OPEN;
+       }
+       else if( (previous_ph_adjust>=PH_OPENING_TIME) & (ph_state==OPEN))
+       {
+         setParameter(PARAM_RELAY_TAP,getParameter(PARAM_RELAY_TAP)  & ~(2<<8)); //close the tap
+         ph_state=CLOSE;
+       }
+        
     #endif 
     */
-    
-    
     
     #ifdef  TAP_GAS1
     #endif
@@ -89,7 +101,7 @@ NIL_THREAD(ThreadTap, arg) {
     #ifdef  TAP_GAS4
     #endif
     
-    nilThdSleepMilliseconds(200); 
+    nilThdSleepMilliseconds(500); 
   }
   
 }
