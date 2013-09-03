@@ -25,10 +25,11 @@
 /*define the IN/OUT ports of the card*/
 
 /***********************
-LOGGER AND DEBUGGER
+SERIAL, LOGGER AND DEBUGGER
 ************************/
 
-#define LOGGER 1
+//#define SERIAL 1
+//#define LOGGER 1
 #define DEBUGGER 1
 
 

@@ -1,5 +1,5 @@
 //This code is kept for debugging. It will not be present in the final version of the code for the bioreactor
-
+#ifdef SERIAL
 // The maximal length of a parameter value. It is a int so the value must be between -32768 to 32767
 #define MAX_PARAM_VALUE_LENGTH 10
 
@@ -154,3 +154,5 @@ static void printFreeMemory(Print* output)
 {
   nilPrintUnusedStack(output);
 }
+
+#endif
