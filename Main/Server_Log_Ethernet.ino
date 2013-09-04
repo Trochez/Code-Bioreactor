@@ -301,7 +301,11 @@ void parseRequest(Client* cl, uint8_t* req) {
   } 
   
   else if (c=='l'){
-    printIndexes(cl); 
+    #ifdef THR_LINEAR_LOGS
+      printIndexes(cl); 
+    #else
+      noThread(cl);
+    #endif
   }
   
   //return the log of the entry given
@@ -396,7 +400,7 @@ void printTab(Print* output, uint8_t* tab, char s) {
   }
   output->println();
 } 
-
+#ifdef THR_LINEAR_LOGS
 void printIndexes(Print* output){
    output->println(getLastEntryCmd());
    newLine(output);
@@ -411,7 +415,8 @@ void printIndexes(Print* output){
      output->println(getLastEntryHour());
   #endif
 }
- 
+#endif
+
 void noSuchCommand(Print* output){
   output->println(F("No Such Command"));
   newLine(output);

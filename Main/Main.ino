@@ -30,7 +30,7 @@ SERIAL, LOGGER AND DEBUGGER
 
 //#define SERIAL 1
 //#define LOGGER 1
-#define DEBUGGER 1
+//#define DEBUGGER 1
 
 
 /********************
@@ -64,7 +64,7 @@ SERIAL, LOGGER AND DEBUGGER
 
 
 
-#define THR_LINEAR_LOGS       1
+//#define THR_LINEAR_LOGS       1
 #define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
