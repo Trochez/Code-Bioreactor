@@ -29,20 +29,31 @@ NIL_THREAD(ThreadTap, arg) {
   #ifdef TAP_FOOD
     unsigned long timer_food=now();
     boolean food_state=CLOSE;
-    setParameter(PARAM_FOOD_PERIOD,10);        //one pulse every 10 sec, default config
+    if(getParameter(PARAM_FOOD_PERIOD) != MAX_INTEGER)
+    {
+      setAndSaveParameter(PARAM_FOOD_PERIOD,10);        //one pulse every 10 sec, default config
+    }
   #endif
   
   #if defined(TAP_ACID) || defined(TAP_BASE)
     unsigned long previous_ph_adjust=now();
     boolean ph_state=CLOSE;
-    setParameter(PARAM_DESIRED_PH,700);      //in fact corresponds to a PH of 7.0
+    if(getParameter(PARAM_DESIRED_PH) != MAX_INTEGER)
+    {
+      setAndSaveParameter(PARAM_DESIRED_PH,700);      //in fact corresponds to a PH of 7.0
+    }
   #endif
   
   
   #ifdef TAP_GAS1    
  
     P_GAS_CONTROL  gas1;
-    setParameter(PARAM_DESIRED_FLUX_GAS1,0);  //set by default as 0 cc/min
+    
+    if(getParameter(PARAM_DESIRED_FLUX_GAS1) != MAX_INTEGER)
+    {
+      setAndSaveParameter(PARAM_DESIRED_FLUX_GAS1,0);  //set by default as 0 cc/min
+    }
+    
     gas1->timer=now();
     gas1->state=CLOSE;
     gas1->duty_cycle=0;  //opening set at 0% of the regulation windows initially 
@@ -55,7 +66,11 @@ NIL_THREAD(ThreadTap, arg) {
     #ifdef TAP_GAS2    
  
     P_GAS_CONTROL  gas2;
-    setParameter(PARAM_DESIRED_FLUX_GAS2,0);  //set by default as 0 cc/min
+    
+    if(getParameter(PARAM_DESIRED_FLUX_GAS2) != MAX_INTEGER)
+    {
+      setAndSaveParameter(PARAM_DESIRED_FLUX_GAS2,0);  //set by default as 0 cc/min
+    }
     
     gas2->timer=now();
     gas2->state=CLOSE;
@@ -69,7 +84,11 @@ NIL_THREAD(ThreadTap, arg) {
   #ifdef TAP_GAS3    
  
     P_GAS_CONTROL  gas3;
-    setParameter(PARAM_DESIRED_FLUX_GAS3,0);  //set by default as 0 cc/min
+    
+    if(getParameter(PARAM_DESIRED_FLUX_GAS3) != MAX_INTEGER)
+    {
+      setAndSaveParameter(PARAM_DESIRED_FLUX_GAS3,0);  //set by default as 0 cc/min
+    }
     
     gas3->timer=now();
     gas3->state=CLOSE;
@@ -83,7 +102,11 @@ NIL_THREAD(ThreadTap, arg) {
   #ifdef TAP_GAS4    
  
     P_GAS_CONTROL  gas4;
-    setParameter(PARAM_DESIRED_FLUX_GAS4,0);  //set by default as 0 cc/min
+    
+    if(getParameter(PARAM_DESIRED_FLUX_GAS4) != MAX_INTEGER)
+    {
+      setAndSaveParameter(PARAM_DESIRED_FLUX_GAS4,0);  //set by default as 0 cc/min
+    }
     
     gas4->timer=now();
     gas4->state=CLOSE;
@@ -196,6 +219,7 @@ NIL_THREAD(ThreadTap, arg) {
   
 }
 
+#if defined(TAP_GAS1) || defined(TAP_GAS2) || defined(TAP_GAS3) || defined(TAP_GAS4)
 
 void fluxRegulation(P_GAS_CONTROL p_gas)
 {
@@ -236,9 +260,11 @@ void fluxRegulation(P_GAS_CONTROL p_gas)
     digitalWrite(TAP_GAS1, HIGH);//open the tap using dedicated PWM port
     p_gas->timer=now();
     p_gas->state=OPEN; 
-  }  
-  
+  }   
 }
+
+#endif
+
   
 #endif
 
