@@ -76,11 +76,9 @@ SERIAL, LOGGER AND DEBUGGER
 ******************/
 
 //#define TEMP_CTRL     1
-
 //#define PH_CTRL       1
-
 //#define GAS_CTRL      1
-//#define STEPPER_CTRL   1
+#define STEPPER_CTRL   1
 
 
 /**********************
@@ -199,7 +197,7 @@ SERIAL, LOGGER AND DEBUGGER
     
     //few hard coded parameters for flux control
     #define FLUX_TOLERANCE      10    //define a tolerance of 1 cc/min
-    #define FLUX_TIME_WINDOWS   10   //define a control windows of 10sec for the flux
+    #define FLUX_TIME_WINDOWS   10    //define a control windows of 10sec for the flux
     
 #endif
 

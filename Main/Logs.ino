@@ -58,10 +58,13 @@ uint32_t getLastEntryMin();
 #define NO_ANSWER_NTP_SERVER   6
 #define NO_ANSWER_SERVER       7
 #define SENSORS_ERROR          8
+#define PUMPING_FAILURE        9
 #define SET_MODE_1             16
 #define SET_MODE_2             17
 #define SET_MODE_3             18
 
+#define WGHT_FAILURE           129
+#define WGHT_BACK_TO_NORMAL    130
 #define ERROR_ERASE_SECTOR     140
 //The parameter are defined between 200 and 225
 #define PARAMETER_SET          200

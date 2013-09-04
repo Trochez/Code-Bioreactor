@@ -22,6 +22,8 @@
 #define EEPROM_MIN_ADDR            0
 #define EEPROM_MAX_ADDR          511
 
+#define MAX_INTEGER              65535
+
 
 uint16_t parameters[MAX_PARAM];
 

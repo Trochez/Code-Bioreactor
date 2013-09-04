@@ -1,5 +1,10 @@
 #ifdef WGHT
 
+//TO BE DONE
+//implement a conversion to give the volume rather than analog read.
+//hard coded safety value, TO BE CHANGED ONCE THE SENSOR IS CALIBRATED and conversion performed automatically !!!!!!!!!
+  #define MAX_ABSOLUTE_WGHT          500
+
 NIL_WORKING_AREA(waThreadWeight, 32);    
 NIL_THREAD(ThreadWeight, arg) {
     
@@ -33,13 +38,11 @@ NIL_THREAD(ThreadWeight, arg) {
     int weight = analogRead(WGHT);
     
     while(true){ 
- 
+      
       //sensor read 
       leaky_wght=weight;
       weight = 0.9*leaky_wght+0.1*analogRead(WGHT);
-      
-      //implement a conversion to give the volume rather than analog read.
-      setParameter(PARAM_WGHT, weight);
+      setParameter(PARAM_WGHT, weight);      
      
       #ifdef RELAY_PUMP
       
@@ -52,14 +55,46 @@ NIL_THREAD(ThreadWeight, arg) {
              leaky_wght=weight;
              weight = 0.9*leaky_wght+0.1*analogRead(WGHT);
              setParameter(PARAM_WGHT, weight);
-             nilThdSleepMilliseconds(1000);  
+             nilThdSleepMilliseconds(500);  
+             
+          /*********
+          sanity check for sensor failure
+          **********/
+          while(weight>MAX_ABSOLUTE_WGHT)
+          {
+            boolean i=false;
+            
+            if(i=false)
+            {
+              writeLog(COMMAND_LOGS, &newEntryCmd, now(), WGHT_FAILURE, weight); 
+              i=true;   
+            }
+            
+            leaky_wght=weight;
+            weight = 0.9*leaky_wght+0.1*analogRead(WGHT);
+            setParameter(PARAM_WGHT, weight);
+            
+            if(weight<=MAW_ABSOLUTE_WGHT)
+            {
+              writeLog(COMMAND_LOGS, &newEntryCmd, now(), WGHT_BACK_TO_NORMAL, weight); 
+              i=false;   
+            }
+            nilThdSleepMilliseconds(500); 
           }
+          /************
+          end of sanity check 
+          ************/          
+             
+          }
+          
           //enable pumping
           setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR) | FLAG_PUMPING));
           setParameter(PARAM_RELAY_PUMP,(getParameter(PARAM_RELAY_PUMP)|8));
           writeLog(COMMAND_LOGS, &newEntryCmd, now(), PUMPING_START, 0);
           
-        //add a sanity check here if the value is out of range of if the weight does not change after pumping for a while (ERROR_WGHT_CTRL)
+          
+          
+        //add a sanity check here if the value is out of range or if the weight does not change after pumping for a while (ERROR_WGHT_CTRL)
         //condition would restart the mixing and disable pumping
           /*
           while(weight>=getParameter(PARAM_LVL_MIN_WATER)){
@@ -82,7 +117,7 @@ NIL_THREAD(ThreadWeight, arg) {
       
       #endif
       
-      nilThdSleepMilliseconds(1000);  //refresh every second
+      nilThdSleepMilliseconds(500);  //refresh every second
     }
 }
 
