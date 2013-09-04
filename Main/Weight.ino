@@ -62,22 +62,22 @@ NIL_THREAD(ThreadWeight, arg) {
           **********/
           while(weight>MAX_ABSOLUTE_WGHT)
           {
-            boolean i=false;
+            boolean weight_failure=false;
             
-            if(i=false)
+            if(weight_failure=false)
             {
               writeLog(COMMAND_LOGS, &newEntryCmd, now(), WGHT_FAILURE, weight); 
-              i=true;   
+              weight_failure=true;   
             }
             
             leaky_wght=weight;
             weight = 0.9*leaky_wght+0.1*analogRead(WGHT);
             setParameter(PARAM_WGHT, weight);
             
-            if(weight<=MAW_ABSOLUTE_WGHT)
+            if(weight<=MAX_ABSOLUTE_WGHT)
             {
               writeLog(COMMAND_LOGS, &newEntryCmd, now(), WGHT_BACK_TO_NORMAL, weight); 
-              i=false;   
+              weight_failure=false;   
             }
             nilThdSleepMilliseconds(500); 
           }
