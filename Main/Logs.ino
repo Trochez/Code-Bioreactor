@@ -41,8 +41,8 @@ uint32_t getLastEntryMin();
 #define COMMAND_LOGS               101
 #define RRD_SEC_LOGS               115
 #ifdef RRD_ON
-	#define RRD_MIN_LOGS               109
-	#define RRD_HOUR_LOGS              104
+  #define RRD_MIN_LOGS             109
+  #define RRD_HOUR_LOGS            104
 #endif
 #define ENTRY_SIZE_LINEAR_LOGS     32
 #define ENTRY_SIZE_COMMAND_LOGS    12
@@ -63,7 +63,8 @@ uint32_t getLastEntryMin();
 #define SET_MODE_3             18
 
 #define ERROR_ERASE_SECTOR     140
-#define PARAMETER_SET          130
+//The parameter are defined between 200 and 225
+#define PARAMETER_SET          200
 #define ERROR_NOT_FOUND_ENTRY_N  150
 
 

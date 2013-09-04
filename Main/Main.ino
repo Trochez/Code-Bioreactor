@@ -64,7 +64,7 @@ SERIAL, LOGGER AND DEBUGGER
 
 
 
-//#define THR_LINEAR_LOGS       1
+#define THR_LINEAR_LOGS       1
 #define THR_ETHERNET          1
 
 #define PARAM_ERROR_CODE          22  
@@ -177,18 +177,30 @@ SERIAL, LOGGER AND DEBUGGER
   #define  TAP_GAS4     PWM4
   
   // Parameters stored in memory
-  #ifdef FLUX  
-    // define time windows for duty cycle
+  #ifdef TAP_GAS1  
     #define PARAM_FLUX_GAS1            3
-    #define PARAM_FLUX_GAS2            4
-    #define PARAM_FLUX_GAS3            5
-    #define PARAM_FLUX_GAS4            6 
-    #define PARAM_DESIRED_FLUX_GAS1            13
-    #define PARAM_DESIRED_FLUX_GAS2            14
-    #define PARAM_DESIRED_FLUX_GAS3            15
-    #define PARAM_DESIRED_FLUX_GAS4            16
-    
+    #define PARAM_DESIRED_FLUX_GAS1    13
   #endif
+  
+  #ifdef  TAP_GAS2
+    #define PARAM_FLUX_GAS2            4
+    #define PARAM_DESIRED_FLUX_GAS2    14
+  #endif
+  
+  #ifdef  TAP_GAS3
+    #define PARAM_FLUX_GAS3            5
+    #define PARAM_DESIRED_FLUX_GAS3    15
+  #endif
+  
+  #ifdef  TAP_GAS4
+    #define PARAM_FLUX_GAS4            6
+    #define PARAM_DESIRED_FLUX_GAS4    16
+  #endif
+    
+    //few hard coded parameters for flux control
+    #define FLUX_TOLERANCE      10    //define a tolerance of 1 cc/min
+    #define FLUX_TIME_WINDOWS   10   //define a control windows of 10sec for the flux
+    
 #endif
 
 //*************************************

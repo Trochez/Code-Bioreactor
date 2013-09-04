@@ -91,47 +91,52 @@ NIL_THREAD(ThreadEthernet, arg) {
   /****************************
    * LOG & NTP Setup
    *****************************/
-#ifdef THR_LINEAR_LOGS
-  // update the entry where the new log should be written.
-  newEntryCmd = findLastEntryN(COMMAND_LOGS);
-#ifdef DEBUG_LOGS
-  Serial.println("find Cmd");
-#endif
-  newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
-#ifdef DEBUG_LOGS
-  Serial.println("find Sec");
-#endif
-  //newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
-  //newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
+  #ifdef THR_LINEAR_LOGS
+    // update the entry where the new log should be written.
+    newEntryCmd = findLastEntryN(COMMAND_LOGS);
+    
+    #ifdef DEBUG_LOGS
+      Serial.println("find Cmd");
+    #endif
+    
+    newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
+    
+    #ifdef DEBUG_LOGS
+      Serial.println("find Sec");
+    #endif
+    //newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
+    //newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
 
-  //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
-  unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
+    //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
+    unsigned char packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
 
-  // Boolean variable to test a t the first place several times the actuall
-  // time of the arduino. Count 5 times the arduino time before synchronization
-  time_t time_now = 0;
-  time_t previousNTP = 0;
-  time_t previousLog = 0;
-  boolean waitPacket = false;
-  // A UDP instance to let us send and receive packets over UDP
-  EthernetUDP Udp;
-  Udp.begin(localPort);
-#endif
+    // Boolean variable to test a t the first place several times the actuall
+    // time of the arduino. Count 5 times the arduino time before synchronization
+    time_t time_now = 0;
+    time_t previousNTP = 0;
+    time_t previousLog = 0;
+    boolean waitPacket = false;
+    // A UDP instance to let us send and receive packets over UDP
+    EthernetUDP Udp;
+    Udp.begin(localPort);
+  #endif
 
   /****************************
    * SETUP ETHERNET SERVER
    *****************************/
-#ifdef THR_ETHERNET
-  server.begin();
-#endif
+  #ifdef THR_ETHERNET
+    server.begin();
+  #endif
   
-#ifdef DEBUG_LOGS
-  Serial.println(Ethernet.localIP());
-#endif
+  #ifdef DEBUG_LOGS
+    Serial.println(Ethernet.localIP());
+  #endif
+
   while (TRUE) {
-#ifdef DEBUG_LOGS
-    //Serial.println("Begining thread Ethernet/logs");
-#endif
+    
+    #ifdef DEBUG_LOGS
+      //Serial.println("Begining thread Ethernet/logs");
+    #endif
     /****************************
      * THREAD LOG & TIME : STRUCTURE    
      * - Update NTP all days
@@ -141,7 +146,7 @@ NIL_THREAD(ThreadEthernet, arg) {
      * no answer -> log in event + try again in 3600 seconds
      * - Log parameter every 1 second
      *****************************/
-#ifdef THR_LINEAR_LOGS
+    #ifdef THR_LINEAR_LOGS
     time_now = now();
 
     if(!waitPacket && ((time_now - previousNTP ) >= NTP_UPDATE_TIME)) {
@@ -196,61 +201,61 @@ NIL_THREAD(ThreadEthernet, arg) {
      * THREAD ETHERNET 
      * - Receive request from clients
      *****************************/
-#ifdef THR_ETHERNET
-    EthernetClient client = server.available();
-    if (client) {
-      Serial.println("new client");
-      // an http request ends with a blank line
-      boolean currentLineIsBlank = true;
-      //Count the number of byte of the answer
-
-      uint8_t request[TABLE_SIZE];
-      int count = 0;
-      while (client.connected()) {
-
-        if (client.available()) {
-          char c = client.read();
-          //Serial.write(c);
-          //store characters to string           
-          if (count < REQUEST_LENGTH) {
-            // += append a character to a string
-            request[count] = c;
-            count++;
-          }
-          // if you've gotten to the end of the line (received a newline
-          // character) and the line is blank, the http request has ended,
-          // so you can send a reply
-          if (c == '\n' && currentLineIsBlank) {
-            // send a standard http response header
-            client.println(F("HTTP/1.1 200 OK"));
-            client.println(F("Content-Type: text/html"));
-            client.println(F("Connection: close"));  // the connection will be closed after completion of the response
-            client.println();
-            client.println(F("<!DOCTYPE HTML>"));
-            client.println(F("<html>"));
-            //client.write(request, HEX);
-            parseRequest(&client, request);
-
-            client.println(F("</html>"));
-            break;
-          }
-          if (c == '\n') {
-            // you're starting a new line
-            currentLineIsBlank = true;
-          } 
-          else if (c != '\r') {
-            // you've gotten a character on the current line
-            currentLineIsBlank = false;
+    #ifdef THR_ETHERNET
+      EthernetClient client = server.available();
+      if (client) {
+        Serial.println("new client");
+        // an http request ends with a blank line
+        boolean currentLineIsBlank = true;
+        //Count the number of byte of the answer
+  
+        uint8_t request[TABLE_SIZE];
+        int count = 0;
+        while (client.connected()) {
+  
+          if (client.available()) {
+            char c = client.read();
+            //Serial.write(c);
+            //store characters to string           
+            if (count < REQUEST_LENGTH) {
+              // += append a character to a string
+              request[count] = c;
+              count++;
+            }
+            // if you've gotten to the end of the line (received a newline
+            // character) and the line is blank, the http request has ended,
+            // so you can send a reply
+            if (c == '\n' && currentLineIsBlank) {
+              // send a standard http response header
+              client.println(F("HTTP/1.1 200 OK"));
+              client.println(F("Content-Type: text/html"));
+              client.println(F("Connection: close"));  // the connection will be closed after completion of the response
+              client.println();
+              client.println(F("<!DOCTYPE HTML>"));
+              client.println(F("<html>"));
+              //client.write(request, HEX);
+              parseRequest(&client, request);
+  
+              client.println(F("</html>"));
+              break;
+            }
+            if (c == '\n') {
+              // you're starting a new line
+              currentLineIsBlank = true;
+            } 
+            else if (c != '\r') {
+              // you've gotten a character on the current line
+              currentLineIsBlank = false;
+            }
           }
         }
-      }
-      // give the web browser time to receive the data
-      delay(1);
-      // close the connection:
-      client.stop();
-      Serial.println("client disconnected");
-    } 
-#endif
+        // give the web browser time to receive the data
+        delay(1);
+        // close the connection:
+        client.stop();
+        Serial.println("client disconnected");
+      } 
+    #endif
 
 
     nilThdSleepMilliseconds(200);
@@ -287,20 +292,20 @@ void parseRequest(Client* cl, uint8_t* req) {
 
   // show i2c (wire) information
   else if (c=='i') { 
-#if defined(GAS_CTRL) || defined(I2C_LCD)
-    wireInfo(cl);
-#else
-    noThread(cl);
-#endif
+    #if defined(GAS_CTRL) || defined(I2C_LCD)
+      wireInfo(cl);
+    #else
+      noThread(cl);
+    #endif
   } 
 
   //show oneWire information
   else if (c=='o') {
-#ifdef ONE_WIRE_BUS1
-    oneWireInfo(cl);
-#else
-    noThread(cl);
-#endif
+    #ifdef ONE_WIRE_BUS1
+      oneWireInfo(cl);
+    #else
+      noThread(cl);
+    #endif
   }
 
   // show settings
@@ -309,48 +314,53 @@ void parseRequest(Client* cl, uint8_t* req) {
   } 
 
   else if (c=='l'){
-#ifdef THR_LINEAR_LOGS
-    printIndexes(cl); 
-#else
-    noThread(cl);
-#endif
+    #ifdef THR_LINEAR_LOGS
+      printIndexes(cl); 
+    #else
+      noThread(cl);
+    #endif
   }
 
   //return the log of the entry given
   else if ( (c=='s') || /*(c=='m') || (c=='h') ||*/ (c=='e')){
-#ifdef THR_LINEAR_LOGS
+    #ifdef THR_LINEAR_LOGS
 
     //We parse the second character of the GET
-    uint8_t d = req[URL_2];
-
-    switch(d){  
-        //We return the last entry
-      case ' ':
-        readLastEntry(c, req);
-        if(c=='e') 
-          printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
-        else 
-          printTab(cl, req, ENTRY_SIZE_LINEAR_LOGS);
-        break;
+      uint8_t d = req[URL_2];
   
+      switch(d){  
+          //We return the last entry
+        case ' ':
+          readLastEntry(c, req);
+          if(c=='e') 
+            printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
+          else 
+            printTab(cl, req, ENTRY_SIZE_LINEAR_LOGS);
+          break;
+    
         //We have a log entry number given
-      case '=':
-        //We get the number in the url with the function getNumber
-        readEntryN(c, req, getNumber(URL_3, req));
-        if(c=='e') 
-          printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
-        else 
-          printTab(cl, req, ENTRY_SIZE_LINEAR_LOGS);
-        break;
-        
-      default:
-        noSuchCommand(cl);
-        break;
-    }
-#else
-    noThread(cl);
-#endif
+        case '=':
+          //We get the number in the url with the function getNumber
+          //Send it to readEntryN which return 0 if no error occured
+          if(readEntryN(c, req, getNumber(URL_3, req)) != 0){
+            if(c=='e') 
+              printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
+            else 
+              printTab(cl, req, ENTRY_SIZE_LINEAR_LOGS);
+          } else {
+            noSuchCommand(cl);
+          }
+          break;
+          
+        default:
+          noSuchCommand(cl);
+          break;
+      }
+    #else
+      noThread(cl);
+    #endif
   }
+  
   // The request is a parameter A-Z
   else if(c >= ASCII_A && c <= ASCII_Z){
     //Here we read the second byte of the URL to differentiate the requests
@@ -367,8 +377,10 @@ void parseRequest(Client* cl, uint8_t* req) {
         uint32_t value = getNumber(URL_3, req);
         (*cl).println(value);
         byte p = (byte) (c-ASCII_A);
-        //writeLog(int8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
-        //writeLog(COMMAND_LOGS, &newEntryCmd, time_now, (uint16_t) (p+OFFSET) , index);
+        #ifdef THR_LINEAR_LOGS
+          //writeLog(int8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
+          writeLog(COMMAND_LOGS, &newEntryCmd, now(), (uint16_t) (PARAMETER_SET + p) , (uint16_t) value);
+        #endif
         setAndSaveParameter(p, value);
         printParameter(cl, p);
       }
@@ -457,7 +469,6 @@ void printHelp(Print* output) {
   newLine(output);
   output->println(F("(g)param"));
   newLine(output);
-
 }
 
 void printHardCodedParameters(Print* output){

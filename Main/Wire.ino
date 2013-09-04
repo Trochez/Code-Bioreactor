@@ -43,7 +43,7 @@ NIL_THREAD(ThreadWire, arg) {
   while(true) {
     
     wireEventStatus++;
-    if (wireEventStatus%10==5) {
+    if (wireEventStatus%25==5) {
       wireUpdateList();
     }
  
@@ -192,7 +192,7 @@ NIL_THREAD(ThreadWire, arg) {
       }
     }*/    
     
-    nilThdSleepMilliseconds(1000);
+    nilThdSleepMilliseconds(200);
 
   }
 }
@@ -306,8 +306,8 @@ void wireUpdateList() {
         i--;
       } 
       else if (currentPosition>=numberI2CDevices || wireDeviceID[currentPosition]>i) { // we need to add a device
-        Serial.print("add: ");
-        Serial.println(i);
+//        Serial.print("add: ");
+//        Serial.println(i);
         wireInsertDevice(currentPosition, i);
         currentPosition++;
       }
@@ -315,8 +315,8 @@ void wireUpdateList() {
     }
   }
   while (currentPosition<numberI2CDevices) {
-    Serial.print("delete: ");
-    Serial.println(wireDeviceID[currentPosition]);
+//    Serial.print("delete: ");
+//    Serial.println(wireDeviceID[currentPosition]);
     wireRemoveDevice(currentPosition);
   }
 }
@@ -392,4 +392,5 @@ boolean wireFlagStatus(byte *aByte, byte address) {
 
 
 #endif
+
 
