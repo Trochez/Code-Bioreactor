@@ -48,8 +48,8 @@ SERIAL, LOGGER AND DEBUGGER
 #define IO4     22//A4
 #define IO5     18//A0
 
-#define I2C_RELAY         32
-#define I2C_RELAY_TAP     36
+#define I2C_RELAY         32 //B00100000
+#define I2C_RELAY_TAP     36 //B00100100
 #define I2C_FLUX          104
 
 

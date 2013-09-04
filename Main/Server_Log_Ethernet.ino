@@ -254,6 +254,9 @@ NIL_THREAD(ThreadEthernet, arg) {
         // close the connection:
         client.stop();
         Serial.println("client disconnected");
+        /*while(client.status() != 0) {
+         delay(5);
+        }*/
       } 
     #endif
 
@@ -342,7 +345,7 @@ void parseRequest(Client* cl, uint8_t* req) {
         case '=':
           //We get the number in the url with the function getNumber
           //Send it to readEntryN which return 0 if no error occured
-          if(readEntryN(c, req, getNumber(URL_3, req)) != 0){
+          if(readEntryN(c, req, getNumber(URL_3, req)) == 0){
             if(c=='e') 
               printTab(cl, req, ENTRY_SIZE_COMMAND_LOGS);
             else 
