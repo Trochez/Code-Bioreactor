@@ -310,8 +310,10 @@ uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN)
   temp = sst.flashReadNextInt32();
   if(temp == entryN) {
     return getLogsN(log_type, sst, result, entryN); }
-  else
+  else {
+    sst.flashReadFinish();
     return ERROR_NOT_FOUND_ENTRY_N;
+  }
 }
 
 /*

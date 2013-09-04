@@ -78,7 +78,7 @@ EthernetServer server(80);
  ---------------------------*/
 
 
-NIL_WORKING_AREA(waThreadEthernet, 296); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 384); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   //This is needed by both NTP and ethernet server
   Ethernet.begin(mac, ip);
