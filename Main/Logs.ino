@@ -7,7 +7,7 @@
 */
 #ifdef THR_LINEAR_LOGS
 
-//#define DEBUG_LOGS 1
+#define DEBUG_LOGS 1
 //#define RRD_ON 1
 #define RRD_OFF 1
 
@@ -38,11 +38,11 @@ uint32_t getLastEntryMin();
 #define NTP_PACKET_SIZE (48)
 
 // the different types of logs
-#define COMMAND_LOGS               1
-#define RRD_SEC_LOGS               2
+#define COMMAND_LOGS               101
+#define RRD_SEC_LOGS               115
 #ifdef RRD_ON
-	#define RRD_MIN_LOGS               3
-	#define RRD_HOUR_LOGS              4
+	#define RRD_MIN_LOGS               109
+	#define RRD_HOUR_LOGS              104
 #endif
 #define ENTRY_SIZE_LINEAR_LOGS     32
 #define ENTRY_SIZE_COMMAND_LOGS    12
@@ -98,7 +98,7 @@ uint32_t getLastEntryMin();
 	#define ADDRESS_HOUR_SIZE (ADDRESS_CMD_BEG  - ADDRESS_HOUR_BEG)
 #endif
 
-#define ADDRESS_CMD_SIZE  0x020000
+#define ADDRESS_CMD_SIZE  0x030000
 
 #ifdef RRD_OFF
 	#define ADDRESS_SEC_SIZE  (ADDRESS_CMD_BEG  - ADDRESS_SEC_BEG)
@@ -291,7 +291,7 @@ uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN)
       addressOfEntryN = findAddressOfEntryN(log_type, entryN);
       break;
     case RRD_SEC_LOGS: 
-      addressOfEntryN = findAddressOfEntryN(log_type, entryN);    
+      addressOfEntryN = findAddressOfEntryN(log_type, entryN);
       break;
 	#ifdef RRD_ON
     case RRD_MIN_LOGS:
@@ -564,7 +564,7 @@ uint32_t findLastEntryN(uint8_t log_type)
   while(!found) 
   {
     #ifdef DEBUG_LOGS    
-      delay(200);
+      //delay(20); A Virer
     #endif
     sst.flashReadInit(addressEntryN);    
     ID_temp = sst.flashReadNextInt32();  
