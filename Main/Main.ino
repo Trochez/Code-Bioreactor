@@ -9,7 +9,6 @@
 #include <SST.h>
 #include <SPI.h>
 
-
 //Ethernet libraries
 #include <Ethernet.h>
 #include <EthernetUdp.h>
@@ -77,7 +76,9 @@ SERIAL, LOGGER AND DEBUGGER
 ******************/
 
 //#define TEMP_CTRL     1
+
 //#define PH_CTRL       1
+
 //#define GAS_CTRL      1
 //#define STEPPER_CTRL   1
 
@@ -104,7 +105,7 @@ SERIAL, LOGGER AND DEBUGGER
 
   // Input/Output
   #define  TEMP_LIQ       IO1
-  #define  TEMP_PLATE     IO2
+  //#define  TEMP_PLATE     IO2
   #define  TRANS_PID      PWM5
   
   // Parameters stored in memory
@@ -163,7 +164,6 @@ SERIAL, LOGGER AND DEBUGGER
   #endif
 
 #endif
-
 //*************************************
 
 #ifdef     GAS_CTRL
@@ -262,7 +262,7 @@ void setup() {
   }*/
   
   
-
+  
   nilSysBegin();
 }
 

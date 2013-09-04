@@ -60,7 +60,7 @@ NIL_THREAD(ThreadSerial, arg) {
       if (inChar=='d') { // show debug info
         getDebuggerLog(&Serial);
         serialReset();
-      } else*/ if (inChar=='f') { // show settings
+      } else */ if (inChar=='f') { // show settings
         printFreeMemory(&Serial);
         serialReset();
       } 

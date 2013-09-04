@@ -36,7 +36,7 @@ NIL_THREAD(ThreadWeight, arg) {
           }
           //enable pumping
           setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR) | FLAG_PUMPING));
-          setParameter(PARAM_RELAY_PUMP,getParameter(PARAM_RELAY_PUMP)|8);      
+          setParameter(PARAM_RELAY_PUMP,(getParameter(PARAM_RELAY_PUMP)|8));
           
         //add a sanity check here if the value is out of range of if the weight does not change after pumping for a while (ERROR_WGHT_CTRL)
         //condition would restart the mixing and disable pumping
@@ -50,7 +50,7 @@ NIL_THREAD(ThreadWeight, arg) {
         
         if( (weight<=getParameter(PARAM_LVL_MIN_WATER)) & ((getParameter(FLAG_VECTOR)&(FLAG_STEPPER_OFF))==(FLAG_STEPPER_OFF))){
           //set the condition to disable the pumping sequence and re-anable stepper motor mixing
-          setParameter(PARAM_RELAY_PUMP,0); 
+          setParameter(PARAM_RELAY_PUMP, (getParameter(PARAM_RELAY_PUMP)&~8));
           setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR) & ~(FLAG_PUMPING)));
           nilThdSleepMilliseconds(1000); 
           setParameter(FLAG_VECTOR,(getParameter(FLAG_VECTOR) & ~(FLAG_STEPPER_OFF)));
