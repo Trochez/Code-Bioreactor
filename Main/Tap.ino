@@ -29,7 +29,7 @@ NIL_THREAD(ThreadTap, arg) {
   #ifdef TAP_FOOD
     unsigned long timer_food=now();
     boolean food_state=CLOSE;
-    if(getParameter(PARAM_FOOD_PERIOD) != MAX_INTEGER)
+    if(getParameter(PARAM_FOOD_PERIOD) == MAX_INTEGER)
     {
       setAndSaveParameter(PARAM_FOOD_PERIOD,10);        //one pulse every 10 sec, default config
     }
@@ -38,7 +38,7 @@ NIL_THREAD(ThreadTap, arg) {
   #if defined(TAP_ACID) || defined(TAP_BASE)
     unsigned long previous_ph_adjust=now();
     boolean ph_state=CLOSE;
-    if(getParameter(PARAM_DESIRED_PH) != MAX_INTEGER)
+    if(getParameter(PARAM_DESIRED_PH) == MAX_INTEGER)
     {
       setAndSaveParameter(PARAM_DESIRED_PH,700);      //in fact corresponds to a PH of 7.0
     }
@@ -49,7 +49,7 @@ NIL_THREAD(ThreadTap, arg) {
  
     P_GAS_CONTROL  gas1;
     
-    if(getParameter(PARAM_DESIRED_FLUX_GAS1) != MAX_INTEGER)
+    if(getParameter(PARAM_DESIRED_FLUX_GAS1) == MAX_INTEGER)
     {
       setAndSaveParameter(PARAM_DESIRED_FLUX_GAS1,0);  //set by default as 0 cc/min
     }
@@ -67,7 +67,7 @@ NIL_THREAD(ThreadTap, arg) {
  
     P_GAS_CONTROL  gas2;
     
-    if(getParameter(PARAM_DESIRED_FLUX_GAS2) != MAX_INTEGER)
+    if(getParameter(PARAM_DESIRED_FLUX_GAS2) == MAX_INTEGER)
     {
       setAndSaveParameter(PARAM_DESIRED_FLUX_GAS2,0);  //set by default as 0 cc/min
     }
@@ -85,7 +85,7 @@ NIL_THREAD(ThreadTap, arg) {
  
     P_GAS_CONTROL  gas3;
     
-    if(getParameter(PARAM_DESIRED_FLUX_GAS3) != MAX_INTEGER)
+    if(getParameter(PARAM_DESIRED_FLUX_GAS3) == MAX_INTEGER)
     {
       setAndSaveParameter(PARAM_DESIRED_FLUX_GAS3,0);  //set by default as 0 cc/min
     }
@@ -103,7 +103,7 @@ NIL_THREAD(ThreadTap, arg) {
  
     P_GAS_CONTROL  gas4;
     
-    if(getParameter(PARAM_DESIRED_FLUX_GAS4) != MAX_INTEGER)
+    if(getParameter(PARAM_DESIRED_FLUX_GAS4) == MAX_INTEGER)
     {
       setAndSaveParameter(PARAM_DESIRED_FLUX_GAS4,0);  //set by default as 0 cc/min
     }

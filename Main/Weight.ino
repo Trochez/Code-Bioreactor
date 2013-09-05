@@ -9,27 +9,27 @@ NIL_WORKING_AREA(waThreadWeight, 64);
 NIL_THREAD(ThreadWeight, arg) {
     
     //quick init of the default parameters
-    if(getParameter(PARAM_WAIT_TIME_PUMP_MOTOR) != MAX_INTEGER)
+    if(getParameter(PARAM_WAIT_TIME_PUMP_MOTOR) == MAX_INTEGER)
     {
       setAndSaveParameter(PARAM_WAIT_TIME_PUMP_MOTOR,10);    //wait time of 10 seconds, to be changed then
     }  
 
-    if(getParameter(PARAM_LVL_MAX_WATER) != MAX_INTEGER)
+    if(getParameter(PARAM_LVL_MAX_WATER) == MAX_INTEGER)
     {    
       setAndSaveParameter(PARAM_LVL_MAX_WATER,420);
     }
       
-    if(getParameter(PARAM_LVL_MIN_WATER) != MAX_INTEGER)
+    if(getParameter(PARAM_LVL_MIN_WATER) == MAX_INTEGER)
     {    
       setAndSaveParameter(PARAM_LVL_MIN_WATER,370); 
     }  
       
-    if(getParameter(PARAM_RELAY_PUMP) != MAX_INTEGER)  
+    if(getParameter(PARAM_RELAY_PUMP) == MAX_INTEGER)  
     {
       setAndSaveParameter(PARAM_RELAY_PUMP,0);
     }
       
-    if(getParameter(FLAG_VECTOR) != MAX_INTEGER)
+    if(getParameter(FLAG_VECTOR) == MAX_INTEGER)
     {
       setAndSaveParameter(FLAG_VECTOR,0);
     }
