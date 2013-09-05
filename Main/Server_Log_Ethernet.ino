@@ -78,7 +78,7 @@ EthernetServer server(80);
  ---------------------------*/
 
 
-NIL_WORKING_AREA(waThreadEthernet, 384); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 256); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   //This is needed by both NTP and ethernet server
   Ethernet.begin(mac, ip);
@@ -378,7 +378,6 @@ void parseRequest(Client* cl, uint8_t* req) {
     case '=':
       { // { } Allow to declare variables inside the switch
         uint32_t value = getNumber(URL_3, req);
-        (*cl).println(value);
         byte p = (byte) (c-ASCII_A);
         #ifdef THR_LINEAR_LOGS
           //writeLog(int8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
@@ -423,12 +422,10 @@ void newLine(Print* output){
 }
 
 void printTab(Print* output, uint8_t* tab, char s) {
-  Serial.print("char s: ");
-  Serial.println((uint8_t) s);
   for(int i=0; i<s; i++){
     output->print(tab[i], HEX);
+    output->print(" ");
   }
-  output->println();
 } 
 
 #ifdef THR_LINEAR_LOGS
