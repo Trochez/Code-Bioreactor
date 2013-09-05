@@ -76,7 +76,7 @@ EthernetServer server(80);
  Ethernet Thread
  ---------------------------*/
 
-NIL_WORKING_AREA(waThreadEthernet, 384); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 256); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   /*
        SST sst = SST(4);

@@ -11,7 +11,7 @@ unsigned long heatingRegWindowStartTime;
 //PID object definition can be found in PID library (to include for compilation).
 PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000,15,300, DIRECT);
 
-NIL_WORKING_AREA(waThreadRelay_PID, 70);      
+NIL_WORKING_AREA(waThreadRelay_PID, 64);      
 NIL_THREAD(ThreadRelay_PID, arg) 
 {  
   //Default parameters

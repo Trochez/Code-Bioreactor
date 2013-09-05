@@ -7,7 +7,7 @@
 */
 #ifdef THR_LINEAR_LOGS
 
-#define DEBUG_LOGS 1
+//#define DEBUG_LOGS 1
 //#define DEBUG_ETHERNET 1
 //#define RRD_ON 1
 #define RRD_OFF 1
@@ -65,10 +65,13 @@ uint32_t getLastEntryMin();
 #define NO_ANSWER_NTP_SERVER   6
 #define NO_ANSWER_SERVER       7
 #define SENSORS_ERROR          8
+#define PUMPING_FAILURE        9
 #define SET_MODE_1             16
 #define SET_MODE_2             17
 #define SET_MODE_3             18
 
+#define WGHT_FAILURE           129
+#define WGHT_BACK_TO_NORMAL    130
 #define ERROR_ERASE_SECTOR     140
 //The parameter are defined between 200 and 225
 #define PARAMETER_SET          200
@@ -314,8 +317,10 @@ uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN)
   temp = sst.flashReadNextInt32();
   if(temp == entryN) {
     return getLogsN(log_type, sst, result, entryN); }
-  else
+  else {
+    sst.flashReadFinish();
     return ERROR_NOT_FOUND_ENTRY_N;
+  }
 }
 
 /*
