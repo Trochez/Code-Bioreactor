@@ -15,9 +15,18 @@ NIL_WORKING_AREA(waThreadRelay_PID, 64);
 NIL_THREAD(ThreadRelay_PID, arg) 
 {  
   //Default parameters
-  setParameter(PARAM_DESIRED_LIQUID_TEMP, 30000);
-  setParameter(PARAM_TEMP_MIN, 28000);
-  setParameter(PARAM_TEMP_MAX, 32000);
+  if(getParameter(PARAM_DESIRED_LIQUID_TEMP) == MAX_INTEGER) {
+     setAndSaveParameter(PARAM_DESIRED_LIQUID_TEMP,30000);  //set by default as 0 cc/min
+  }
+  
+  if(getParameter(PARAM_TEMP_MIN) == MAX_INTEGER) {
+     setAndSaveParameter(PARAM_TEMP_MIN,28000);  //set by default as 0 cc/min
+  }
+  
+  if(getParameter(PARAM_TEMP_MAX) == MAX_INTEGER) {
+     setAndSaveParameter(PARAM_TEMP_MAX,32000);  //set by default as 0 cc/min
+  }
+  
   pinMode(TRANS_PID, OUTPUT);
   
   //Todo : update heatingSetup when a parameter is changed

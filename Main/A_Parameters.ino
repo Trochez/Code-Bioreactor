@@ -32,7 +32,7 @@ void setupParameters() {
   eeprom_read_block ((void*)&parameters, (const void*)EE_START_PARAM, MAX_PARAM*2);
 }
 
-int getParameter(byte number) {
+uint16_t getParameter(byte number) {
   return parameters[number];
 }
 
