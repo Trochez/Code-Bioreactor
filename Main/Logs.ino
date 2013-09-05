@@ -8,6 +8,7 @@
 #ifdef THR_LINEAR_LOGS
 
 #define DEBUG_LOGS 1
+//#define DEBUG_ETHERNET 1
 //#define RRD_ON 1
 #define RRD_OFF 1
 
@@ -35,7 +36,13 @@ uint32_t getLastEntryMin();
   uint32_t getLastEntryHour();
   uint32_t getLastEntryCmd();
 #endif
-#define NTP_PACKET_SIZE (48)
+#ifdef DEBUG_ETHERNET
+  void printDigits(int digits);
+  void digitalClockDisplay();
+#endif
+
+
+#define NTP_PACKET_SIZE 48
 
 // the different types of logs
 #define COMMAND_LOGS               101
@@ -58,13 +65,10 @@ uint32_t getLastEntryMin();
 #define NO_ANSWER_NTP_SERVER   6
 #define NO_ANSWER_SERVER       7
 #define SENSORS_ERROR          8
-#define PUMPING_FAILURE        9
 #define SET_MODE_1             16
 #define SET_MODE_2             17
 #define SET_MODE_3             18
 
-#define WGHT_FAILURE           129
-#define WGHT_BACK_TO_NORMAL    130
 #define ERROR_ERASE_SECTOR     140
 //The parameter are defined between 200 and 225
 #define PARAMETER_SET          200
@@ -155,7 +159,7 @@ void writeLog(uint8_t log_type, uint32_t * entryNb, uint32_t timestamp, uint16_t
   setupMemory(sst);
   
   uint16_t param = 0;
-  
+  Serial.print("timestamp: ");Serial.println(timestamp);
   // test if it is the begining of one sector, and erase the sector of 4094 bytes if needed
   if(!(*entryNb % SECTOR_SIZE)) 
     sst.flashSectorErase(findSectorOfN(log_type, *entryNb));
@@ -310,10 +314,8 @@ uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN)
   temp = sst.flashReadNextInt32();
   if(temp == entryN) {
     return getLogsN(log_type, sst, result, entryN); }
-  else {
-    sst.flashReadFinish();
+  else
     return ERROR_NOT_FOUND_ENTRY_N;
-  }
 }
 
 /*
@@ -634,14 +636,12 @@ uint32_t getLastEntryCmd() {return findPreviousEntryN(COMMAND_LOGS, newEntryCmd)
 /*-----------------------
   NTP related functions
 -----------------------*/
-void sendPacket(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffer[] ){
-   sendNTPpacket(Udp, server, packetBuffer); // send an NTP packet to a time server 
-}
 
-boolean updateNTP(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffer[] ){
+boolean updateNTP(EthernetUDP Udp, byte* packetBuffer ){
    if ( Udp.parsePacket() ) {  
+       Serial.println("receive");
        // We've received a packet, read the data from it
-      Udp.read(packetBuffer, (size_t) NTP_PACKET_SIZE);  // read the packet into the buffer
+      Udp.read(packetBuffer, NTP_PACKET_SIZE);  // read the packet into the buffer
   
       //the timestamp starts at byte 40 of the received packet and is four bytes,
       // or two words, long. First, esxtract the two words:
@@ -655,10 +655,11 @@ boolean updateNTP(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffe
       const unsigned long seventyYears = 2208988800UL;     
       // subtract seventy years, the hour in Colombia: -5 from GMT
       unsigned long epoch = secsSince1900 - seventyYears - 5 * 3600;  
-      
+      Serial.println(epoch);
       setTime(epoch);
       return true;
    } else {
+      Serial.println("no packet received");
       //TODO: What should we do here ? New update 
       return false;
    }
@@ -666,10 +667,12 @@ boolean updateNTP(EthernetUDP& Udp, IPAddress& server, unsigned char packetBuffe
 }
 
 // send an NTP request to the time server at the given address
-unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char packetBuffer[])
+unsigned long sendNTPpacket(EthernetUDP * Udp, IPAddress address, byte * packetBuffer)
 {
+  Serial.println("1");
   // set all bytes in the buffer to 0
   memset(packetBuffer, 0, NTP_PACKET_SIZE); 
+  Serial.println("2");
   // Initialize values needed to form NTP request
   // (see URL above for details on the packets)
   packetBuffer[0] = 0b11100011;   // LI, Version, Mode
@@ -681,12 +684,15 @@ unsigned long sendNTPpacket(EthernetUDP& Udp, IPAddress& address, unsigned char 
   packetBuffer[13]  = 0x4E;
   packetBuffer[14]  = 49;
   packetBuffer[15]  = 52;
-
+  Serial.println("3");
   // all NTP fields have been given values, now
   // you can send a packet requesting a timestamp:         
-  Udp.beginPacket(address, 123); //NTP requests are to port 123
-  Udp.write(packetBuffer,NTP_PACKET_SIZE);
-  Udp.endPacket();
+  (*Udp).beginPacket(address, 123); //NTP requests are to port 123
+  Serial.println("4");
+  (*Udp).write(packetBuffer, NTP_PACKET_SIZE);
+  Serial.println("5");
+  (*Udp).endPacket();
+  Serial.println("6");
   
   // TODO: implement error detection
   return 0;
@@ -704,4 +710,29 @@ void setupMemory(SST sst){
   sst.init();
 }
 
+#endif
+#ifdef DEBUG_ETHERNET
+  // function to print formated digit
+  void printDigits(int digits){
+    // utility for digital clock display: prints preceding colon and leading 0
+    Serial.print(":");
+    if(digits < 10)
+      Serial.print('0');
+    Serial.print(digits);
+  }
+  
+  // print the actuall time
+  void digitalClockDisplay(){
+    // digital clock display of the time
+    Serial.print(hour());
+    printDigits(minute());
+    printDigits(second());
+    Serial.print(" ");
+    Serial.print(day());
+    Serial.print(" ");
+    Serial.print(month());
+    Serial.print(" ");
+    Serial.print(year()); 
+    Serial.println(); 
+  }
 #endif
