@@ -103,7 +103,7 @@ SERIAL, LOGGER AND DEBUGGER
 
   // Input/Output
   #define  TEMP_LIQ       IO1
-  //#define  TEMP_PLATE     IO2
+  #define  TEMP_PLATE     IO2
   #define  TRANS_PID      PWM5
   
   // Parameters stored in memory
