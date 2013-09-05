@@ -76,7 +76,7 @@ EthernetServer server(80);
  Ethernet Thread
  ---------------------------*/
 
-NIL_WORKING_AREA(waThreadEthernet, 304); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 384); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   /*
        SST sst = SST(4);
@@ -84,7 +84,7 @@ NIL_THREAD(ThreadEthernet, arg) {
    sst.flashTotalErase(); //  A Virer !!!
    free(&sst);
    */
-   
+   Ethernet.begin(mac,ip);
    
   /****************************
    * LOG & NTP Setup
@@ -108,20 +108,17 @@ NIL_THREAD(ThreadEthernet, arg) {
     time_t previousLog = 0;
     boolean waitPacket = false;
     // A UDP instance to let us send and receive packets over UDP
-    EthernetUDP Udp;
-    
-  #endif
+     EthernetUDP Udp;
   
   /*********************************
    * SETUP ETHERNET SERVER & NTP
    ********************************/
-  Ethernet.begin(mac,ip);
-  Udp.begin(localPort);
-  
-  
-  sendNTPpacket(&Udp, alix_server, packetBuffer);
-  delay(2000);
-  updateNTP(Udp, packetBuffer);
+    Udp.begin(localPort);
+    
+    sendNTPpacket(&Udp, alix_server, packetBuffer);
+    delay(2000);
+    updateNTP(Udp, packetBuffer);
+  #endif
   
   while (TRUE) {
     /****************************
@@ -153,7 +150,7 @@ NIL_THREAD(ThreadEthernet, arg) {
       // this is the linear logs
       // 
       if(time_now - previousLog > 10) {
-        Serial.print("Time_now: ");Serial.println(time_now);
+        //Serial.print("Time_now: ");Serial.println(time_now);
         writeLog(RRD_SEC_LOGS, &newEntryRRDSec , (uint32_t)time_now, 0, 0);
         
         #ifdef DEBUG_LOGS
@@ -361,7 +358,6 @@ void parseRequest(Client* cl, uint8_t* req) {
     case '=':
       { // { } Allow to declare variables inside the switch
         uint32_t value = getNumber(URL_3, req);
-        (*cl).println(value);
         byte p = (byte) (c-ASCII_A);
         #ifdef THR_LINEAR_LOGS
           //writeLog(int8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
