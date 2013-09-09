@@ -1,30 +1,19 @@
-//This code is kept for debugging. It will not be present in the final version of the code for the bioreactor
 #ifdef SERIAL
+//This code is kept for debugging. It will not be present in the final version of the code for the bioreactor
+
+
 // The maximal length of a parameter value. It is a int so the value must be between -32768 to 32767
 #define MAX_PARAM_VALUE_LENGTH 10
+
+
+//Prototypes
+static void printFreeMemory(Print* output);
+void serialReset();
+
 
 char paramSerialValue[MAX_PARAM_VALUE_LENGTH];
 byte paramSerialValuePosition=0;
 byte paramCurrent=0; // Which parameter are we defining
-
-void serialReset() {
-  paramCurrent=0;
-  paramSerialValuePosition=0;
-  paramSerialValue[0]='\0';
-}
-
-void serialPrintHelp() {
-  Serial.println(F("(d)ebug"));
-  Serial.println(F("(e)eprom"));
-  Serial.println(F("(f)ree mem"));
-  Serial.println(F("(h)elp"));
-  Serial.println(F("(i)2c"));
-  Serial.println(F("(l)og"));
-  #ifdef ONE_WIRE_BUS1
-  Serial.println(F("(o)ne wire"));
-  #endif
-  Serial.println(F("(s)ettings"));
-}
 
 
 NIL_WORKING_AREA(waThreadSerial, 96);
@@ -56,38 +45,40 @@ NIL_THREAD(ThreadSerial, arg) {
     while (Serial.available()) {
       // get the new byte:
       char inChar = (char)Serial.read(); 
-      /*
-      if (inChar=='d') { // show debug info
-        getDebuggerLog(&Serial);
-        serialReset();
-      } else */ if (inChar=='f') { // show settings
-        printFreeMemory(&Serial);
+      if (inChar=='f') { // show settings
+        printHardCodedParameters(&Serial);
         serialReset();
       } 
-      else if (inChar=='h') {
-        serialPrintHelp();
+      else if (inChar=='p') {
+        printHelp(&Serial);
         serialReset();
-      } /*
-      else if (inChar=='l') { // show log
-        getLoggerLog(&Serial);
-        serialReset();
-      } */
+      }
+      else if (inChar=='l') {
+         #ifdef THR_LINEAR_LOGS
+          printIndexes(&Serial); 
+         #else
+          noThread(&Serial);
+         #endif
+         serialReset();
+      }
       else if (inChar=='i') { // show i2c (wire) information
         #if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
-          wireInfo(&Serial);
+          //wireInfo(&Serial); TODO
           serialReset();
         #else  //not elsif !!
           Serial.println("I2C Thread not activated");
         #endif
       } 
-      #ifdef ONE_WIRE_BUS1
+      
       else if (inChar=='o') { // show oneWire information
-        //oneWireInfo(&Serial);
+        #if defined(TEMP_LIQ) || defined(TEMP_PLATE) || defined(TEMP_STEPPER)
+          //oneWireInfo(&Serial); TODO
+        #else
+          noThread(&Serial);
+        #endif
         serialReset();
       } 
-      #endif
-      else if (inChar=='s') { // show settings
-        Serial.println("bouh?!");
+      else if (inChar=='g') { // show settings
         printParameters(&Serial);
         serialReset();
       } 
@@ -151,5 +142,12 @@ static void printFreeMemory(Print* output)
 {
   nilPrintUnusedStack(output);
 }
+
+void serialReset() {
+  paramCurrent=0;
+  paramSerialValuePosition=0;
+  paramSerialValue[0]='\0';
+}
+
 
 #endif

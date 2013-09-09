@@ -1,121 +1,67 @@
-
 #if defined(GAS_CTRL) || defined(TAP_ACID) || defined(TAP_BASE) ||defined(TAP_FOOD)
-
-  
-#if defined(TAP_GAS1) || defined(TAP_GAS2) || defined(TAP_GAS3) || defined(TAP_GAS4)
-  
-  typedef struct 
-  {   
-    unsigned int     average_flux;
-    unsigned int     average_generator;
-    unsigned int     average_counter;
-    time_t   timer;
-    unsigned int     duty_cycle;
-    boolean  state;                      
-    //variables regenerating the flux average from sensor
-   
-  } GAS_CONTROL, *P_GAS_CONTROL;
  
-  void fluxRegulation(P_GAS_CONTROL p_gas);
-  
-#endif
-
+#define OPEN  1
+#define CLOSE 0
 
 NIL_WORKING_AREA(waThreadTap, 128);
 NIL_THREAD(ThreadTap, arg) { 
   
-  #define OPEN  1
-  #define CLOSE 0
-  
   #ifdef TAP_FOOD
     time_t timer_food=now();
     boolean food_state=CLOSE;
-    if(getParameter(PARAM_FOOD_PERIOD) == MAX_INTEGER)
-    {
-      setAndSaveParameter(PARAM_FOOD_PERIOD,10);        //one pulse every 10 sec, default config
-    }
   #endif
   
   #if defined(TAP_ACID) || defined(TAP_BASE)
     time_t previous_ph_adjust=now();
     boolean ph_state=CLOSE;
-    if(getParameter(PARAM_DESIRED_PH) == MAX_INTEGER)
-    {
-      setAndSaveParameter(PARAM_DESIRED_PH,700);      //in fact corresponds to a PH of 7.0
-    }
   #endif
   
   
   #ifdef TAP_GAS1    
- 
-    
-    P_GAS_CONTROL  gas1;
-    if(getParameter(PARAM_DESIRED_FLUX_GAS1) == MAX_INTEGER)
-    {
-      setAndSaveParameter(PARAM_DESIRED_FLUX_GAS1,1210);  //set by default as 0 cc/min
-    }
+    pinMode(TAP_GAS1,OUTPUT);
+    unsigned long time_gas1;
+    unsigned long timer_gas1=now();
+    boolean state_gas1=CLOSE;
+    unsigned int duty_cycle_gas1=0;  //opening set at 0% of the regulation windows initially 
+    unsigned int average_flux_gas1=0;
+    unsigned int average_generator_gas1=0;
+    unsigned int average_counter_gas1=0;
 
-    gas1->timer=now();
-    gas1->state=CLOSE;
-    gas1->duty_cycle=0;  //opening set at 0% of the regulation windows initially 
-    gas1->average_flux=0;
-    gas1->average_generator=0;
-    gas1->average_counter=0;
-
-    
   #endif
   
-    #ifdef TAP_GAS2    
- 
-    P_GAS_CONTROL  gas2;
-    
-    if(getParameter(PARAM_DESIRED_FLUX_GAS2) == MAX_INTEGER)
-    {
-      setAndSaveParameter(PARAM_DESIRED_FLUX_GAS2,0);  //set by default as 0 cc/min
-    }
-    
-    gas2->timer=now();
-    gas2->state=CLOSE;
-    gas2->duty_cycle=0;  //opening set at 0% of the regulation windows initially 
-    gas2->average_flux=0;
-    gas2->average_generator=0;
-    gas2->average_counter=0;
+  #ifdef TAP_GAS2    
+    pinMode(TAP_GAS2,OUTPUT);    
+    unsigned long time_gas2;
+    unsigned long timer_gas2=now();
+    boolean state_gas2=CLOSE;
+    unsigned int duty_cycle_gas2=0;  //opening set at 0% of the regulation windows initially 
+    unsigned int average_flux_gas2=0;
+    unsigned int average_generator_gas2=0;
+    unsigned int average_counter_gas2=0;
     
   #endif
   
   #ifdef TAP_GAS3    
- 
-    P_GAS_CONTROL  gas3;
-    
-    if(getParameter(PARAM_DESIRED_FLUX_GAS3) == MAX_INTEGER)
-    {
-      setAndSaveParameter(PARAM_DESIRED_FLUX_GAS3,0);  //set by default as 0 cc/min
-    }
-    
-    gas3->timer=now();
-    gas3->state=CLOSE;
-    gas3->duty_cycle=0;  //opening set at 0% of the regulation windows initially 
-    gas3->average_flux=0;
-    gas3->average_generator=0;
-    gas3->average_counter=0;
+    pinMode(TAP_GAS3,OUTPUT);    
+    unsigned long time_gas3;
+    unsigned long timer_gas3=now();
+    boolean state_gas3=CLOSE;
+    unsigned int duty_cycle_gas3=0;  //opening set at 0% of the regulation windows initially 
+    unsigned int average_flux_gas3=0;
+    unsigned int average_generator_gas3=0;
+    unsigned int average_counter_gas3=0;
     
   #endif
   
   #ifdef TAP_GAS4    
- 
-    P_GAS_CONTROL  gas4;
-    
-    if(getParameter(PARAM_DESIRED_FLUX_GAS4) == MAX_INTEGER)
-    {
-      setAndSaveParameter(PARAM_DESIRED_FLUX_GAS4,0);  //set by default as 0 cc/min
-    }
-    
-    gas4->timer=now();
-    gas4->state=CLOSE;
-    gas4->duty_cycle=0;  //opening set at 0% of the regulation windows initially 
-    gas4->average_flux=0;
-    gas4->average_generator=0;
-    gas4->average_counter=0;
+    pinMode(TAP_GAS4,OUTPUT);  
+    unsigned long time_gas4;  
+    unsigned long timer_gas4=now();
+    boolean state_gas4=CLOSE;
+    unsigned int duty_cycle_gas4=0;  //opening set at 0% of the regulation windows initially 
+    unsigned int average_flux_gas4=0;
+    unsigned int average_generator_gas4=0;
+    unsigned int average_counter_gas4=0;
     
   #endif
     
@@ -199,20 +145,197 @@ NIL_THREAD(ThreadTap, arg) {
     */
         
     #ifdef  TAP_GAS1 
-      fluxRegulation(gas1);           
-    #endif
+
+        time_gas1=(now()-timer_gas1);
+        #ifdef DEBUG_GAZ        
+          Serial.print("time : ");
+          Serial.println(time_gas1);
+          Serial.print("timer : ");
+          Serial.println(timer_gas1);
+          Serial.print("duty_cycle: ");
+          Serial.println(duty_cycle_gas1);
+          Serial.print("average_flux : ");
+          Serial.println(average_flux_gas1);
+        #endif
+      
+        // regenerate the average value and adjust to desired input, value is adjusted once every 1 time windows of 10 sec
+        if(time_gas1>=FLUX_TIME_WINDOWS)
+          {
+            
+            average_flux_gas1=(average_generator_gas1/average_counter_gas1);
+            average_generator_gas1=getParameter(PARAM_FLUX_GAS1);
+            average_counter_gas1=1; 
+              
+            if((average_flux_gas1 < (getParameter(PARAM_DESIRED_FLUX_GAS1)-FLUX_TOLERANCE)) && (duty_cycle_gas1<100))   //potential overflow problem here because of substration to zero ab initio ?
+            {
+              duty_cycle_gas1++;  //value limited to 100% of the time windows, possibly adjust by more than just one percente at a time
+            }
+              
+            else if((average_flux_gas1 > (getParameter(PARAM_DESIRED_FLUX_GAS1)+FLUX_TOLERANCE)) && (duty_cycle_gas1>0))
+            {
+              duty_cycle_gas1--;
+            }
+          } 
+        else
+        {
+          average_generator_gas1=(average_generator_gas1+getParameter(PARAM_FLUX_GAS1));
+          average_counter_gas1++;
+        } 
+       
+        /*Operate valves*/        
+        if( (time_gas1 >= (FLUX_TIME_WINDOWS*duty_cycle_gas1/100)) && (state_gas1==OPEN))
+        {
+          #ifdef DEBUG_GAZ  
+            Serial.print("close valve");
+          #endif
+          digitalWrite(TAP_GAS1, LOW);//close the tap using PWM port
+          state_gas1=CLOSE;
+          
+        }
+          
+        else if( (time_gas1 >= FLUX_TIME_WINDOWS) && (state_gas1==CLOSE))
+        {
+          #ifdef DEBUG_GAZ  
+            Serial.print("open valve");
+          #endif
+          digitalWrite(TAP_GAS1, HIGH);//open the tap using dedicated PWM port
+          timer_gas1=now();
+          state_gas1=OPEN; 
+        }   
     
+    #endif 
     
     #ifdef  TAP_GAS2
-      fluxRegulation(gas2);
+    
+
+        time_gas2=(now()-timer_gas2);      
+        // regenerate the average value and adjust to desired input, value is adjusted once every 1 time windows of 10 sec
+        if(time_gas2>=FLUX_TIME_WINDOWS)
+          {
+            
+            average_flux_gas2=(average_generator_gas2/average_counter_gas2);
+            average_generator_gas2=getParameter(PARAM_FLUX_GAS2);
+            average_counter_gas2=1; 
+              
+            if((average_flux_gas2 < (getParameter(PARAM_DESIRED_FLUX_GAS2)-FLUX_TOLERANCE)) && (duty_cycle_gas2<100))   //potential overflow problem here because of substration to zero ab initio ?
+            {
+              duty_cycle_gas2++;  //value limited to 100% of the time windows, possibly adjust by more than just one percente at a time
+            }
+              
+            else if((average_flux_gas2 > (getParameter(PARAM_DESIRED_FLUX_GAS2)+FLUX_TOLERANCE)) && (duty_cycle_gas2>0))
+            {
+              duty_cycle_gas2--;
+            }
+          } 
+        else
+        {
+          average_generator_gas2=(average_generator_gas2+getParameter(PARAM_FLUX_GAS2));
+          average_counter_gas2++;
+        } 
+        
+        /*Operate valves*/        
+        if( (time_gas2 >= (FLUX_TIME_WINDOWS*duty_cycle_gas2/100)) && (state_gas2==OPEN))
+        {
+          digitalWrite(TAP_GAS2, LOW);//close the tap using PWM port
+          state_gas2=CLOSE;
+          
+        }
+          
+        else if( (time_gas2 >= FLUX_TIME_WINDOWS) && (state_gas2==CLOSE))
+        {
+          digitalWrite(TAP_GAS2, HIGH);//open the tap using dedicated PWM port
+          timer_gas2=now();
+          state_gas2=OPEN; 
+        }    
+
     #endif
     
     #ifdef  TAP_GAS3
-      fluxRegulation(gas3);
+    
+        time_gas3=(now()-timer_gas3);      
+        // regenerate the average value and adjust to desired input, value is adjusted once every 1 time windows of 10 sec
+        if(time_gas3>=FLUX_TIME_WINDOWS)
+          {
+            
+            average_flux_gas3=(average_generator_gas3/average_counter_gas3);
+            average_generator_gas3=getParameter(PARAM_FLUX_GAS3);
+            average_counter_gas3=1; 
+              
+            if((average_flux_gas3 < (getParameter(PARAM_DESIRED_FLUX_GAS3)-FLUX_TOLERANCE)) && (duty_cycle_gas3<100))   //potential overflow problem here because of substration to zero ab initio ?
+            {
+              duty_cycle_gas3++;  //value limited to 100% of the time windows, possibly adjust by more than just one percente at a time
+            }
+              
+            else if((average_flux_gas3 > (getParameter(PARAM_DESIRED_FLUX_GAS3)+FLUX_TOLERANCE)) && (duty_cycle_gas3>0))
+            {
+              duty_cycle_gas3--;
+            }
+          } 
+        else
+        {
+          average_generator_gas3=(average_generator_gas3+getParameter(PARAM_FLUX_GAS3));
+          average_counter_gas3++;
+        } 
+        
+        /*Operate valves*/        
+        if( (time_gas3 >= (FLUX_TIME_WINDOWS*duty_cycle_gas3/100)) && (state_gas3==OPEN))
+        {
+          digitalWrite(TAP_GAS3, LOW);//close the tap using PWM port
+          state_gas3=CLOSE;
+          
+        }
+          
+        else if( (time_gas3 >= FLUX_TIME_WINDOWS) && (state_gas3==CLOSE))
+        {
+          digitalWrite(TAP_GAS3, HIGH);//open the tap using dedicated PWM port
+          timer_gas3=now();
+          state_gas3=OPEN; 
+        }  
+
     #endif
     
     #ifdef  TAP_GAS4
-      fluxRegulation(gas4);
+    
+        time_gas4=(now()-timer_gas4);      
+        // regenerate the average value and adjust to desired input, value is adjusted once every 1 time windows of 10 sec
+        if(time_gas4>=FLUX_TIME_WINDOWS)
+          {
+            
+            average_flux_gas4=(average_generator_gas4/average_counter_gas4);
+            average_generator_gas4=getParameter(PARAM_FLUX_GAS4);
+            average_counter_gas4=1; 
+              
+            if((average_flux_gas4 < (getParameter(PARAM_DESIRED_FLUX_GAS4)-FLUX_TOLERANCE)) && (duty_cycle_gas4<100))   //potential overflow problem here because of substration to zero ab initio ?
+            {
+              duty_cycle_gas4++;  //value limited to 100% of the time windows, possibly adjust by more than just one percente at a time
+            }
+              
+            else if((average_flux_gas4 > (getParameter(PARAM_DESIRED_FLUX_GAS4)+FLUX_TOLERANCE)) && (duty_cycle_gas4>0))
+            {
+              duty_cycle_gas4--;
+            }
+          } 
+        else
+        {
+          average_generator_gas4=(average_generator_gas4+getParameter(PARAM_FLUX_GAS4));
+          average_counter_gas4++;
+        } 
+        
+        /*Operate valves*/        
+        if( (time_gas4 >= (FLUX_TIME_WINDOWS*duty_cycle_gas4/100)) && (state_gas4==OPEN))
+        {
+          digitalWrite(TAP_GAS4, LOW);//close the tap using PWM port
+          state_gas4=CLOSE;
+          
+        }
+          
+        else if( (time_gas4 >= FLUX_TIME_WINDOWS) && (state_gas4==CLOSE))
+        {
+          digitalWrite(TAP_GAS4, HIGH);//open the tap using dedicated PWM port
+          timer_gas4=now();
+          state_gas4=OPEN; 
+        }     
+
     #endif
     
     nilThdSleepMilliseconds(500); 
@@ -220,67 +343,6 @@ NIL_THREAD(ThreadTap, arg) {
   
 }
 
-#if defined(TAP_GAS1) || defined(TAP_GAS2) || defined(TAP_GAS3) || defined(TAP_GAS4)
-
-void fluxRegulation(P_GAS_CONTROL p_gas)
-{
-  time_t time=((uint32_t)now()-p_gas->timer);
-
-  // regenerate the average value and adjust to desired input, value is adjusted once every 1 time windows of 10 sec
-  if(time>=FLUX_TIME_WINDOWS)
-    {
-      
-      Serial.println("condition 1 true");
-      p_gas->average_flux=(p_gas->average_generator/p_gas->average_counter);
-      p_gas->average_generator=getParameter(PARAM_FLUX_GAS1);
-      p_gas->average_counter=1; 
-        
-      if((p_gas->average_flux < (getParameter(PARAM_DESIRED_FLUX_GAS1)-FLUX_TOLERANCE)) && (p_gas->duty_cycle<100))   //potential overflow problem here because of substration to zero ab initio ?
-      {
-       Serial.println("condition 1.1 true");
-       p_gas->duty_cycle++;  //value limited to 100% of the time windows, possibly adjust by more than just one percente at a time
-      }
-        
-      else if((p_gas->average_flux > (getParameter(PARAM_DESIRED_FLUX_GAS1)+FLUX_TOLERANCE)) && (p_gas->duty_cycle>0))
-      {
-       Serial.println("condition 1.2 true");
-        p_gas->duty_cycle--;
-      }
-    } 
-  else
-  {
-    Serial.println("condition 2 true");
-    p_gas->average_generator=(p_gas->average_generator+getParameter(PARAM_FLUX_GAS1));
-    p_gas->average_counter++;
-  } 
-  
-  /*Operate valves*/
-  
-  if( time >= ((FLUX_TIME_WINDOWS*p_gas->duty_cycle)/100) && (p_gas->state==OPEN))
-  {
-    digitalWrite(TAP_GAS1, LOW);//close the tap using PWM port
-    p_gas->state=CLOSE;
-    
-    Serial.println("close tap");
-    Serial.println(p_gas->timer);
-    Serial.println(p_gas->duty_cycle);
-    
-  }
-    
-  else if( (time >= FLUX_TIME_WINDOWS) && (p_gas->state==CLOSE))
-  {
-    digitalWrite(TAP_GAS1, HIGH);//open the tap using dedicated PWM port
-    p_gas->timer=(uint32_t)now();
-    p_gas->state=OPEN; 
-    
-    Serial.println("open tap");
-    Serial.println(p_gas->timer);
-    Serial.println(p_gas->duty_cycle);
-
-  }   
-}
-
 #endif
 
-#endif
 

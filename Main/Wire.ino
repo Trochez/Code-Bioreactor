@@ -18,7 +18,24 @@
    PH METER
  - B????????
  */
-  
+
+
+void wireWrite(uint8_t address, uint8_t _data );
+void wireWrite(uint8_t address, uint8_t reg, uint8_t _data );
+byte wireRead(uint8_t address);
+int wireReadTwoBytesToInt(uint8_t address);
+int wireReadFourBytesToInt(uint8_t address);
+void wireInfo(Print* output);
+void wireUpdateList();
+void wireRemoveDevice(byte id);
+void wireInsertDevice(byte id, byte newDevice);
+boolean wireDeviceExists(byte id);
+void sendRelay(byte id, byte value, byte* flag);
+void setWireFlag(byte *aByte, byte address);
+void clearWireFlag(byte *aByte, byte address);
+
+boolean wireFlagStatus(byte *aByte, byte address);
+
 
 #define WIRE_MAX_DEVICES 5
 byte numberI2CDevices=0;
@@ -261,8 +278,6 @@ int wireReadFourBytesToInt(uint8_t address) {
     byteWithCFG = Wire.read();
     byteWithADD = Wire.read();
     _data = (byteWithMSB<<8) | byteWithLSB;
-//    Serial.print("_data: ");
-//    Serial.println(_data); 
   }
   return _data;
 }
@@ -296,18 +311,12 @@ void wireUpdateList() {
       // there is a device, we need to check if we should add or remove a previous device
       if (currentPosition<numberI2CDevices && wireDeviceID[currentPosition]==i) { // it is still the same device that is at the same position, nothing to do
         currentPosition++;
-//        Serial.print("ok: ");
-//        Serial.println(i);
       } 
       else if (currentPosition<numberI2CDevices && wireDeviceID[currentPosition]<i) { // some device(s) disappear, we need to delete them
-        Serial.print("delete: ");
-        Serial.println(wireDeviceID[currentPosition]);
         wireRemoveDevice(currentPosition);
         i--;
       } 
       else if (currentPosition>=numberI2CDevices || wireDeviceID[currentPosition]>i) { // we need to add a device
-//        Serial.print("add: ");
-//        Serial.println(i);
         wireInsertDevice(currentPosition, i);
         currentPosition++;
       }
@@ -315,16 +324,11 @@ void wireUpdateList() {
     }
   }
   while (currentPosition<numberI2CDevices) {
-//    Serial.print("delete: ");
-//    Serial.println(wireDeviceID[currentPosition]);
     wireRemoveDevice(currentPosition);
   }
 }
 
 void wireRemoveDevice(byte id) {
-  #ifdef DEBUGGER
-    debugger(DEBUG_WIRE_REMOVED_DEVICE,wireDeviceID[id]);
-  #endif
   for (byte i=id; i<numberI2CDevices-1; i++) {
     wireDeviceID[i]=wireDeviceID[i+1];
   }
@@ -333,9 +337,6 @@ void wireRemoveDevice(byte id) {
 
 void wireInsertDevice(byte id, byte newDevice) {
   //Serial.println(id);
-  #ifdef DEBUGGER
-    debugger(DEBUG_WIRE_ADDED_DEVICE,newDevice);
-  #endif
   
   if (numberI2CDevices<WIRE_MAX_DEVICES) {
     for (byte i=id+1; i<numberI2CDevices-1; i++) {
@@ -344,11 +345,6 @@ void wireInsertDevice(byte id, byte newDevice) {
     wireDeviceID[id]=newDevice;
     numberI2CDevices++;
   } 
-  else {
-    #ifdef LOGGER
-      logger(LOGGER_I2C_CAPACITY_EXCEEDED);
-    #endif
-  }
 }
 
 boolean wireDeviceExists(byte id) {

@@ -1,20 +1,24 @@
-/* Thread Stepper Motor
-This is the thread controlling the motor. It should have a high priority 
-as it is called very often and is short. It controls the sequence with the pin PWM and IO
-of the port.
-The sequence for turning the motor turn is :
-RED-GREEN-BLUE-BLACK => win turn clockwise (top view) where :
-RED = {PWM=LOW, IO=LOW}
-BLUE = {PWM=LOW, IO=HIGH}
-BLACK = {PWM=HIGH, IO=HIGH}
-RED = {PWM=HIGH, IO=LOW}
-*/
+#ifdef STEPPER
+
+/****************************
+*  THREAD STEPPER MOTOR
+*  This is the thread controlling the motor. It should have a high priority 
+*  as it is called very often and is short. It controls the sequence with the pin PWM and IO
+*  of the port.
+*  The sequence for turning the motor turn is :
+*  RED-GREEN-BLUE-BLACK => win turn clockwise (top view) where :
+*  RED = {PWM=LOW, IO=LOW}
+*  BLUE = {PWM=LOW, IO=HIGH}
+*  BLACK = {PWM=HIGH, IO=HIGH}
+*  RED = {PWM=HIGH, IO=LOW}
+******************************/
 
 //We define here the number of step executed during every call to the thread
-#ifdef STEPPER
 #define NB_STEP_CALL 60
 
 
+//Prototypes
+void executeStep(int numberSteps, boolean forward, byte port1, byte port2);
 
 
 NIL_WORKING_AREA(waThreadStepper, 64);

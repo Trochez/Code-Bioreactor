@@ -1,46 +1,42 @@
-/*-------------------------------------------------
- 
- This thread will take care of the Ethernet communications
- 
- -Answer to request from the server (get logs, get parameters)
- -Get state updates from the server / other modules
- 
- 
- The module has to be able to respond to several HTML request.
- 
- The first parameter defines the request type:
- -Upper case letters are for setting parameters
- Parameters range between A and Z
- -Lower case letter are for actions:
- 
- p. Print Help Menu
- f. Settings Hardcoded  : IP, MAC,...
- i. i2c devices
- o. 1-wire devices
- g. Parameters in memory
- {A-Z}. print value of parameter given
- {A-Z}=X set parameter to the value given and save it to EEPROm
- {s,m,h,e}. last log of seconds,minutes,hours and events
- {s.m.h,e}=X. log X of seconds,minutes,hours and events
- l. return a vector of the last entry number:
- #events #seconds #minutes #hours
- 
- -------------------------------------------------*/
-
 #if defined(THR_ETHERNET) || defined(THR_LINEAR_LOGS)
 
-#define DEBUG 0
-#define MAX_HTTP_STRING_LENGTH 2048    // in bytes; max. http return string to read  
-// (reserve space for the http header !AND! the JSON command string)
-#define MAX_COMMAND_STRING_LENGTH 400 // in bytes; max. JSON return string to read 
-#define NTP_UPDATE_TIME 7200
+/****************************************************************
+*   THREAD ETHERNET & LOG EVENT + DATA
+*   This thread will take care of the Ethernet communications
+*   
+*   -Answer to request from the server (get logs, get parameters)
+*   -Get state updates from the server / other modules
+*   
+*   
+*  The module has to be able to respond to several HTML request.
+*   
+*  The first parameter defines the request type:
+*   -Upper case letters are for setting parameters
+*   Parameters range between A and Z
+*   -Lower case letter are for actions:
+*   
+*   p. Print Help Menu
+*   f. Settings Hardcoded  : IP, MAC,...
+*  i. i2c devices
+*   o. 1-wire devices
+*  g. Parameters in memory
+*   {A-Z}. print value of parameter given
+*   {A-Z}=X set parameter to the value given and save it to EEPROm
+*   {s,m,h,e}. last log of seconds,minutes,hours and events
+*   {s.m.h,e}=X. log X of seconds,minutes,hours and events
+*   l. return a vector of the last entry number:
+*   #events #seconds #minutes #hours
+* 
+*****************************************************************/
 
-/*************
- * ASCII 
- * A-Z : 65-90
- * a-z : 97-122
- * 0-9 : 48-57
- ************/
+
+//#define MAX_HTTP_STRING_LENGTH 2048    // in bytes; max. http return string to read  
+// (reserve space for the http header !AND! the JSON command string)
+//#define MAX_COMMAND_STRING_LENGTH 400 // in bytes; max. JSON return string to read 
+
+/***************************************************************
+ * ASCII NUMBERS  * A-Z : 65-90  * a-z : 97-122  * 0-9 : 48-57
+ ***************************************************************/
 #define ASCII_A 65
 #define ASCII_Z 90
 
@@ -59,24 +55,34 @@
 #define REQUEST_LENGTH 17
 #define TABLE_SIZE 32
 
-// Initialize the Ethernet client library
-// with the IP address and port of the server 
-// that you want to connect to (port 80 is default for HTTP):
+
+//Prototypes
+void parseRequest(Client* cl, uint8_t* req);
+uint32_t getNumber(uint8_t start, uint8_t* tab);
+void newLine(Print* output);
+void printTab(Print* output, uint8_t* tab, char s);
+void noSuchCommand(Print* output);
+void noThread(Print* output);
+void printHelp(Print* output);
+void printHardCodedParameters(Print* output);
+#ifdef THR_LINEAR_LOGS
+  void printIndexes(Print* output);
+#endif
+
 
 uint8_t ip[] = IP;
 uint8_t mac[] = MAC;
 const uint8_t alix[] = ALIX;
-
 unsigned int localPort = 8888;      // local port to listen for UDP packets
-
 IPAddress alix_server(alix[0],alix[1],alix[2],alix[3]); // local NTP server
 EthernetServer server(80);
 
-/*---------------------------
- Ethernet Thread
- ---------------------------*/
 
-NIL_WORKING_AREA(waThreadEthernet, 384); //change memoy allocation
+/****************
+ Ethernet Thread
+*****************/
+
+NIL_WORKING_AREA(waThreadEthernet, 400); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
   /*
        SST sst = SST(4);
@@ -85,18 +91,18 @@ NIL_THREAD(ThreadEthernet, arg) {
    free(&sst);
    */
    Ethernet.begin(mac,ip);
-   
+   server.begin();
   /****************************
    * LOG & NTP Setup
    *****************************/
   #ifdef THR_LINEAR_LOGS
   
     // update the entry where the new log should be written.
-    newEntryCmd = findLastEntryN(COMMAND_LOGS);
-    newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS);
+    newEntryCmd = findLastEntryN(COMMAND_LOGS)+1;
+    newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS)+1;
     #ifdef RRD_ON
-      newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS);
-      newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS);
+      newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS)+1;
+      newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS)+1;
     #endif
     //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
     byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
@@ -118,9 +124,32 @@ NIL_THREAD(ThreadEthernet, arg) {
     sendNTPpacket(&Udp, alix_server, packetBuffer);
     delay(2000);
     updateNTP(Udp, packetBuffer);
+    
+    //Log of the reboot of the card
+    writeLog(COMMAND_LOGS, &newEntryCmd, time_now, CARD_BOOT , 0); 
+  #endif
+  
+  #ifdef DEBUG_ETHERNET
+    Serial.print("server is at ");
+    Serial.println(Ethernet.localIP());
   #endif
   
   while (TRUE) {
+    
+    
+    /****************************
+    * ERROR CHECKING % LOGGING
+    ****************************/
+    
+    if(getParameter(FLAG_VECTOR) & EVENT_OCCURED){
+      #ifdef THR_LINEAR_LOGS
+        writeLog(COMMAND_LOGS, &newEntryCmd, time_now, getParameter(PARAM_EVENT), getParameter(PARAM_EVENT_VALUE)); 
+      #endif
+      setParameter(FLAG_VECTOR, getParameter(FLAG_VECTOR) & (~EVENT_OCCURED));
+    }
+    
+    
+    
     /****************************
      * THREAD LOG & TIME : STRUCTURE    
      * - Update NTP all days
@@ -146,11 +175,10 @@ NIL_THREAD(ThreadEthernet, arg) {
         waitPacket = false;
       }
   
-      // This function suppose that the thread is called very regularly (at least 1 time every seconds)
+      // This function suppose that the thread is called regularly (at least 1 time every 10 second)
       // this is the linear logs
       // 
-      if(time_now - previousLog > 10) {
-        //Serial.print("Time_now: ");Serial.println(time_now);
+      if(time_now - previousLog >= LOG_INTERVAL) {
         writeLog(RRD_SEC_LOGS, &newEntryRRDSec , (uint32_t)time_now, 0, 0);
         
         #ifdef DEBUG_LOGS
@@ -184,7 +212,9 @@ NIL_THREAD(ThreadEthernet, arg) {
     #ifdef THR_ETHERNET
       EthernetClient client = server.available();
       if (client) {
-        Serial.println("new client");
+        #ifdef DEBUG_ETHERNET
+          Serial.println("new client");
+        #endif
         // an http request ends with a blank line
         boolean currentLineIsBlank = true;
         //Count the number of byte of the answer
@@ -195,7 +225,6 @@ NIL_THREAD(ThreadEthernet, arg) {
   
           if (client.available()) {
             char c = client.read();
-            //Serial.write(c);
             //store characters to string           
             if (count < REQUEST_LENGTH) {
               // += append a character to a string
@@ -213,7 +242,6 @@ NIL_THREAD(ThreadEthernet, arg) {
               client.println();
               client.println(F("<!DOCTYPE HTML>"));
               client.println(F("<html>"));
-              //client.write(request, HEX);
               parseRequest(&client, request);
   
               client.println(F("</html>"));
@@ -233,7 +261,9 @@ NIL_THREAD(ThreadEthernet, arg) {
         delay(1);
         // close the connection:
         client.stop();
-        Serial.println("client disconnected");
+        #ifdef DEBUG_ETHERNET
+          Serial.println("client disconnected");
+        #endif
         /*while(client.status() != 0) {
          delay(5);
         }*/
@@ -276,7 +306,7 @@ void parseRequest(Client* cl, uint8_t* req) {
   // show i2c (wire) information
   else if (c=='i') { 
     #if defined(GAS_CTRL) || defined(I2C_LCD)
-      wireInfo(cl);
+      //wireInfo(cl); TODO
     #else
       noThread(cl);
     #endif
@@ -284,8 +314,17 @@ void parseRequest(Client* cl, uint8_t* req) {
 
   //show oneWire information
   else if (c=='o') {
-    #ifdef ONE_WIRE_BUS1
-      oneWireInfo(cl);
+    #if defined(TEMP_LIQ) || defined(TEMP_PLATE) || defined(TEMP_STEPPER)
+      //oneWireInfo(cl); TODO
+    #else
+      noThread(cl);
+    #endif
+  }
+  
+    //show oneWire information
+  else if (c=='w') {
+    #if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD) || defined(PH_CTRL)
+      //wireInfo(cl); TODO
     #else
       noThread(cl);
     #endif
@@ -360,7 +399,6 @@ void parseRequest(Client* cl, uint8_t* req) {
         uint32_t value = getNumber(GET_CHAR_3, req);
         byte p = (byte) (c-ASCII_A);
         #ifdef THR_LINEAR_LOGS
-          //writeLog(int8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
           writeLog(COMMAND_LOGS, &newEntryCmd, now(), (uint16_t) (PARAMETER_SET + p) , (uint16_t) value);
         #endif
         setAndSaveParameter(p, value);
@@ -402,8 +440,6 @@ void newLine(Print* output){
 }
 
 void printTab(Print* output, uint8_t* tab, char s) {
-  Serial.print("char s: ");
-  Serial.println((uint8_t) s);
   for(int i=0; i<s; i++){
     output->print(tab[i], HEX);
     output->print(' ');
@@ -440,17 +476,17 @@ void noThread(Print* output){
 
 void printHelp(Print* output) {
   //return the menu
-  output->println(F("(f)hard"));
+  output->print(F("(f)hard"));
   newLine(output);
-  output->println(F("(p)help"));
+  output->print(F("(p)help"));
   newLine(output);
-  output->println(F("(i)2c"));
+  output->print(F("(i)2c"));
   newLine(output);
-  output->println(F("(l)og"));
+  output->print(F("(l)og"));
   newLine(output);
-  output->println(F("(o)1-wire"));
+  output->print(F("(o)1-wire"));
   newLine(output);
-  output->println(F("(g)param"));
+  output->print(F("(g)param"));
   newLine(output);
 }
 
@@ -458,14 +494,11 @@ void printHardCodedParameters(Print* output){
   output->println(F("Hardcoded:")); 
   newLine(output);
   output->print(F("IP:"));
-  //output->print(ip[0] + " " + ip[1] + " " + ip[2] + " " + ip[3]);
-  newLine(output);
+  printIP(output, ip, 4);
   output->print(F("MAC:"));
-  //output->println(mac[0] + " " + mac[1] + " " + mac[2] + " " + mac[3]); 
-  newLine(output);
+  printIP(output, mac, 6);
   output->print(F("ALIX:"));
-  //output->println(alix[0] + " " + alix[1] + " " + alix[2] + " " + alix[3]); 
-  newLine(output);
+  printIP(output, (uint8_t*) alix, 4);
 #ifdef RELAY_PUMP
   output->print(F("I2C relay:"));
   output->println(I2C_RELAY); 
@@ -476,6 +509,14 @@ void printHardCodedParameters(Print* output){
   output->println(I2C_FLUX); 
   newLine(output);
 #endif
+}
+
+void printIP(Print* output, uint8_t* tab, uint8_t s){
+   for(int i=0; i<s; i++){
+      output->print(tab[i], DEC);
+      output->print(' ');
+   }  
+   output->println("<br/>");
 }
 
 #endif

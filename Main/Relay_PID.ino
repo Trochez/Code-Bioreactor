@@ -1,31 +1,24 @@
+#ifdef TRANS_PID
+
 //TODO : Clean global variables
 
-#ifdef TRANS_PID
 #include <PID_v1.h>
+
 
 void pid_ctrl();
 void heatingSetup();
+
+
 double heatingRegInput, heatingRegOutput, heatingRegSetpoint;
 unsigned long heatingRegWindowStartTime;
 //Specify the heating regulation links and initial tuning parameters //Kp=100; Ti=0.2; Td=5 are initial testing param.
 //PID object definition can be found in PID library (to include for compilation).
 PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000,15,300, DIRECT);
 
+
 NIL_WORKING_AREA(waThreadRelay_PID, 64);      
 NIL_THREAD(ThreadRelay_PID, arg) 
-{  
-  //Default parameters
-  if(getParameter(PARAM_DESIRED_LIQUID_TEMP) == MAX_INTEGER) {
-     setAndSaveParameter(PARAM_DESIRED_LIQUID_TEMP,30000);  //set by default as 0 cc/min
-  }
-  
-  if(getParameter(PARAM_TEMP_MIN) == MAX_INTEGER) {
-     setAndSaveParameter(PARAM_TEMP_MIN,28000);  //set by default as 0 cc/min
-  }
-  
-  if(getParameter(PARAM_TEMP_MAX) == MAX_INTEGER) {
-     setAndSaveParameter(PARAM_TEMP_MAX,32000);  //set by default as 0 cc/min
-  }
+{
   
   pinMode(TRANS_PID, OUTPUT);
   
