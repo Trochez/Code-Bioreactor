@@ -151,6 +151,180 @@ NIL_THREAD(ThreadWire, arg) {
     }
     */
     
+    #ifdef PARAM_PH
+    
+      
+      Serial.print("valeur du PARAM_PH ");     
+      Serial.println(getParameter(PARAM_PH));
+      delay (6);
+   
+      //setParameter(PARAM_PH,1); quand pourrait-on définir le parametre à 1?
+      
+      int valueph = getParameter(PARAM_PH);
+      //Serial.print("valueph (PARAM_PH): ");     DEBUG
+      //Serial.println(valueph);                  DEBUG
+      //delay (1500);                             DEBUG
+      
+      int phquatre ;
+      int phquatretot = 0;
+      int phquatremoy ;
+      int phsept ;
+      int phsepttot = 0;
+      int phseptmoy ;
+      int factora ;
+      int factorb ;
+         
+      if(valueph == 4)
+      {
+        
+      Serial.println("1ere calibration (pH 4)");
+      //Serial.print("verif valueph (4) :");      DEBUG
+      //Serial.println(valueph);                  DEBUG
+      delay (10000);
+      
+      
+          int i ; 
+      
+          for (i=0; i<10; i++)
+         {           
+          phquatre = wireReadFourBytesToInt(PH);
+          phquatretot += phquatre;
+          Serial.print("valeur calibration pH 4 :");
+          Serial.println(phquatre);
+          delay (1500);
+         }
+     
+         phquatremoy = (phquatretot / 10);
+         Serial.print("valeur calibration pH 4 MOYENNE :");
+         Serial.println(phquatremoy);
+         delay (8000);
+      }
+      else
+      
+      if(valueph == 7)
+      {
+        
+        Serial.println("2e calibration (pH 7)");
+        //Serial.print("verif valueph (4) :");      DEBUG
+        //Serial.println(valueph);                  DEBUG
+        delay (10000);
+      
+      
+          int j ; 
+      
+          for (j=0; j<10; j++)
+         {           
+          phsept = wireReadFourBytesToInt(PH);
+          phsepttot += phsept;
+          Serial.print("valeur calibration pH 7:");
+          Serial.println(phsept);
+          delay (1500);
+         }
+     
+         phseptmoy = (phsepttot / 10);
+         Serial.print("valeur calibration pH 7 MOYENNE :");
+         Serial.println(phseptmoy);
+         delay (8000);
+      
+      }
+      else
+      
+      
+      
+       if(valueph == 2)
+      {      
+      Serial.println("c'est parti pour la lecture du pH !!");
+      //Serial.println("verif valueph (2) :");               DEBUG
+      //Serial.println(valueph);                             DEBUG
+      delay (4000);
+      
+      int phlecture = wireReadFourBytesToInt(PH);
+      Serial.print("valeur brute du pH :");
+      Serial.println(phlecture);
+      delay (6);
+      
+      factora = ((300*20) / (phquatremoy - phseptmoy ));
+      Serial.print("facteur a :");
+      Serial.println(factora);
+      delay (6);
+      
+      factorb = (((phseptmoy*factora)/20) + 700 );
+      Serial.print("facteur b :");
+      Serial.println(factorb);
+      delay (6);
+      
+      int phfinal = (factorb - ((factora*phlecture)/20));
+      Serial.print("valeur finale du pH :");
+      Serial.println(phfinal);
+      delay (3000);
+      
+      setParameter(PARAM_PH,wireReadFourBytesToInt(PH));
+      
+      }
+      else
+      
+      if(valueph > 10)
+      {  
+      Serial.print("facteur a :");
+      Serial.println(factora);
+      
+      Serial.print("facteur b :");
+      Serial.println(factorb);
+        
+      int phlecture = wireReadFourBytesToInt(PH);
+      Serial.print("valeur brute du pH :");
+      Serial.println(phlecture);
+      delay (6);
+      
+      
+      int phfinal = (factorb - ((factora*phlecture)/20));
+      Serial.print("valeur finale du pH :");
+      Serial.println(phfinal);
+      delay (3000);
+      
+      setParameter(PARAM_PH,wireReadFourBytesToInt(PH));
+     
+      }
+      else
+      
+      Serial.println("Entrez C4, ou C7, pour commencer la calibration");
+      //Serial.print("verif valueph initiale (1) :");                        DEBUG
+      //Serial.println(valueph);                                             DEBUG
+      delay (500);
+      
+      
+      
+      
+      
+      
+      //Serial.print("entrer une valeur pour le parametre C (1, 4 ou 7): ");
+      //setParameter(PARAM_PH,wireReadFourBytesToInt(PH));
+      //delay (10000);
+      
+      //setParameter(PARAM_PH,wireReadFourBytesToInt(PH));
+      //setParameter(PARAM_PH,wireReadFourBytesToInt(PH));
+      
+      /*delay (5000);
+      Serial.print("valeur du ph: ");
+      Serial.println(PARAM_PH);
+      delay (5000);
+      
+      */
+      
+      
+       
+      //Serial.print("valeur pH 4 bytes: ");
+      //Serial.println(wireReadFourBytesToInt(PH));
+      //delay (1000);
+      
+     
+      /*Serial.print("valeur pH 2 bytes : ");
+      Serial.println(wireReadTwoBytesToInt(PH));
+      delay (1000);*/
+      
+      
+    #endif 
+    
     
     /*************
       ANEMOMETER
@@ -317,6 +491,8 @@ void wireUpdateList() {
         i--;
       } 
       else if (currentPosition>=numberI2CDevices || wireDeviceID[currentPosition]>i) { // we need to add a device
+        //Serial.print("add: ");        DEBUG POUR CONNAITRE L'ADRESSE DE L'I2C !!!!!!!!
+        //Serial.println(i);
         wireInsertDevice(currentPosition, i);
         currentPosition++;
       }

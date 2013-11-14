@@ -48,6 +48,7 @@ SERIAL, LOGGER AND DEBUGGER
 #define I2C_RELAY         32 //B00100000
 #define I2C_RELAY_TAP     36 //B00100100
 #define I2C_FLUX          104//B01101000
+#define I2C_PH            104//B01101000
 
 //Define here if the LCD screen is used or not
 //#define I2C_LCD B00100111
@@ -75,7 +76,7 @@ SERIAL, LOGGER AND DEBUGGER
 ******************/
 
 //#define TEMP_CTRL      1
-//#define PH_CTRL        1
+#define PH_CTRL        1
 //#define GAS_CTRL       1
 //#define STEPPER_CTRL   1
 
@@ -89,8 +90,15 @@ SERIAL, LOGGER AND DEBUGGER
 // and a different MAC address
 ***********************/
 
-#define IP {172, 17, 0 ,100}
-#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
+//#define IP {172, 17, 0 ,101}                          //stepper
+//#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}      //stepper
+//#define IP {172, 17, 0 ,103}                             
+//#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEE}        
+//#define IP {172, 17, 0 ,104}                          //gas
+//#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xDD}      //gas
+#define IP {172, 17, 0 ,105}                          //pH
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAD}      //pH
+
 #define ALIX {172,17,0,10} 
 
 #define NTP_UPDATE_TIME 7200
@@ -132,7 +140,8 @@ SERIAL, LOGGER AND DEBUGGER
   
   // Input/Output  
   
-  #define PH                     IO1
+  //#define PH                     IO1
+  #define PH                     I2C_PH            // #define  RELAY_PUMP                   I2C_RELAY
   #define TAP_ACID               I2C_RELAY_TAP
   #define TAP_BASE               I2C_RELAY_TAP
   #define TAP_FOOD               I2C_RELAY_TAP
@@ -144,10 +153,11 @@ SERIAL, LOGGER AND DEBUGGER
       #define PARAM_RELAY_TAP    25       
   #endif
   
-  #ifdef PH
-    #define PARAM_DESIRED_PH     12 
-    #define PARAM_PH             2
+  #ifdef PH                                       //#ifdef RELAY_PUMP
+    #define PARAM_DESIRED_PH     12               //#define PARAM_WAIT_TIME_PUMP_MOTOR   21
+    #define PARAM_PH             2                //#define PARAM_RELAY_PUMP             25
     
+       
     //not parameters, hard coded values, set the minimal delay between pH adjustements to 10 seconds
     #define PH_ADJUST_DELAY      10    //delay between acid or base supplies
     #define PH_OPENING_TIME      1     //1sec TAP opening when adjusting
@@ -171,10 +181,10 @@ SERIAL, LOGGER AND DEBUGGER
   // Input/Output
   #define ANEMOMETER_WRITE            I2C_FLUX
   #define ANEMOMETER_READ             I2C_FLUX
-  #define  TAP_GAS1                   PWM1
-  #define  TAP_GAS2                   PWM2
+ // #define  TAP_GAS1                   PWM1
+ // #define  TAP_GAS2                   PWM2
   #define  TAP_GAS3                   PWM3
-  #define  TAP_GAS4                   PWM4
+ // #define  TAP_GAS4                   PWM4
   
   // Parameters stored in memory
   #ifdef TAP_GAS1  

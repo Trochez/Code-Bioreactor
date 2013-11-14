@@ -69,11 +69,11 @@ void setupParameters() {
   
   #ifdef WGHT
     if(getParameter(PARAM_LVL_MAX_WATER) == MAX_INTEGER) {    
-      setAndSaveParameter(PARAM_LVL_MAX_WATER,420);
+      setAndSaveParameter(PARAM_LVL_MAX_WATER,350);
     }
       
     if(getParameter(PARAM_LVL_MIN_WATER) == MAX_INTEGER) {    
-      setAndSaveParameter(PARAM_LVL_MIN_WATER,370); 
+      setAndSaveParameter(PARAM_LVL_MIN_WATER,260); 
     }  
   #endif
  
