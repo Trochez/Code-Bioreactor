@@ -63,10 +63,9 @@ SERIAL, LOGGER AND DEBUGGER
 
 #ifdef THR_LINEAR_LOGS
   #define LOG_INTERVAL        10
-  #define RRD_OFF             1  
+
   //#define DEBUG_LOGS          1
   //#define DEBUG_ETHERNET      1
-  //#define RRD_ON              1
 #endif
 
 #define THR_ETHERNET          1

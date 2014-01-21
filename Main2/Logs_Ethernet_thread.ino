@@ -43,8 +43,8 @@
 #define ASCII_0 48
 #define ASCII_9 57
 
-#define ASCII_a 48
-#define ASCII_z 57
+#define ASCII_a 97
+#define ASCII_z 122
 
 //Define the bytes of the URL in the request from the client
 #define GET_CHAR_1 5
@@ -100,10 +100,7 @@ NIL_THREAD(ThreadEthernet, arg) {
     // update the entry where the new log should be written.
     newEntryCmd = findLastEntryN(COMMAND_LOGS)+1;
     newEntryRRDSec = findLastEntryN(RRD_SEC_LOGS)+1;
-    #ifdef RRD_ON
-      newEntryRRDSMin = findLastEntryN(RRD_MIN_LOGS)+1;
-      newEntryRRDSHour = findLastEntryN(RRD_HOUR_LOGS)+1;
-    #endif
+    
     //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
     byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
   
@@ -455,12 +452,6 @@ void printTab(Print* output, uint8_t* tab, char s) {
     output->println(getLastEntrySec());
     newLine(output);
   
-    #ifdef RRD_ON
-      output->println(getLastEntryMin());
-      newLine(output);
-    
-      output->println(getLastEntryHour());
-    #endif
   }
 #endif
 

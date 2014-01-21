@@ -5,7 +5,7 @@
 
 	// TODO: change the time now() in global?
 */
-#ifdef THR_LINEAR_LOGS
+
 
 //Log libraries TODO: should be completed and corrected, still problem with the C/C++ compiler
 //#include <Log.h>
@@ -23,10 +23,7 @@ uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
 uint32_t findLastEntryN(uint8_t log_type);
 uint32_t getLastEntrySec();
 uint32_t getLastEntryMin();
-#ifdef RRD_ON
-  uint32_t getLastEntryHour();
-  uint32_t getLastEntryCmd();
-#endif
+
 #ifdef DEBUG_ETHERNET
   void printDigits(int digits);
   void digitalClockDisplay();
@@ -38,10 +35,6 @@ uint32_t getLastEntryMin();
 // the different types of logs
 #define COMMAND_LOGS               101
 #define RRD_SEC_LOGS               115
-#ifdef RRD_ON
-  #define RRD_MIN_LOGS             109
-  #define RRD_HOUR_LOGS            104
-#endif
 #define ENTRY_SIZE_LINEAR_LOGS     32
 #define ENTRY_SIZE_COMMAND_LOGS    12
 #define NB_PARAMETERS_LINEAR_LOGS  12
@@ -72,52 +65,26 @@ uint32_t getLastEntryMin();
 #define PARAMETER_SET          200
 #define ERROR_NOT_FOUND_ENTRY_N  150
 
-
 // Definition of the log sectors in the flash for the logs
 #define ADDRESS_SEC_BEG   0x000000
-#ifdef RRD_ON
-	#define ADDRESS_MIN_BEG   0x3F4000
-	#define ADDRESS_HOUR_BEG  0x5EE000
-#endif
-
 #define ADDRESS_CMD_BEG   0x620000
 
-#ifdef RRD_ON
-	#define ADDRESS_SEC_LAST  (ADDRESS_MIN_BEG - ENTRY_SIZE_LINEAR_LOGS)
-	#define ADDRESS_MIN_LAST  (ADDRESS_HOUR_BEG - ENTRY_SIZE_LINEAR_LOGS)
-	#define ADDRESS_HOUR_LAST (ADDRESS_CMD_BEG - ENTRY_SIZE_LINEAR_LOGS)
-	
-#endif
-
 #define ADDRESS_CMD_LAST  (ADDRESS_CMD_BEG + ADDRESS_CMD_SIZE - ENTRY_SIZE_COMMAND_LOGS)
-	
-#ifdef RRD_OFF
-	#define ADDRESS_SEC_LAST  (ADDRESS_CMD_BEG - ENTRY_SIZE_LINEAR_LOGS)
-#endif
+#define ADDRESS_SEC_LAST  (ADDRESS_CMD_BEG - ENTRY_SIZE_LINEAR_LOGS)
+
 
 #define SECTOR_SIZE       4096
 
-// Size of the log sectors in bytes
-#ifdef RRD_ON
-	#define ADDRESS_SEC_SIZE  (ADDRESS_MIN_BEG  - ADDRESS_SEC_BEG)
-	#define ADDRESS_MIN_SIZE  (ADDRESS_HOUR_BEG - ADDRESS_MIN_BEG)
-	#define ADDRESS_HOUR_SIZE (ADDRESS_CMD_BEG  - ADDRESS_HOUR_BEG)
-#endif
 
 #define ADDRESS_CMD_SIZE  0x030000
 
-#ifdef RRD_OFF
-	#define ADDRESS_SEC_SIZE  (ADDRESS_CMD_BEG  - ADDRESS_SEC_BEG)
-#endif
+#define ADDRESS_SEC_SIZE  (ADDRESS_CMD_BEG  - ADDRESS_SEC_BEG)
+
 
 
 // The number of entires by types of logs (seconds, minutes, hours, commands/events)
 #define NB_ENTRIES_SEC    (ADDRESS_SEC_SIZE  / ENTRY_SIZE_LINEAR_LOGS)
  
-#ifdef RRD_ON
-	#define NB_ENTRIES_MIN    (ADDRESS_MIN_SIZE  / ENTRY_SIZE_LINEAR_LOGS)
-	#define NB_ENTRIES_HOUR   (ADDRESS_HOUR_SIZE / ENTRY_SIZE_LINEAR_LOGS)
-#endif
 
 
 #define NB_ENTRIES_CMD    (ADDRESS_CMD_SIZE  / ENTRY_SIZE_COMMAND_LOGS)
@@ -130,10 +97,6 @@ uint32_t getLastEntryMin();
 uint32_t newEntryCmd = 0;
 uint32_t newEntryRRDSec = 0;
 
-#ifdef RRD_ON
-	uint32_t newEntryRRDSMin;
-	uint32_t newEntryRRDSHour;
-#endif
 
 
 /* 
@@ -170,16 +133,7 @@ void writeLog(uint8_t log_type, uint32_t * entryNb, uint32_t timestamp, uint16_t
         sst.flashSectorErase(findSectorOfN(RRD_SEC_LOGS, *entryNb));
       break;
       
-    #ifdef RRD_ON
-      case RRD_MIN_LOGS:
-        //TODO function to compute the average of the last N Seconds and store them
 
-        break;
-      case RRD_HOUR_LOGS:
-        //TODO function to compute the average of the last N Minutes and store them
-
-        break;
-    #endif 
     
   }
   
@@ -210,16 +164,6 @@ void writeLog(uint8_t log_type, uint32_t * entryNb, uint32_t timestamp, uint16_t
         sst.flashWriteNextInt16(param);
       }
       break;
-    #ifdef RRD_ON
-      case RRD_MIN_LOGS:
-        //TODO function to compute the average of the last N Seconds and store them
-
-        break;
-      case RRD_HOUR_LOGS:
-        //TODO function to compute the average of the last N Minutes and store them
-
-        break;
-    #endif 
   }
   
   // finish the process of writing the data in memory
@@ -256,14 +200,6 @@ void readLastEntry(uint8_t log_type, uint8_t* result) {
     case RRD_SEC_LOGS: 
       address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryRRDSec));
       break;
-	#ifdef RRD_ON
-	  case RRD_MIN_LOGS:
-	    address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryRRDMin));
-	    break;
-	  case RRD_HOUR_LOGS:
-	    address = findAddressOfEntryN(log_type, findPreviousEntryN(log_type, newEntryRRDHour));
-	    break;
-  #endif
   } 
   
   // Initializate the memory for the reading
@@ -278,10 +214,6 @@ void readLastEntry(uint8_t log_type, uint8_t* result) {
       break;
     
     case RRD_SEC_LOGS: 
-	#ifdef RRD_ON 
-		case RRD_MIN_LOGS:  
-		case RRD_HOUR_LOGS: 
-	#endif
       for(int i = 0; i < ENTRY_SIZE_LINEAR_LOGS + 4; i++) 
         result[i] = sst.flashReadNextInt8();
       break;
@@ -320,14 +252,6 @@ uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN)
     case RRD_SEC_LOGS: 
       addressOfEntryN = findAddressOfEntryN(log_type, entryN);
       break;
-	#ifdef RRD_ON
-    case RRD_MIN_LOGS:
-      addressOfEntryN = findAddressOfEntryN(log_type, entryN);
-      break;
-    case RRD_HOUR_LOGS:
-      addressOfEntryN = findAddressOfEntryN(log_type, entryN);
-      break;
-	#endif
   }
   sst.flashReadInit(addressOfEntryN);
   temp = sst.flashReadNextInt32();
@@ -365,10 +289,6 @@ uint8_t getLogsN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN)
   switch(log_type)
   {
     case RRD_SEC_LOGS:
-	#ifdef RRD_ON 
-		case RRD_MIN_LOGS: 
-		case RRD_HOUR_LOGS:
-	#endif
       restOfByte = ENTRY_SIZE_LINEAR_LOGS;
       break;
     case COMMAND_LOGS:
@@ -403,14 +323,6 @@ uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN)
     case RRD_SEC_LOGS: 
       lastEntry = (entryN + 1);
       break;
-	#ifdef RRD_ON
-    case RRD_MIN_LOGS: 
-      lastEntry = (entryN + 1);
-      break;
-    case RRD_HOUR_LOGS: 
-      lastEntry = (entryN + 1);
-      break;
-	#endif
   }*/
   return lastEntry;
 }
@@ -439,14 +351,6 @@ uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN)
       case RRD_SEC_LOGS: 
         PreviousEntry = NB_ENTRIES_SEC -1;
         break;
-    #ifdef RRD_ON
-      case RRD_MIN_LOGS: 
-        PreviousEntry = NB_ENTRIES_MIN -1;
-        break;
-      case RRD_HOUR_LOGS: 
-        PreviousEntry = NB_ENTRIES_HOUR -1;
-        break;
-  	#endif
     }
   }
   return PreviousEntry;
@@ -475,14 +379,6 @@ uint16_t findSectorOfN(uint8_t log_type, uint32_t entryNb) {
     case RRD_SEC_LOGS: 
       sectorNb = (ADDRESS_SEC_BEG / SECTOR_SIZE) + ((entryNb % NB_ENTRIES_SEC) - (entryNb % SECTOR_SIZE)) / SECTOR_SIZE;;
       break;
-	#ifdef RRD_ON
-    case RRD_MIN_LOGS: 
-      sectorNb = (ADDRESS_MIN_BEG / SECTOR_SIZE) + ((entryNb % NB_ENTRIES_MIN) - (entryNb % SECTOR_SIZE)) / SECTOR_SIZE;;
-      break;
-    case RRD_HOUR_LOGS: 
-      sectorNb = (ADDRESS_HOUR_BEG / SECTOR_SIZE) + ((entryNb % NB_ENTRIES_HOUR) - (entryNb % SECTOR_SIZE)) / SECTOR_SIZE;;
-      break;
-	#endif
   }*/
   return sectorNb;
 }
@@ -506,14 +402,6 @@ void updateEntryN(uint8_t log_type, uint32_t * entryNb) {
     case RRD_SEC_LOGS: 
       *entryNb = (*entryNb + 1) % NB_ENTRIES_SEC;
       break;
-  #ifdef RRD_ON
-    case RRD_MIN_LOGS: 
-      newEntryRRDMin = (newEntryMin + 1) % NB_ENTRIES_MIN;
-      break;
-    case RRD_HOUR_LOGS: 
-      newEntryRRDHour = (newEntryHour + 1) % NB_ENTRIES_HOUR;
-      break;
-  #endif
   }*/
   *entryNb = (*entryNb + 1);
 }
@@ -539,14 +427,6 @@ uint32_t findAddressOfEntryN(uint8_t logs_type, uint32_t entryN)
     case RRD_SEC_LOGS:
       address = ((entryN % NB_ENTRIES_SEC) * ENTRY_SIZE_LINEAR_LOGS) % ADDRESS_SEC_SIZE + ADDRESS_SEC_BEG;
       break;
-	#ifdef RRD_ON
-    case RRD_MIN_LOGS:
-      address = ((entryN % NB_ENTRIES_MIN) * ENTRY_SIZE_LINEAR_LOGS) % ADDRESS_MIN_SIZE + ADDRESS_MIN_BEG;
-      break;
-    case RRD_HOUR_LOGS:
-      address = ((entryN % NB_ENTRIES_HOUR) * ENTRY_SIZE_LINEAR_LOGS) % ADDRESS_HOUR_SIZE + ADDRESS_HOUR_BEG;
-      break;
-	#endif
   }
   return address;
 }
@@ -588,16 +468,6 @@ uint32_t findLastEntryN(uint8_t log_type)
       	Serial.print("addressLastEntryN: ");Serial.println(ADDRESS_SEC_LAST);
 			#endif
       break;
-	#ifdef RRD_ON
-    case RRD_MIN_LOGS: 
-      addressEntryN = ADDRESS_MIN_BEG;
-      addressLastEntryN = ADDRESS_MIN_LAST;
-      break;
-    case RRD_HOUR_LOGS: 
-      addressEntryN = ADDRESS_HOUR_BEG;
-      addressLastEntryN = ADDRESS_HOUR_LAST;
-      break;
-	#endif
   }
   while(!found) 
   {
@@ -655,10 +525,6 @@ uint32_t findLastEntryN(uint8_t log_type)
 
 uint32_t getLastEntrySec() {return findPreviousEntryN(RRD_SEC_LOGS, newEntryRRDSec);}
 uint32_t getLastEntryCmd() {return findPreviousEntryN(COMMAND_LOGS, newEntryCmd);}
-#ifdef RRD_ON
-  uint32_t getLastEntryMin() {return findPreviousEntryN(RRD_SEC_LOGS, newEntryRRDSMin);}
-  uint32_t getLastEntryHour() {return findPreviousEntryN(RRD_MIN_LOGS, newEntryRRDHour);
-#endif
 
 /*-----------------------
   NTP related functions
@@ -741,7 +607,7 @@ void setupMemory(SST sst){
   sst.init();
 }
 
-#endif
+
 #ifdef DEBUG_ETHERNET
   // function to print formated digit
   void printDigits(int digits){
