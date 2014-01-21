@@ -19,7 +19,7 @@ EthernetClient::EthernetClient() : _sock(MAX_SOCK_NUM) {
 
 EthernetClient::EthernetClient(uint8_t sock) : _sock(sock) {
 }
-
+#ifdef WITH_DNS
 int EthernetClient::connect(const char* host, uint16_t port) {
   // Look up the host first
   int ret = 0;
@@ -34,7 +34,7 @@ int EthernetClient::connect(const char* host, uint16_t port) {
     return ret;
   }
 }
-
+#endif
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
   if (_sock != MAX_SOCK_NUM)
     return 0;

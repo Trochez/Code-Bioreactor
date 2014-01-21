@@ -84,12 +84,21 @@ EthernetServer server(80);
 
 NIL_WORKING_AREA(waThreadEthernet, 400); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
+<<<<<<< HEAD
   
    SST sst = SST(4);
    setupMemory(sst);
    sst.flashTotalErase(); //  A Virer !!!
    free(&sst);
    
+=======
+  /*
+       SST sst = SST(4);
+   setupMemory(sst);
+   sst.flashTotalErase(); //  A Virer !!!
+   free(&sst);
+   */
+>>>>>>> 6c8ffe67d0060a99780741634f96094e01ffee54
    Ethernet.begin(mac,ip);
    server.begin();
   /****************************

@@ -62,7 +62,9 @@ public:
   virtual int beginPacket(IPAddress ip, uint16_t port);
   // Start building up a packet to send to the remote host specific in host and port
   // Returns 1 if successful, 0 if there was a problem resolving the hostname or port
+  #ifdef WITH_DNS
   virtual int beginPacket(const char *host, uint16_t port);
+  #endif
   // Finish off this packet and send it
   // Returns 1 if the packet was sent successfully, 0 if there was an error
   virtual int endPacket();
