@@ -2,11 +2,7 @@
   LIBRAIRIES
 **************/
 
-<<<<<<< HEAD
-//MultiThread  
-=======
 //MultiThread
->>>>>>> 6c8ffe67d0060a99780741634f96094e01ffee54
 #include <NilRTOS.h>
 
 //Memory Lib
@@ -32,11 +28,7 @@
 SERIAL, LOGGER AND DEBUGGER
 ************************/
 
-<<<<<<< HEAD
-//#define SERIAL 1
-=======
 #define SERIAL 1
->>>>>>> 6c8ffe67d0060a99780741634f96094e01ffee54
 
 /********************
   PIN&ADRESS MAPPING
@@ -84,15 +76,10 @@ SERIAL, LOGGER AND DEBUGGER
 ******************/
 
 //#define TEMP_CTRL      1
-<<<<<<< HEAD
-//#define PH_CTRL        1
 #define GAS_CTRL       1
-#define PH_CTRL        1
-=======
 #define PH_CTRL        1
 //#define GAS_CTRL       1
 //#define STEPPER_CTRL   1
->>>>>>> 6c8ffe67d0060a99780741634f96094e01ffee54
 
 
 /**********************
@@ -103,16 +90,12 @@ SERIAL, LOGGER AND DEBUGGER
 // Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
 // and a different MAC address
 ***********************/
-<<<<<<< HEAD
 #define IP {172, 17, 0 , 103}
 #define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAB}
 //#define IP {172, 17, 0 , 104}
 //define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAA}
 //#define IP {172, 17, 0 , 105}
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}
-=======
-
->>>>>>> 6c8ffe67d0060a99780741634f96094e01ffee54
 //#define IP {172, 17, 0 ,101}                          //stepper
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}      //stepper
 //#define IP {172, 17, 0 ,103}                             
@@ -242,13 +225,8 @@ SERIAL, LOGGER AND DEBUGGER
 #ifdef STEPPER_CTRL
   // Input/Output
   
-<<<<<<< HEAD
-  #define  WGHT                         IO5
-  #define  STEPPER                      {IO2,PWM2}
-=======
   #define  WGHT                         IO1
   #define  STEPPER                      {IO5,PWM5}
->>>>>>> 6c8ffe67d0060a99780741634f96094e01ffee54
   //#define  TEMP_STEPPER                 IO4
   #define  RELAY_PUMP                   I2C_RELAY
   
