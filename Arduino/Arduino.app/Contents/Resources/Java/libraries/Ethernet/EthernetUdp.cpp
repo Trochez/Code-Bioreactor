@@ -25,7 +25,7 @@
  *
  * bjoern@cs.stanford.edu 12/30/2008
  */
-
+#include "EthernetUDP.h"
 #include "w5100.h"
 #include "socket.h"
 #include "Ethernet.h"
@@ -75,7 +75,7 @@ void EthernetUDP::stop()
   EthernetClass::_server_port[_sock] = 0;
   _sock = MAX_SOCK_NUM;
 }
-
+#ifdef WITH_DNS
 int EthernetUDP::beginPacket(const char *host, uint16_t port)
 {
   // Look up the host first
@@ -91,7 +91,7 @@ int EthernetUDP::beginPacket(const char *host, uint16_t port)
     return ret;
   }
 }
-
+#endif
 int EthernetUDP::beginPacket(IPAddress ip, uint16_t port)
 {
   _offset = 0;
