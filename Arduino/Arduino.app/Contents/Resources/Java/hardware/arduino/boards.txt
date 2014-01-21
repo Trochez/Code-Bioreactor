@@ -167,7 +167,7 @@ leonardo.build.variant=leonardo
 
 ##############################################################
 
-berta.name=Berta BoaRd (bioreactor)
+berta.name=Berta BoaRd (atmega32u4, bioreactor)
 berta.upload.protocol=avr109
 berta.upload.maximum_size=28672
 berta.upload.speed=57600

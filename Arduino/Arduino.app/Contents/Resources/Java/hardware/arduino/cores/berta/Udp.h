@@ -41,7 +41,7 @@
 class UDP : public Stream {
 
 public:
-  virtual uint8_t begin(uint16_t) =0;	// initialize, start listening on specified port. Returns 1 if successful, 0 if there are no sockets available to use
+  virtual uint8_t begin(uint16_t) =0; // initialize, start listening on specified port. Returns 1 if successful, 0 if there are no sockets available to use
   virtual void stop() =0;  // Finish with the UDP socket
 
   // Sending UDP packets
@@ -51,7 +51,9 @@ public:
   virtual int beginPacket(IPAddress ip, uint16_t port) =0;
   // Start building up a packet to send to the remote host specific in host and port
   // Returns 1 if successful, 0 if there was a problem resolving the hostname or port
+  #if WITH_DNS
   virtual int beginPacket(const char *host, uint16_t port) =0;
+  #endif
   // Finish off this packet and send it
   // Returns 1 if the packet was sent successfully, 0 if there was an error
   virtual int endPacket() =0;
@@ -75,7 +77,7 @@ public:
   virtual int read(char* buffer, size_t len) =0;
   // Return the next byte from the current packet without moving on to the next byte
   virtual int peek() =0;
-  virtual void flush() =0;	// Finish reading the current packet
+  virtual void flush() =0;  // Finish reading the current packet
 
   // Return the IP address of the host who sent the current incoming packet
   virtual IPAddress remoteIP() =0;
