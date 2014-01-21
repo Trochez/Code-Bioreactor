@@ -167,24 +167,24 @@ leonardo.build.variant=leonardo
 
 ##############################################################
 
-leonardo.name=Berta BoaRd (bioreactor)
-leonardo.upload.protocol=avr109
-leonardo.upload.maximum_size=28672
-leonardo.upload.speed=57600
-leonardo.upload.disable_flushing=true
-leonardo.bootloader.low_fuses=0xff
-leonardo.bootloader.high_fuses=0xd8
-leonardo.bootloader.extended_fuses=0xcb
-leonardo.bootloader.path=caterina
-leonardo.bootloader.file=Caterina-Leonardo.hex
-leonardo.bootloader.unlock_bits=0x3F
-leonardo.bootloader.lock_bits=0x2F
-leonardo.build.mcu=atmega32u4
-leonardo.build.f_cpu=16000000L
-leonardo.build.vid=0x2341
-leonardo.build.pid=0x8036
-leonardo.build.core=berta
-leonardo.build.variant=leonardo
+berta.name=Berta BoaRd (bioreactor)
+berta.upload.protocol=avr109
+berta.upload.maximum_size=28672
+berta.upload.speed=57600
+berta.upload.disable_flushing=true
+berta.bootloader.low_fuses=0xff
+berta.bootloader.high_fuses=0xd8
+berta.bootloader.extended_fuses=0xcb
+berta.bootloader.path=caterina
+berta.bootloader.file=Caterina-Leonardo.hex
+berta.bootloader.unlock_bits=0x3F
+berta.bootloader.lock_bits=0x2F
+berta.build.mcu=atmega32u4
+berta.build.f_cpu=16000000L
+berta.build.vid=0x2341
+berta.build.pid=0x8036
+berta.build.core=berta
+berta.build.variant=leonardo
 
 ##############################################################
 
