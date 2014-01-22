@@ -19,7 +19,7 @@ byte paramCurrent=0; // Which parameter are we defining
 NIL_WORKING_AREA(waThreadSerial, 96);
 NIL_THREAD(ThreadSerial, arg) {
 
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   /*
   SerialEvent occurs whenever a new data comes in the

@@ -432,9 +432,7 @@ uint32_t getNumber(uint8_t start, uint8_t* tab){
 /****************************************
  * Parameter & requests related functions
  *****************************************/
-void newLine(Print* output){
-  output->println(F("<br/>"));
-}
+
 
 void printTab(Print* output, uint8_t* tab, char s) {
   for(int i=0; i<s; i++){
@@ -447,68 +445,19 @@ void printTab(Print* output, uint8_t* tab, char s) {
 #ifdef THR_LINEAR_LOGS
   void printIndexes(Print* output){
     output->println(getLastEntryCmd());
-    newLine(output);
-  
     output->println(getLastEntrySec());
-    newLine(output);
-  
   }
 #endif
 
 void noSuchCommand(Print* output){
   output->println(F("No Such Command"));
-  newLine(output);
 }
 
 void noThread(Print* output){
   output->println(F("No Thread"));
-  newLine(output);
 }
 
-void printHelp(Print* output) {
-  //return the menu
-  output->print(F("(f)hard"));
-  newLine(output);
-  output->print(F("(p)help"));
-  newLine(output);
-  output->print(F("(i)2c"));
-  newLine(output);
-  output->print(F("(l)og"));
-  newLine(output);
-  output->print(F("(o)1-wire"));
-  newLine(output);
-  output->print(F("(g)param"));
-  newLine(output);
-}
 
-void printHardCodedParameters(Print* output){
-  output->println(F("Hardcoded:")); 
-  newLine(output);
-  output->print(F("IP:"));
-  printIP(output, ip, 4);
-  output->print(F("MAC:"));
-  printIP(output, mac, 6);
-  output->print(F("ALIX:"));
-  printIP(output, (uint8_t*) alix, 4);
-#ifdef RELAY_PUMP
-  output->print(F("I2C relay:"));
-  output->println(I2C_RELAY); 
-  newLine(output);
-#endif
-#ifdef FLUX
-  output->print(F("I2C Flux:"));
-  output->println(I2C_FLUX); 
-  newLine(output);
-#endif
-}
-
-void printIP(Print* output, uint8_t* tab, uint8_t s){
-   for(int i=0; i<s; i++){
-      output->print(tab[i], DEC);
-      output->print(' ');
-   }  
-   output->println("<br/>");
-}
 
 #endif
 

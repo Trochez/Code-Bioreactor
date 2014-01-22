@@ -6,8 +6,7 @@
 #define MAX_PARAM_VALUE_LENGTH 10
 
 
-//Prototypes
-static void printFreeMemory(Print* output);
+
 void serialReset();
 
 
@@ -16,11 +15,10 @@ byte paramSerialValuePosition=0;
 byte paramCurrent=0; // Which parameter are we defining
 
 
-NIL_WORKING_AREA(waThreadSerial, 96);
+NIL_WORKING_AREA(waThreadSerial, 100);
 NIL_THREAD(ThreadSerial, arg) {
 
   Serial.begin(9600);
-
   /*
   SerialEvent occurs whenever a new data comes in the
    hardware serial RX.  This routine is run between each
@@ -45,11 +43,11 @@ NIL_THREAD(ThreadSerial, arg) {
     while (Serial.available()) {
       // get the new byte:
       char inChar = (char)Serial.read(); 
-      if (inChar=='f') { // show settings
+      if (inChar=='p') { // show settings
         printHardCodedParameters(&Serial);
         serialReset();
       } 
-      else if (inChar=='p') {
+      else if (inChar=='h') {
         printHelp(&Serial);
         serialReset();
       }
@@ -78,8 +76,12 @@ NIL_THREAD(ThreadSerial, arg) {
         #endif
         serialReset();
       } 
-      else if (inChar=='g') { // show settings
+      else if (inChar=='s') { // show settings
         printParameters(&Serial);
+        serialReset();
+      } 
+       else if (inChar=='f') { // show settings
+        printFreeMemory(&Serial);
         serialReset();
       } 
       else if (inChar==',') { // store value and increment
@@ -138,10 +140,7 @@ NIL_THREAD(ThreadSerial, arg) {
   }
 }
 
-static void printFreeMemory(Print* output)
-{
-  nilPrintUnusedStack(output);
-}
+
 
 void serialReset() {
   paramCurrent=0;

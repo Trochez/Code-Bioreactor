@@ -165,23 +165,21 @@ boolean sendError(uint8_t event, uint8_t value){
 }
 
 void printParameter(Print* output, byte number){
-  output->println(F("Parameter:<br/>"));
+  output->println(F("Parameter:"));
   output->print(number);
   output->print("-");
   output->print((char)(number + 65));
   output->print(": ");
-  output->print(parameters[number]);
-  output->println("<br/>");
+  output->println(parameters[number]);
 }
 
 void printParameters(Print* output) {
-  output->println(F("Current settings:<br/>"));
+  output->println(F("Current settings:"));
   for (int i = 0; i < MAX_PARAM; i++) {
     output->print(i);
     output->print("-");
     output->print((char)(i + 65));
     output->print(": ");
-    output->print(parameters[i]);
-    output->println(F("<br/>"));
+    output->println(parameters[i]);
   }
 }

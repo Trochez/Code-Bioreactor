@@ -10,34 +10,14 @@
 //Log libraries TODO: should be completed and corrected, still problem with the C/C++ compiler
 //#include <Log.h>
 
-//Prototypes
-void writeLog(uint8_t log_type, uint32_t* entryNb, uint32_t timestamp, uint16_t event_number, uint16_t parameter_value);
-void readLastEntry(uint8_t log_type, uint8_t* result);
-uint8_t readEntryN(uint8_t log_type, uint8_t* result, uint32_t entryN);
-uint8_t getLogsN(uint8_t log_type, SST sst, uint8_t* result, uint32_t entryN);
-uint16_t findSectorOfN(uint8_t log_type, uint32_t entryNb);
-void updateEntryN(uint8_t log_type, uint32_t* entryN);
-uint32_t findAddressOfEntryN(uint8_t logs_type, uint32_t entryN);
-uint32_t findNextEntryN(uint8_t log_type, uint32_t entryN);
-uint32_t findPreviousEntryN(uint8_t logs_type, uint32_t entryN);
-uint32_t findLastEntryN(uint8_t log_type);
-uint32_t getLastEntrySec();
-uint32_t getLastEntryMin();
 
-#ifdef DEBUG_ETHERNET
-  void printDigits(int digits);
-  void digitalClockDisplay();
-#endif
-
-
-#define NTP_PACKET_SIZE 48
 
 // the different types of logs
 #define COMMAND_LOGS               101
 #define RRD_SEC_LOGS               115
-#define ENTRY_SIZE_LINEAR_LOGS     32
-#define ENTRY_SIZE_COMMAND_LOGS    12
-#define NB_PARAMETERS_LINEAR_LOGS  12
+#define ENTRY_SIZE_LINEAR_LOGS     64
+#define ENTRY_SIZE_COMMAND_LOGS    0
+#define NB_PARAMETERS_LINEAR_LOGS  26
 #define SIZE_TIMESTAMPS            4
 #define SIZE_COUNTER_ENTRY         4
 
