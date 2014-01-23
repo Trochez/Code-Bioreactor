@@ -14,6 +14,12 @@ void printHardCodedParameters(Print* output){
   output->print(F("I2C Flux:"));
   output->println(I2C_FLUX); 
 #endif
+#ifdef THR_LINEAR_LOGS
+  output->print(F("Log index:"));
+  output->println(getLastEntrySec());
+#endif
+
+
 }
 
 void printIP(Print* output, uint8_t* tab, uint8_t s, byte format){
@@ -50,11 +56,12 @@ void printIP(Print* output, uint8_t* tab, uint8_t s, byte format){
 
 void printResult(char* data, Print* output) {
   boolean theEnd=false;
+  boolean logEvent=false;
   byte paramCurrent=0; // Which parameter are we defining
   // The maximal length of a parameter value. It is a int so the value must be between -32768 to 32767
-#define MAX_PARAM_VALUE_LENGTH 6
-  char paramSerialValue[MAX_PARAM_VALUE_LENGTH];
-  byte paramSerialValuePosition=0;
+#define MAX_PARAM_VALUE_LENGTH 8
+  char paramValue[MAX_PARAM_VALUE_LENGTH];
+  byte paramValuePosition=0;
   byte i=0;
 
   while (!theEnd) {
@@ -66,13 +73,6 @@ void printResult(char* data, Print* output) {
     } 
     else if (inChar=='h') {
       printHelp(output);
-    }
-    else if (inChar=='l') {
-#ifdef THR_LINEAR_LOGS
-      printIndexes(output); 
-#else
-      noThread(output);
-#endif
     }
     else if (inChar=='i') { // show i2c (wire) information
 #if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
@@ -95,38 +95,53 @@ void printResult(char* data, Print* output) {
     else if (inChar=='f') { // show settings
       printFreeMemory(output);
     } 
+        else if (inChar=='l') { // show log
+     logEvent=true;
+    } 
     else if (inChar==',') { // store value and increment
       if (paramCurrent>0) {
-        if (paramSerialValuePosition>0) {
-          setAndSaveParameter(paramCurrent-1,atof(paramSerialValue));
+        if (paramValuePosition>0) {
+          setAndSaveParameter(paramCurrent-1,atoi(paramValue));
         } 
         else {
-          Serial.println(parameters[paramCurrent-1]);
+          output->println(parameters[paramCurrent-1]);
         }
         if (paramCurrent<=MAX_PARAM) {
           paramCurrent++;
-          paramSerialValuePosition=0;
-          paramSerialValue[0]='\0';
+          paramValuePosition=0;
+          paramValue[0]='\0';
         }
       }
     }
     else if (theEnd) {
       // this is a carriage return;
       if (paramCurrent>0) {
-        if (paramSerialValuePosition>0) {
-          setAndSaveParameter(paramCurrent-1,atof(paramSerialValue));
+        if (paramValuePosition>0) {
+          setAndSaveParameter(paramCurrent-1,atoi(paramValue));
         } 
         else {
-          Serial.println(parameters[paramCurrent-1]);
+          output->println(parameters[paramCurrent-1]);
         }
+      }      
+      else if (logEvent) {
+#ifdef THR_LINEAR_LOGS
+        if (paramValuePosition>0) {
+          printLogN(output,atol(paramValue));
+        } 
+        else {
+          printLastLog(output);
+        }
+#else
+        noThread(output);
+#endif
       }
     }
     else if ((inChar>47 && inChar<58) || inChar=='-') {
-      if (paramSerialValuePosition<MAX_PARAM_VALUE_LENGTH) {
-        paramSerialValue[paramSerialValuePosition]=inChar;
-        paramSerialValuePosition++;
-        if (paramSerialValuePosition<MAX_PARAM_VALUE_LENGTH) {
-          paramSerialValue[paramSerialValuePosition]='\0';
+      if (paramValuePosition<MAX_PARAM_VALUE_LENGTH) {
+        paramValue[paramValuePosition]=inChar;
+        paramValuePosition++;
+        if (paramValuePosition<MAX_PARAM_VALUE_LENGTH) {
+          paramValue[paramValuePosition]='\0';
         }
       }
     } 
@@ -152,6 +167,9 @@ static void printFreeMemory(Print* output)
 {
   nilPrintUnusedStack(output);
 }
+
+
+
 
 
 
