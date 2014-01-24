@@ -102,6 +102,36 @@ boolean updateNTP(EthernetUDP Udp, byte* packetBuffer ){
       //TODO: What should we do here ? New update 
       return false;
    }
-   
+}
+
+unsigned int localPort = 8888;      // local port to listen for UDP packets
+const uint8_t alix[] = ALIX;
+IPAddress alix_server(alix[0],alix[1],alix[2],alix[3]); // local NTP server
+
+
+void setupNtp() {
+  
+  //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
+  byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
+
+  // Boolean variable to test a t the first place several times the actuall
+  // time of the arduino. Count 5 times the arduino time before synchronization
+  time_t time_now = 0;
+  time_t previousNTP = 0;
+  time_t previousLog = 0;
+  boolean waitPacket = false;
+  // A UDP instance to let us send and receive packets over UDP
+  EthernetUDP Udp;
+
+  /*********************************
+   * SETUP ETHERNET SERVER & NTP
+   ********************************/
+  Udp.begin(localPort);
+
+  sendNTPpacket(&Udp, alix_server, packetBuffer);
+  delay(2000);
+  updateNTP(Udp, packetBuffer);
+
+  //Log of the reboot of the card
 }
 
