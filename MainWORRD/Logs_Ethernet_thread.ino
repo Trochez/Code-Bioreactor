@@ -97,7 +97,7 @@ NIL_THREAD(ThreadEthernet, arg) {
    *****************************/
 #ifdef THR_LINEAR_LOGS
 
-  newEntryRRDSec = findLastEntryN()+1;
+
 
   //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
   byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
@@ -121,7 +121,7 @@ NIL_THREAD(ThreadEthernet, arg) {
   updateNTP(Udp, packetBuffer);
 
   //Log of the reboot of the card
-  writeLog(&newEntryCmd, time_now, CARD_BOOT , 0); 
+  
 #endif
 
 #ifdef DEBUG_ETHERNET
@@ -138,7 +138,7 @@ NIL_THREAD(ThreadEthernet, arg) {
 
     if(getParameter(FLAG_VECTOR) & EVENT_OCCURED){
 #ifdef THR_LINEAR_LOGS
-      writeLog(&newEntryCmd, time_now, getParameter(PARAM_EVENT), getParameter(PARAM_EVENT_VALUE)); 
+      writeLog(getParameter(PARAM_EVENT), getParameter(PARAM_EVENT_VALUE)); 
 #endif
       setParameter(FLAG_VECTOR, getParameter(FLAG_VECTOR) & (~EVENT_OCCURED));
     }
@@ -164,7 +164,7 @@ NIL_THREAD(ThreadEthernet, arg) {
     else if(waitPacket && time_now - previousNTP >= NTP_UPDATE_TIME+2) {
       boolean success = updateNTP(Udp, packetBuffer);
       if(!success) {
-        writeLog(&newEntryCmd, time_now, NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
+        writeLog(NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
       }
       previousNTP = time_now;
       waitPacket = false;
@@ -174,7 +174,7 @@ NIL_THREAD(ThreadEthernet, arg) {
     // this is the linear logs
     // 
     if(time_now - previousLog >= LOG_INTERVAL) {
-      writeLog(&newEntryRRDSec , (uint32_t)time_now, 0, 0);
+      writeLog( 0, 0);
       previousLog = time_now;
     }
 #endif
@@ -302,7 +302,7 @@ void parseRequest(Client* cl, uint8_t* req) {
         uint32_t value = getNumber(GET_CHAR_3, req);
         byte p = (byte) (c-ASCII_A);
 #ifdef THR_LINEAR_LOGS
-        writeLog(&newEntryCmd, now(), (uint16_t) (PARAMETER_SET + p) , (uint16_t) value);
+        writeLog( (uint16_t) (PARAMETER_SET + p) , (uint16_t) value);
 #endif
         setAndSaveParameter(p, value);
         printParameter(cl, p);
@@ -342,11 +342,6 @@ uint32_t getNumber(uint8_t start, uint8_t* tab){
 
 
 
-#ifdef THR_LINEAR_LOGS
-void printIndexes(Print* output){
-  output->println(getLastEntrySec());
-}
-#endif
 
 void noSuchCommand(Print* output){
   output->println(F("No Such Command"));

@@ -24,9 +24,13 @@
 
 NIL_THREADS_TABLE_BEGIN()
 
+
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadLogger, NULL, waThreadLogger, sizeof(waThreadLogger))
+
 #ifdef SERIAL
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThreadSerial))
 #endif
+
 
 
 

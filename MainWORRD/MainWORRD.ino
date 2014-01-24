@@ -64,7 +64,7 @@
 #ifdef THR_LINEAR_LOGS
 #define LOG_INTERVAL        10
 
-#define DEBUG_LOGS          1
+//#define DEBUG_LOGS          1
 //#define DEBUG_ETHERNET      1
 #endif
 
@@ -284,16 +284,11 @@ void setup() {
   delay(1000);
   setupParameters();
   initParameterBioreactor();
-#ifdef SERIAL
-  while(!Serial)
-  { 
-    ; 
-  }
-#endif
-
   nilSysBegin();
 }
 
 void loop() {
 }
+
+
 

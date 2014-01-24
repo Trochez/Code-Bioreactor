@@ -1,11 +1,12 @@
 void printHardCodedParameters(Print* output){
-  output->println(F("Hardcoded:")); 
   output->print(F("IP:"));
   printIP(output, ip, 4, DEC);
   output->print(F("MAC:"));
   printIP(output, mac, 6, HEX);
   output->print(F("NTP:"));
   printIP(output, (uint8_t*) alix, 4, DEC);
+   output->print(F("EPOCH:"));
+   output->println(now());
 #ifdef RELAY_PUMP
   output->print(F("I2C relay:"));
   output->println(I2C_RELAY); 
@@ -15,8 +16,8 @@ void printHardCodedParameters(Print* output){
   output->println(I2C_FLUX); 
 #endif
 #ifdef THR_LINEAR_LOGS
-  output->print(F("Log index:"));
-  output->println(getLastEntrySec());
+  output->print(F("Next log index:"));
+  output->println(nextEntryID);
 #endif
 
 
