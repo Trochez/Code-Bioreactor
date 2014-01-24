@@ -29,8 +29,9 @@
 void getTemperature(OneWire &ow, int parameter, byte * loggedErrorTemp, uint16_t logNumber);
   
   
-NIL_WORKING_AREA(waThreadTemp, 64);
+NIL_WORKING_AREA(waThreadTemp, 150);
 NIL_THREAD(ThreadTemp, arg) {
+  nilThdSleepMilliseconds(1000);
   #ifdef TEMP_CTRL
 
     #ifdef TEMP_LIQ
@@ -68,7 +69,7 @@ NIL_THREAD(ThreadTemp, arg) {
       getTemperature(oneWire3, PARAM_TEMP_STEPPER, &errorTempStepper, TEMP_STEPPER_FAILED); 
     #endif
     
-    nilThdSleepMilliseconds(750);
+    nilThdSleepMilliseconds(5000);
   }
 }
   
@@ -105,6 +106,9 @@ void getTemperature(OneWire &ow, int parameter, byte * loggedErrorTemp, uint16_t
     data[0] = ow.read();
     data[1] = ow.read();
     int16_t raw = (data[1] << 8) | data[0];
+    
+    Serial.println(raw);
+    
     //float celsius = (float)raw / 16.0;
     setParameter(parameter, raw*62);
   }

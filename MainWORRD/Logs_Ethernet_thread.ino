@@ -56,14 +56,6 @@
 #define TABLE_SIZE 32
 
 
-//Prototypes
-void parseRequest(Client* cl, uint8_t* req);
-uint32_t getNumber(uint8_t start, uint8_t* tab);
-void newLine(Print* output);
-void printTab(Print* output, uint8_t* tab, char s);
-void noSuchCommand(Print* output);
-void noThread(Print* output);
-void printHelp(Print* output);
 
 #ifdef THR_LINEAR_LOGS
 void printIndexes(Print* output);
@@ -72,9 +64,8 @@ void printIndexes(Print* output);
 
 uint8_t ip[] = IP;
 uint8_t mac[] = MAC;
-const uint8_t alix[] = ALIX;
-unsigned int localPort = 8888;      // local port to listen for UDP packets
-IPAddress alix_server(alix[0],alix[1],alix[2],alix[3]); // local NTP server
+
+
 EthernetServer server(80);
 
 
@@ -82,47 +73,15 @@ EthernetServer server(80);
  * Ethernet Thread
  *****************/
 
-NIL_WORKING_AREA(waThreadEthernet, 400); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 500); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
-
-  SST sst = SST(4);
-  setupMemory(sst);
-  sst.flashTotalErase(); //  A Virer !!!
-  free(&sst);
 
   Ethernet.begin(mac,ip);
   server.begin();
   /****************************
    * LOG & NTP Setup
    *****************************/
-#ifdef THR_LINEAR_LOGS
 
-
-
-  //const int NTP_PACKET_SIZE= 48; // NTP time stamp is in the first 48 bytes of the message
-  byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets 
-
-  // Boolean variable to test a t the first place several times the actuall
-  // time of the arduino. Count 5 times the arduino time before synchronization
-  time_t time_now = 0;
-  time_t previousNTP = 0;
-  time_t previousLog = 0;
-  boolean waitPacket = false;
-  // A UDP instance to let us send and receive packets over UDP
-  EthernetUDP Udp;
-
-  /*********************************
-   * SETUP ETHERNET SERVER & NTP
-   ********************************/
-  Udp.begin(localPort);
-
-  sendNTPpacket(&Udp, alix_server, packetBuffer);
-  delay(2000);
-  updateNTP(Udp, packetBuffer);
-
-  //Log of the reboot of the card
-  
-#endif
 
 #ifdef DEBUG_ETHERNET
   Serial.print("server is at ");
@@ -138,46 +97,12 @@ NIL_THREAD(ThreadEthernet, arg) {
 
     if(getParameter(FLAG_VECTOR) & EVENT_OCCURED){
 #ifdef THR_LINEAR_LOGS
-      writeLog(getParameter(PARAM_EVENT), getParameter(PARAM_EVENT_VALUE)); 
+  //    writeLog(getParameter(PARAM_EVENT), getParameter(PARAM_EVENT_VALUE)); 
 #endif
       setParameter(FLAG_VECTOR, getParameter(FLAG_VECTOR) & (~EVENT_OCCURED));
     }
 
 
-
-    /****************************
-     * THREAD LOG & TIME : STRUCTURE    
-     * - Update NTP all days
-     * Send packet
-     * 2sec later check if answer
-     * answer -> update
-     * no answer -> log in event + try again in 3600 seconds
-     * - Log parameter every 1 second
-     *****************************/
-#ifdef THR_LINEAR_LOGS
-    time_now = now();
-    if(!waitPacket && ((time_now - previousNTP ) >= NTP_UPDATE_TIME)) {
-      sendNTPpacket(&Udp,alix_server, packetBuffer);
-      waitPacket = true;
-    } 
-    // 2 seconds later we check if we have an answer from the server and update the time if possible
-    else if(waitPacket && time_now - previousNTP >= NTP_UPDATE_TIME+2) {
-      boolean success = updateNTP(Udp, packetBuffer);
-      if(!success) {
-        writeLog(NO_ANSWER_NTP_SERVER, 0); //TODO :update the function 
-      }
-      previousNTP = time_now;
-      waitPacket = false;
-    }
-
-    // This function suppose that the thread is called regularly (at least 1 time every 10 second)
-    // this is the linear logs
-    // 
-    if(time_now - previousLog >= LOG_INTERVAL) {
-      writeLog( 0, 0);
-      previousLog = time_now;
-    }
-#endif
 
     /****************************
      * THREAD ETHERNET 
@@ -255,70 +180,8 @@ NIL_THREAD(ThreadEthernet, arg) {
 
 void parseRequest(Client* cl, uint8_t* req) {
 
-  //The request has the form:
-  //"GET /XYZ HTTP/1.1 
-  // ..."
-  // We are interested by the 5th character (X)
-
-  uint8_t c = req[GET_CHAR_1];
-
-
-
-
-
-
-
-  // show settings
-  if (c=='g') {
-    printParameters(cl);
-  } 
-
-  else if (c=='l'){
-#ifdef THR_LINEAR_LOGS
-    printIndexes(cl); 
-#else
-    noThread(cl);
-#endif
-  }
-
-  //return the log of the entry given
-  else if ( (c=='s') || /*(c=='m') || (c=='h') ||*/ (c=='e')){
-
-  }
-
-  // The request is a parameter A-Z
-  else if(c >= ASCII_A && c <= ASCII_Z){
-    //Here we read the second byte of the URL to differentiate the requests
-    uint8_t d = req[GET_CHAR_2];
-    switch(d){
-
-      //There is only one parameter in the GET
-    case ' ':
-      printParameter(cl, (byte) (c-ASCII_A));
-      break;
-
-    case '=':
-      { // { } Allow to declare variables inside the switch
-        uint32_t value = getNumber(GET_CHAR_3, req);
-        byte p = (byte) (c-ASCII_A);
-#ifdef THR_LINEAR_LOGS
-        writeLog( (uint16_t) (PARAMETER_SET + p) , (uint16_t) value);
-#endif
-        setAndSaveParameter(p, value);
-        printParameter(cl, p);
-      }
-      break;
-
-    default:
-      noSuchCommand(cl);
-      break;
-    }
-  } 
-
-  //This request does not exist
-  else {
     noSuchCommand(cl); 
-  }
+
 }
 
 uint32_t getNumber(uint8_t start, uint8_t* tab){

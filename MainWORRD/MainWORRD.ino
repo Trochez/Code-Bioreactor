@@ -64,8 +64,8 @@
 #ifdef THR_LINEAR_LOGS
 #define LOG_INTERVAL        10
 
-#define DEBUG_LOGS          1
-//#define DEBUG_ETHERNET      1
+//#define DEBUG_LOGS          1
+#define DEBUG_ETHERNET      1
 #endif
 
 #define THR_ETHERNET          1
@@ -74,9 +74,9 @@
  * DEFINE CARD TYPE
  ******************/
 
-//#define TEMP_CTRL      1
-#define GAS_CTRL       1
-#define PH_CTRL        1
+#define TEMP_CTRL      1
+//#define GAS_CTRL       1
+//#define PH_CTRL        1
 //#define GAS_CTRL       1
 //#define STEPPER_CTRL   1
 
@@ -281,14 +281,16 @@
  *********/
 
 void setup() {
-  delay(1000);
+  delay(5000);
   setupParameters();
   initParameterBioreactor();
+
   nilSysBegin();
 }
 
 void loop() {
 }
+
 
 
 
