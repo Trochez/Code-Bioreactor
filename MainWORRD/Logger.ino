@@ -29,7 +29,7 @@
 
 #define SECTOR_SIZE       4096
 #define NB_ENTRIES_PER_SECTOR    (SECTOR_SIZE  / ENTRY_SIZE_LINEAR_LOGS)
-#define ADDRESS_SIZE  (ADDRESS_LAST  - ADDRESS_BEG)
+#define ADDRESS_SIZE  (ADDRESS_MAX  - ADDRESS_BEG)
 
 
 // The number of entires by types of logs (seconds, minutes, hours, commands/events)
@@ -164,8 +164,7 @@ uint16_t findSectorOfN( ) {
  */
 uint32_t findAddressOfEntryN(uint32_t entryN)
 {
-  uint32_t address = 0;
-  address = ((entryN % MAX_NB_ENTRIES) * ENTRY_SIZE_LINEAR_LOGS) % ADDRESS_SIZE + ADDRESS_BEG;
+  uint32_t address = ((entryN % MAX_NB_ENTRIES) * ENTRY_SIZE_LINEAR_LOGS) % ADDRESS_SIZE + ADDRESS_BEG;
   return address;
 }
 
