@@ -55,8 +55,6 @@ void printIP(Print* output, uint8_t* tab, uint8_t s, byte format){
 
 void printResult(char* data, Print* output) {
   boolean theEnd=false;
-  boolean logEvent=false;
-  boolean multipleLogEvent=false;
   byte paramCurrent=0; // Which parameter are we defining
   // The maximal length of a parameter value. It is a int so the value must be between -32768 to 32767
 #define MAX_PARAM_VALUE_LENGTH 8
@@ -95,12 +93,6 @@ void printResult(char* data, Print* output) {
     else if (inChar=='f') { // show settings
       printFreeMemory(output);
     } 
-    else if (inChar=='l') { // show log
-      logEvent=true;
-    } 
-    else if (inChar=='m') { // show log
-      multipleLogEvent=true;
-    } 
     else if (inChar==',') { // store value and increment
       if (paramCurrent>0) {
         if (paramValuePosition>0) {
@@ -126,7 +118,16 @@ void printResult(char* data, Print* output) {
           output->println(parameters[paramCurrent-1]);
         }
       }      
-      else if (logEvent) {
+       else if (data[0]=='e') {
+        if (paramValuePosition>0) {
+          setTime(atol(paramValue));
+        } 
+        else {
+          output->println(now());
+        }
+
+      }
+      else if (data[0]=='l') {
 #ifdef THR_LINEAR_LOGS
         if (paramValuePosition>0) {
           printLogN(output,atol(paramValue));
@@ -138,7 +139,7 @@ void printResult(char* data, Print* output) {
         noThread(output);
 #endif
       }
-      else if (multipleLogEvent) {
+      else if (data[0]=='m') {
 #ifdef THR_LINEAR_LOGS
         if (paramValuePosition>0) {
           long currentValueLong=atol(paramValue);
@@ -180,6 +181,7 @@ void printResult(char* data, Print* output) {
 
 void printHelp(Print* output) {
   //return the menu
+  output->println(F("(e)poch"));
   output->println(F("(f)ree"));
   output->println(F("(h)elp"));
   output->println(F("(i)2c"));
@@ -195,6 +197,7 @@ static void printFreeMemory(Print* output)
 {
   nilPrintUnusedStack(output);
 }
+
 
 
 
