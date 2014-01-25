@@ -106,11 +106,8 @@ void getTemperature(OneWire &ow, int parameter, byte * loggedErrorTemp, uint16_t
     data[0] = ow.read();
     data[1] = ow.read();
     int16_t raw = (data[1] << 8) | data[0];
-    
-    Serial.println(raw);
-    
     //float celsius = (float)raw / 16.0;
-    setParameter(parameter, raw*62);
+    setParameter(parameter, ((long)raw*625)/100);
   }
 }  
 

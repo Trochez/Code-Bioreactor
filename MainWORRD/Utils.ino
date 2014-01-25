@@ -3,10 +3,8 @@ void printHardCodedParameters(Print* output){
   printIP(output, ip, 4, DEC);
   output->print(F("MAC:"));
   printIP(output, mac, 6, HEX);
-  output->print(F("NTP:"));
-  printIP(output, (uint8_t*) alix, 4, DEC);
-   output->print(F("EPOCH:"));
-   output->println(now());
+  output->print(F("EPOCH:"));
+  output->println(now());
 #ifdef RELAY_PUMP
   output->print(F("I2C relay:"));
   output->println(I2C_RELAY); 
@@ -58,6 +56,7 @@ void printIP(Print* output, uint8_t* tab, uint8_t s, byte format){
 void printResult(char* data, Print* output) {
   boolean theEnd=false;
   boolean logEvent=false;
+  boolean multipleLogEvent=false;
   byte paramCurrent=0; // Which parameter are we defining
   // The maximal length of a parameter value. It is a int so the value must be between -32768 to 32767
 #define MAX_PARAM_VALUE_LENGTH 8
@@ -96,8 +95,11 @@ void printResult(char* data, Print* output) {
     else if (inChar=='f') { // show settings
       printFreeMemory(output);
     } 
-        else if (inChar=='l') { // show log
-     logEvent=true;
+    else if (inChar=='l') { // show log
+      logEvent=true;
+    } 
+    else if (inChar=='m') { // show log
+      multipleLogEvent=true;
     } 
     else if (inChar==',') { // store value and increment
       if (paramCurrent>0) {
@@ -136,6 +138,30 @@ void printResult(char* data, Print* output) {
         noThread(output);
 #endif
       }
+      else if (multipleLogEvent) {
+#ifdef THR_LINEAR_LOGS
+        if (paramValuePosition>0) {
+          long currentValueLong=atol(paramValue);
+          if (( currentValueLong - nextEntryID ) < 0) {
+            printLogN(output,currentValueLong);
+          } 
+          else {
+            byte endValue=100;
+            if (( currentValueLong - nextEntryID ) < 100) {
+              endValue= currentValueLong - nextEntryID;
+            }
+            for (byte i=0; i<endValue; i++) {
+              printLogN(output,currentValueLong);
+            }
+          }
+        } 
+        else {
+          output->println(nextEntryID-1);
+        }
+#else
+        noThread(output);
+#endif
+      }
     }
     else if ((inChar>47 && inChar<58) || inChar=='-') {
       if (paramValuePosition<MAX_PARAM_VALUE_LENGTH) {
@@ -154,12 +180,13 @@ void printResult(char* data, Print* output) {
 
 void printHelp(Print* output) {
   //return the menu
-  output->println(F("(f)free"));
-  output->println(F("(h)help"));
+  output->println(F("(f)ree"));
+  output->println(F("(h)elp"));
   output->println(F("(i)2c"));
   output->println(F("(l)og"));
-  output->println(F("(o)1-wire"));
-  output->println(F("(p)param"));
+  output->println(F("(m)ultiple log"));
+  output->println(F("(o)ne-wire"));
+  output->println(F("(p)aram"));
   output->println(F("(s)settings"));
 }
 
@@ -168,6 +195,9 @@ static void printFreeMemory(Print* output)
 {
   nilPrintUnusedStack(output);
 }
+
+
+
 
 
 

@@ -36,6 +36,11 @@ NIL_THREAD(ThreadSerial, arg) {
   }
 }
 
+void noThread(Print* output){
+  output->println(F("No Thread"));
+}
+
+
 #endif
 
 

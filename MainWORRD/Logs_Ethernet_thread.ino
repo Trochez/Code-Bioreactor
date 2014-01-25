@@ -8,48 +8,14 @@
  *   -Get state updates from the server / other modules
  *   
  *   
- *  The module has to be able to respond to several HTML request.
+ *  The module has to be able to respond to same command as Serial.
  *   
- *  The first parameter defines the request type:
- *   -Upper case letters are for setting parameters
- *   Parameters range between A and Z
- *   -Lower case letter are for actions:
- *   
- *   p. Print Help Menu
- *   f. Settings Hardcoded  : IP, MAC,...
- *  i. i2c devices
- *   o. 1-wire devices
- *  g. Parameters in memory
- *   {A-Z}. print value of parameter given
- *   {A-Z}=X set parameter to the value given and save it to EEPROm
- *   {s,m,h,e}. last log of seconds,minutes,hours and events
- *   {s.m.h,e}=X. log X of seconds,minutes,hours and events
- *   l. return a vector of the last entry number:
- *   #events #seconds #minutes #hours
- * 
  *****************************************************************/
-
-
-//#define MAX_HTTP_STRING_LENGTH 2048    // in bytes; max. http return string to read  
-// (reserve space for the http header !AND! the JSON command string)
-//#define MAX_COMMAND_STRING_LENGTH 400 // in bytes; max. JSON return string to read 
-
-/***************************************************************
- * ASCII NUMBERS  * A-Z : 65-90  * a-z : 97-122  * 0-9 : 48-57
- ***************************************************************/
-#define ASCII_A 65
-#define ASCII_Z 90
-
-#define ASCII_0 48
-#define ASCII_9 57
-
-#define ASCII_a 97
-#define ASCII_z 122
 
 
 //The longest request possible is "GET /s=4294967295"
 #define REQUEST_LENGTH 20
-#define REQUEST_START  4
+#define REQUEST_START  5
 
 
 #define TABLE_SIZE 32
@@ -69,12 +35,11 @@ EthernetServer server(80);
 NIL_WORKING_AREA(waThreadEthernet, 600); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
 
+   nilThdSleepMilliseconds(3000);
+  
   Ethernet.begin(mac,ip);
   server.begin();
-  /****************************
-   * LOG & NTP Setup
-   *****************************/
-
+ 
 
 #ifdef DEBUG_ETHERNET
   Serial.print("server is at ");
@@ -103,6 +68,9 @@ NIL_THREAD(ThreadEthernet, arg) {
      *****************************/
 #ifdef THR_ETHERNET
     EthernetClient client = server.available();
+    
+  Serial.println("Check");
+    
     if (client) {
 #ifdef DEBUG_ETHERNET
       Serial.println("new client");
@@ -138,7 +106,8 @@ NIL_THREAD(ThreadEthernet, arg) {
       client.println();
       client.println(F("<!DOCTYPE HTML>"));
       client.println(F("<html><pre>"));
-      printResult(request, &client);
+      client.println(F("ABCD"));
+  //    printResult(request, &client);
       client.println(F("</pre></html>"));
 
 
@@ -153,31 +122,9 @@ NIL_THREAD(ThreadEthernet, arg) {
     } 
 #endif
 
-
-    nilThdSleepMilliseconds(200);
+    nilThdSleepMilliseconds(1000);
   }
 }
-
-/*----------------------------
- Ethernet related functions
- ----------------------------*/
-
-void parseRequest(Client* cl, uint8_t* req) {
-
-  noSuchCommand(cl); 
-}
-
-
-
-void noSuchCommand(Print* output){
-  output->println(F("No Such Command"));
-}
-
-void noThread(Print* output){
-  output->println(F("No Thread"));
-}
-
-
 
 #endif
 

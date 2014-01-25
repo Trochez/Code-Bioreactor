@@ -11,7 +11,7 @@
 
 //Ethernet libraries
 #include <Ethernet.h>
-#include <EthernetUdp.h>
+
 
 // The normal serial takes 200 bytes more but is buffered
 // And if we send a String for parameters it can not be understand ...
