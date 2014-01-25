@@ -82,8 +82,8 @@ NIL_THREAD(ThreadEthernet, arg) {
       char request[TABLE_SIZE];
       int count = 0;
 
-      while (client.connected()) {
-        if (client.available()) {
+ 
+        while (client.available() && client.connected()) {
           char c = client.read();
           
           //store characters to string           
@@ -97,8 +97,8 @@ NIL_THREAD(ThreadEthernet, arg) {
           }
           count++;
         }
-      }
-
+      
+if (client.connected()) {
 
       client.println(F("HTTP/1.1 200 OK"));
       client.println(F("Content-Type: text/html"));
@@ -112,9 +112,10 @@ NIL_THREAD(ThreadEthernet, arg) {
 
 
       // give the web browser time to receive the data
-      delay(1);
+      nilThdSleepMilliseconds(1);
       // close the connection:
       client.stop();
+}
 #ifdef DEBUG_ETHERNET
       Serial.println("client disconnected");
 #endif
