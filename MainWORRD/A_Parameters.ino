@@ -1,16 +1,16 @@
 /*********************************************
-  This file is used to declare the parameters
-  table used by the program.
-
-  We use the EEPROM for saving the parameters 
-  changed by the user during the functionment 
-  of the Bioreactor.
-  
-  The parameter are loaded during the boot.
-  
-  All change to important parameters are saved 
-  to the EEPROM
-*********************************************/
+ * This file is used to declare the parameters
+ * table used by the program.
+ * 
+ * We use the EEPROM for saving the parameters 
+ * changed by the user during the functionment 
+ * of the Bioreactor.
+ * 
+ * The parameter are loaded during the boot.
+ * 
+ * All change to important parameters are saved 
+ * to the EEPROM
+ *********************************************/
 
 #include <avr/eeprom.h>
 
@@ -39,21 +39,21 @@ int getParameter(byte number) {
 }
 
 int* getParametersTable(){
-   return parameters; 
+  return parameters; 
 }
 
 void setParameter(byte number, int value) {
-   parameters[number]=value;
+  parameters[number]=value;
 }
 
 /*
 This will take time, around 4 ms
-This will also use the EEPROM that is limited to 100000 writes
-*/
+ This will also use the EEPROM that is limited to 100000 writes
+ */
 void setAndSaveParameter(byte number, int value) {
-   parameters[number]=value;
-   //The address of the parameter is given by : EE_START_PARAM+number*2
-   eeprom_write_word((uint16_t*) EE_START_PARAM+number, value);
+  parameters[number]=value;
+  //The address of the parameter is given by : EE_START_PARAM+number*2
+  eeprom_write_word((uint16_t*) EE_START_PARAM+number, value);
 }
 
 
@@ -70,3 +70,4 @@ void printParameters(Print* output) {
     printParameter(output, i);
   }
 }
+

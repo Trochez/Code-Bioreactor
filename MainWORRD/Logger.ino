@@ -71,7 +71,7 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
     Serial.println(findSectorOfN());
 #endif
 
-//    sst.flashSectorErase(findSectorOfN());
+    //    sst.flashSectorErase(findSectorOfN());
   }
 
   // Initialized the flash memory with the right address in the memory
@@ -129,14 +129,7 @@ uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
   for(int i = 0; i < ENTRY_SIZE_LINEAR_LOGS; i++) {
     result[i] = sst.flashReadNextInt8();
   }
-
   sst.flashReadFinish();
-
-  if (!(((entryN & 0xFF000000) >> 24 == result[0]) && ((entryN & 0x00FF0000) >> 16 == result[1]) && ((entryN & 0x0000FF00) >> 8 == result[2]) && ((entryN & 0x000000FF) == result[3]))) {
-   // for (byte i=0; i<ENTRY_SIZE_LINEAR_LOGS; i++) {
-   //   result[i]=255; 
-   // }
-  }
 }
 
 
@@ -192,7 +185,7 @@ void recoverLastEntryN()
   while(addressEntryN<ADDRESS_LAST) 
   {
     sst.flashReadInit(addressEntryN);
-    
+
     ID_temp = sst.flashReadNextInt32();
     Time_temp = sst.flashReadNextInt32(); 
     sst.flashReadFinish();          
@@ -245,18 +238,25 @@ void printLastLog(Print* output) {
 void printLogN(Print* output, uint32_t entryN) {
   uint8_t record[ENTRY_SIZE_LINEAR_LOGS];
   readEntryN(record, entryN);
-  printTab(output, record);
-}
 
-void printTab(Print* output, uint8_t* tab) {
+  byte checkDigit=0;
   for(int i=0; i<ENTRY_SIZE_LINEAR_LOGS; i++){
-    output->print(tab[i], HEX);
-    output->print(' ');
+    if (record[i]<16) {
+
+      output->print('0');
+    }
+    checkDigit^=record[i];
+    output->print(record[i], HEX);
   }
-  output->println();
+  output->print(mac[4], HEX);
+  checkDigit^=mac[4];
+  output->print(mac[5], HEX);
+  checkDigit^=mac[5];
+
+  output->println(checkDigit, HEX);
 } 
 
-NIL_WORKING_AREA(waThreadLogger, 200);
+NIL_WORKING_AREA(waThreadLogger, 100);
 NIL_THREAD(ThreadLogger, arg) {
   nilThdSleepMilliseconds(1000);
   recoverLastEntryN();
@@ -265,6 +265,7 @@ NIL_THREAD(ThreadLogger, arg) {
     nilThdSleepMilliseconds(2000);
   }
 }
+
 
 
 

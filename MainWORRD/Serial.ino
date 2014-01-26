@@ -1,6 +1,6 @@
 #ifdef SERIAL
 
-#define SERIAL_BUFFER_LENGTH 16
+#define SERIAL_BUFFER_LENGTH 32
 char serialBuffer[SERIAL_BUFFER_LENGTH];
 byte serialBufferPosition=0;
 

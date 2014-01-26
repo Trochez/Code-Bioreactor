@@ -57,7 +57,7 @@ void printResult(char* data, Print* output) {
   boolean theEnd=false;
   byte paramCurrent=0; // Which parameter are we defining
   // The maximal length of a parameter value. It is a int so the value must be between -32768 to 32767
-#define MAX_PARAM_VALUE_LENGTH 8
+#define MAX_PARAM_VALUE_LENGTH 12
   char paramValue[MAX_PARAM_VALUE_LENGTH];
   byte paramValuePosition=0;
   byte i=0;
@@ -118,7 +118,7 @@ void printResult(char* data, Print* output) {
           output->println(parameters[paramCurrent-1]);
         }
       }      
-       else if (data[0]=='e') {
+      else if (data[0]=='e') {
         if (paramValuePosition>0) {
           setTime(atol(paramValue));
         } 
@@ -147,12 +147,14 @@ void printResult(char* data, Print* output) {
             printLogN(output,currentValueLong);
           } 
           else {
-            byte endValue=100;
-            if (( currentValueLong - nextEntryID ) < 100) {
-              endValue= currentValueLong - nextEntryID;
+            byte endValue=20;
+            if (currentValueLong > nextEntryID) {
+              endValue=0;
+            } else if (( nextEntryID - currentValueLong ) < 20) {
+              endValue= nextEntryID - currentValueLong;
             }
             for (byte i=0; i<endValue; i++) {
-              printLogN(output,currentValueLong);
+              printLogN(output,currentValueLong+i);
             }
           }
         } 
@@ -189,7 +191,7 @@ void printHelp(Print* output) {
   output->println(F("(m)ultiple log"));
   output->println(F("(o)ne-wire"));
   output->println(F("(p)aram"));
-  output->println(F("(s)settings"));
+  output->println(F("(s)ettings"));
 }
 
 
@@ -197,6 +199,7 @@ static void printFreeMemory(Print* output)
 {
   nilPrintUnusedStack(output);
 }
+
 
 
 

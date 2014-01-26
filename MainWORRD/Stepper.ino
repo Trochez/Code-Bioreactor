@@ -80,7 +80,7 @@ void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
         digitalWrite(port2,LOW);
         break;
     }
-    delay(5);
+    nilThdSleepMilliseconds(5);
   } 
 
 }
