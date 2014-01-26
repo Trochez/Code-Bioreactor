@@ -29,8 +29,8 @@ EthernetServer server(80);
 
 
 /****************
- * Ethernet Thread
- *****************/
+* Ethernet Thread
+*****************/
 
 NIL_WORKING_AREA(waThreadEthernet, 600); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
