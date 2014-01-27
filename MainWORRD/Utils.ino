@@ -1,3 +1,5 @@
+#define MAX_MULTI_LOG 20
+
 void printHardCodedParameters(Print* output){
   output->print(F("IP:"));
   printIP(output, ip, 4, DEC);
@@ -147,14 +149,15 @@ void printResult(char* data, Print* output) {
             printLogN(output,currentValueLong);
           } 
           else {
-            byte endValue=20;
+            byte endValue=MAX_MULTI_LOG;
             if (currentValueLong > nextEntryID) {
               endValue=0;
-            } else if (( nextEntryID - currentValueLong ) < 20) {
+            } else if (( nextEntryID - currentValueLong ) < MAX_MULTI_LOG) {
               endValue= nextEntryID - currentValueLong;
             }
             for (byte i=0; i<endValue; i++) {
               printLogN(output,currentValueLong+i);
+              nilThdSleepMilliseconds(10);
             }
           }
         } 

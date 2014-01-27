@@ -109,7 +109,7 @@ NIL_THREAD(ThreadEthernet, arg) {
         printResult(request, &client);
 
         // give the web browser time to receive the data
-        nilThdSleepMilliseconds(10);
+        nilThdSleepMilliseconds(50);
         // close the connection:
         client.stop();
       }

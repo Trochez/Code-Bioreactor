@@ -88,6 +88,7 @@
  * // CAUTION
  * // Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
  * // and a different MAC address
+ * // MAC address has to be over 16 for the last 2 bytes !!!!!!!!
  ***********************/
 #define IP {172, 17, 0 , 103}
 #define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAB}

@@ -14,6 +14,8 @@
 
 // the different types of logs
 
+const char hex[] = "0123456789ABCDEF";
+
 
 #define ENTRY_SIZE_LINEAR_LOGS     64
 #define NB_PARAMETERS_LINEAR_LOGS  26
@@ -35,6 +37,10 @@
 
 // The number of entires by types of logs (seconds, minutes, hours, commands/events)
 #define MAX_NB_ENTRIES    (ADDRESS_SIZE  / ENTRY_SIZE_LINEAR_LOGS)
+
+
+SEMAPHORE_DECL(lockFlashAccess, 1);
+
 
 
 //Determine the position of the last logs in the memory for
@@ -59,6 +65,8 @@ void writeLog() {
 
 void writeLog(uint16_t event_number, uint16_t parameter_value) {
   if (!logActive) return;
+
+  nilSemWait(&lockFlashAccess);
   SST sst = SST(4);
   setupMemory(sst);
 
@@ -91,7 +99,7 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
 
   // finish the process of writing the data in memory
   sst.flashWriteFinish();
-
+  nilSemSignal(&lockFlashAccess);
   //Update the value of the next event log position in the memory
   nextEntryID++;
 }
@@ -112,6 +120,7 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
  flash memory
  */
 uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
+  nilSemWait(&lockFlashAccess);
   SST sst = SST(4);
   setupMemory(sst); 
 
@@ -126,11 +135,34 @@ uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
 
   sst.flashReadInit(addressOfEntryN);
 
+
+
+
+  byte checkDigit=0;
   for(int i = 0; i < ENTRY_SIZE_LINEAR_LOGS; i++) {
-    result[i] = sst.flashReadNextInt8();
+    byte oneByte=sst.flashReadNextInt8();
+    checkDigit^=oneByte;
+    result[i*2] = hex[oneByte>>4];
+    result[i*2+1] = hex[oneByte&15];
   }
+  result[ENTRY_SIZE_LINEAR_LOGS*2]=hex[mac[4]>>4];
+  result[ENTRY_SIZE_LINEAR_LOGS*2+1]=hex[mac[4]&15];
+  checkDigit^=mac[4];
+  result[ENTRY_SIZE_LINEAR_LOGS*2+2]=hex[mac[5]>>4];
+  result[ENTRY_SIZE_LINEAR_LOGS*2+3]=hex[mac[5]&15];
+  checkDigit^=mac[4];
+  result[ENTRY_SIZE_LINEAR_LOGS*2+4]=hex[checkDigit>>4];
+  result[ENTRY_SIZE_LINEAR_LOGS*2+5]=hex[checkDigit&15];
+  result[ENTRY_SIZE_LINEAR_LOGS*2+6]='\n';
+
+
+
   sst.flashReadFinish();
+  nilSemSignal(&lockFlashAccess);
 }
+
+
+
 
 
 /*
@@ -236,24 +268,11 @@ void printLastLog(Print* output) {
 }
 
 void printLogN(Print* output, uint32_t entryN) {
-  uint8_t record[ENTRY_SIZE_LINEAR_LOGS];
+  uint8_t record[ENTRY_SIZE_LINEAR_LOGS*2+7];
   readEntryN(record, entryN);
 
-  byte checkDigit=0;
-  for(int i=0; i<ENTRY_SIZE_LINEAR_LOGS; i++){
-    if (record[i]<16) {
+  output->write(record, ENTRY_SIZE_LINEAR_LOGS*2+7);
 
-      output->print('0');
-    }
-    checkDigit^=record[i];
-    output->print(record[i], HEX);
-  }
-  output->print(mac[4], HEX);
-  checkDigit^=mac[4];
-  output->print(mac[5], HEX);
-  checkDigit^=mac[5];
-
-  output->println(checkDigit, HEX);
 } 
 
 NIL_WORKING_AREA(waThreadLogger, 100);
@@ -265,6 +284,9 @@ NIL_THREAD(ThreadLogger, arg) {
     nilThdSleepMilliseconds(2000);
   }
 }
+
+
+
 
 
 
