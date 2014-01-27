@@ -150,7 +150,7 @@ uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
   checkDigit^=mac[4];
   result[ENTRY_SIZE_LINEAR_LOGS*2+2]=hex[mac[5]>>4];
   result[ENTRY_SIZE_LINEAR_LOGS*2+3]=hex[mac[5]&15];
-  checkDigit^=mac[4];
+  checkDigit^=mac[5];
   result[ENTRY_SIZE_LINEAR_LOGS*2+4]=hex[checkDigit>>4];
   result[ENTRY_SIZE_LINEAR_LOGS*2+5]=hex[checkDigit&15];
   result[ENTRY_SIZE_LINEAR_LOGS*2+6]='\n';
