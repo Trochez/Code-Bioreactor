@@ -1,56 +1,120 @@
 var http = require('http');
-var nano = require('nano')('http://localhost:5984');
+var nano = require('nano')('http://128.179.167.109:5984');
 
+var counter=0;
 
-var arduinoIPs=["172.17.0.105"]
+var arduinoIPs=["172.17.0.107"]
+
 
 setInterval(function() {
   for (var i=0; i<arduinoIPs.length; i++) {
     var ip=arduinoIPs[i];
+
+    console.log("Getting update for: "+ip)
 
     // we need to search for the last entryID for this specific IP address
     getLastEntryID(ip, function(ip, lastID) {
       fetchLog(ip, lastID+1);
     })
   }
+},10000)
 
-},5000)
+/*
+setEpoch();
+setTimeout(function() {
+  setInterval(function() {
+    setEpoch();
+  },60*60*1000)
+},5000);
+*/
+
+getMemory();
+setTimeout(function() {
+  setInterval(function() {
+    getMemory();
+  },10000)
+},5000);
 
 
+function setEpoch() {
+  for (var i=0; i<arduinoIPs.length; i++) {
+    var host=arduinoIPs[i];
+    var epoch=(new Date()).getTime()/1000>>0;
+    var options={
+      host: host,
+      path: "/e"+epoch
+    };
+
+    var result=get(host, options, function(body) {
+      console.log("Clock update on: " + host +" : "+body);
+    });
+  }
+}
+
+function getVariables() {
+  for (var i=0; i<arduinoIPs.length; i++) {
+      var host=arduinoIPs[i];
+      var options={
+        host: host,
+        path: "/s"
+      };
+
+      var result=get(host, options,function(body) {
+        console.log("Variable on: " + host+" - "+body);
+      });
+    }
+  }
+
+function getMemory() {
+  for (var i=0; i<arduinoIPs.length; i++) {
+      var host=arduinoIPs[i];
+      var options={
+        host: host,
+        path: "/f"
+      };
+
+      var result=get(host, options,function(body) {
+        console.log("Memory status on: " + host+" - "+body);
+      });
+      if (result) {
+        
+      }
+    }
+  }
 
 
-
-
-function fetchLog(host, lastID) {
-  var tmp = [];
+function fetchLog(host, lastID) { 
   var options={
     host: host,
     path: "/m"+lastID
   };
 
-console.log(options);
+  console.log(options);
 
-  var req = http.request(options, function(res) {
+  var result=get(host, options, function(body) {
+    console.log(body);
+    parseResult(body, options);
+  });
+}
+
+function get(host, options, callback) {
+   var tmp = [];
+    http.get(options, function(res) {
     res.setEncoding('utf8');
     res.on('data', function(chunk) {
       tmp.push(chunk);
     });
     res.on('end', function (e) {
        var body = tmp.join('');
-       parseResult(body, options);
+       callback(body);
     });
-  });
-
-  req.on('error', function(e) {
+  }).on('error', function(e) {
     console.log('problem with request: ' + e.message);
   });
-
-  // write data to request body
-  req.end();
 }
 
-
 function parseResult(result, options) {
+  console.log("PARSE");
   var lines=result.split(/[\r\n]+/);
   for (var i=0; i<lines.length; i++) {
     var line=lines[i];
@@ -70,6 +134,7 @@ function parseResult(result, options) {
           entry.mac=line.substring(128,132);
           entry.host=options.host;
           saveToCouchDB(entry);
+            console.log("Saving: "+(counter++));
         } else {
           console.log("Check digit error: "+line);
         }
@@ -96,25 +161,31 @@ function parseResult(result, options) {
 }
 
 function getCouchDBLink() {
-  nano.db.create('bioreactor');
-  return nano.db.use('bioreactor');   
+  nano.db.create('bioreactor3');
+  return nano.db.use('bioreactor3');   
 }
 
 function getLastEntryID(host, callback) {
-  var bioreactor =getCouchDBLink();    
-  bioreactor.view('logDisplay', 'stats', {key:"172.17.0.105"}, function(err, body) {
+  var bioreactor =getCouchDBLink();
+  bioreactor.view('logDisplay', 'stats', {key:host}, function(err, body) {
     if (!err) {
-      callback(host, body.rows[0].value.max);
+      var lastID=-1;
+      if (body.rows && body.rows[0] && body.rows[0].value && body.rows[0].value.max) {
+        lastID=body.rows[0].value.max;
+      }
+      callback(host, lastID);
     } else {
-      console.log("ERROR: can not getLastEntryID from: "+host);
+      console.log("ERROR: can not getLastEntryID: Assuming 0");
+      callback(host, -1);
     }
   });
 }
 
 
 function saveToCouchDB(entry) {
-  var bioreactor =getCouchDBLink();     
+  var bioreactor =getCouchDBLink();
   bioreactor.insert( entry, function(err, body, header) {
+
     if (err) throw console.log(err);
     // console.log(header);
   });

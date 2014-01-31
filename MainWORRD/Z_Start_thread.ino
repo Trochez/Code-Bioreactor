@@ -25,7 +25,7 @@ NIL_THREAD(ThreadMonitoring, arg) {
 NIL_THREADS_TABLE_BEGIN()
 
 #ifdef THR_LINEAR_LOGS
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadLogger, NULL, waThreadLogger, sizeof(waThreadLogger))
+  NIL_THREADS_TABLE_ENTRY(NULL, ThreadLogger, NULL, waThreadLogger, sizeof(waThreadLogger))
 #endif
 
 #ifdef  STEPPER

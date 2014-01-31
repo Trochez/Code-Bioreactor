@@ -29,13 +29,13 @@ EthernetServer server(80);
 
 
 /****************
-* Ethernet Thread
-*****************/
+ * Ethernet Thread
+ *****************/
 
-NIL_WORKING_AREA(waThreadEthernet, 600); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 350); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
 
-  nilThdSleepMilliseconds(3000);
+  nilThdSleepMilliseconds(1000);
 
   Ethernet.begin(mac,ip);
   server.begin();
@@ -81,13 +81,14 @@ NIL_THREAD(ThreadEthernet, arg) {
       int count = 0;
 
 
-      while (client.available() && client.connected()) {
+      while (client.available() && client.connected() && count<1000) {
         char c = client.read();
 
         //store characters to string           
         if (starting && count<REQUEST_LENGTH && count>=REQUEST_START) {
+#ifdef DEBUG_ETHERNET
           Serial.print(c);
-
+#endif
           // += append a character to a string
           if (c=='\n' || c=='\r' || c==' ') {
             request[count-REQUEST_START] = '\0';
@@ -109,8 +110,10 @@ NIL_THREAD(ThreadEthernet, arg) {
         printResult(request, &client);
 
         // give the web browser time to receive the data
-        nilThdSleepMilliseconds(50);
+        nilThdSleepMilliseconds(100);
         // close the connection:
+        client.flush();
+         nilThdSleepMilliseconds(100);
         client.stop();
       }
 #ifdef DEBUG_ETHERNET
@@ -125,6 +128,7 @@ NIL_THREAD(ThreadEthernet, arg) {
 }
 
 #endif
+
 
 
 

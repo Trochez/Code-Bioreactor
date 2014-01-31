@@ -157,7 +157,6 @@ void printResult(char* data, Print* output) {
             }
             for (byte i=0; i<endValue; i++) {
               printLogN(output,currentValueLong+i);
-              nilThdSleepMilliseconds(10);
             }
           }
         } 

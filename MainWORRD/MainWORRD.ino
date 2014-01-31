@@ -101,7 +101,7 @@
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEE}        
 //#define IP {172, 17, 0 ,104}                          //gas
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xDD}      //gas
-#define IP {172, 17, 0 ,105}                          //pH
+#define IP {172, 17, 0 ,107}                          //pH
 #define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAD}      //pH
 
 #define ALIX {172,17,0,10} 

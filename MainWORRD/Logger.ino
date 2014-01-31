@@ -281,7 +281,7 @@ NIL_THREAD(ThreadLogger, arg) {
   recoverLastEntryN();
   while(TRUE) {
     writeLog();
-    nilThdSleepMilliseconds(2000);
+    nilThdSleepMilliseconds(10000);
   }
 }
 
