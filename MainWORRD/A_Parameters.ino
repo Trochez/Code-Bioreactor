@@ -24,10 +24,7 @@
 #define EEPROM_MAX_ADDR          511
 
 
-
-
 int parameters[MAX_PARAM];
-
 
 void setupParameters() {
   //We copy all the value in the parameters table
@@ -36,10 +33,6 @@ void setupParameters() {
 
 int getParameter(byte number) {
   return parameters[number];
-}
-
-int* getParametersTable(){
-  return parameters; 
 }
 
 void setParameter(byte number, int value) {
@@ -54,6 +47,8 @@ void setAndSaveParameter(byte number, int value) {
   parameters[number]=value;
   //The address of the parameter is given by : EE_START_PARAM+number*2
   eeprom_write_word((uint16_t*) EE_START_PARAM+number, value);
+  
+  writeLog(PARAMETER_SET+number, value);
 }
 
 

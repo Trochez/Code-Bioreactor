@@ -2,12 +2,22 @@
 // If the led is "stable" (blinks 500 times per seconds) it means there are not too
 // many activities on the microcontroler
 
-#ifdef THR_MONITORING
+
 NIL_WORKING_AREA(waThreadMonitoring, 0);
 NIL_THREAD(ThreadMonitoring, arg) {
+  // we should not start the watchdog too quickly ...
+   nilThdSleepMilliseconds(30000);
+   
+  // we activate the watchdog
+  // we need to make a RESET all the time otherwise automatic reboot: wdt_reset();
+  wdt_enable(WDTO_8S);
+
   boolean turnOn=true;
+#ifdef THR_MONITORING
   pinMode(THR_MONITORING, OUTPUT);   
+#endif
   while (TRUE) {
+#ifdef THR_MONITORING
     if (turnOn) {
       turnOn=false;
       digitalWrite(THR_MONITORING,HIGH);
@@ -16,16 +26,19 @@ NIL_THREAD(ThreadMonitoring, arg) {
       turnOn=true;
       digitalWrite(THR_MONITORING,LOW);
     }
-    nilThdSleepMilliseconds(500);
+#endif
+    nilThdSleepMilliseconds(100);
+
+    wdt_reset();
   }
 }
-#endif
+
 
 
 NIL_THREADS_TABLE_BEGIN()
 
 #ifdef THR_LINEAR_LOGS
-  NIL_THREADS_TABLE_ENTRY(NULL, ThreadLogger, NULL, waThreadLogger, sizeof(waThreadLogger))
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadLogger, NULL, waThreadLogger, sizeof(waThreadLogger))
 #endif
 
 #ifdef  STEPPER
@@ -64,11 +77,14 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThrea
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadEthernet, NULL, waThreadEthernet, sizeof(waThreadEthernet))
 #endif
 
-#ifdef THR_MONITORING 
+
+// This thread is mandatory and check that nothing is currently blocking the arduino
+// otherwise there is an automatic RESET 
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadMonitoring, NULL, waThreadMonitoring, sizeof(waThreadMonitoring))
-#endif
 
 NIL_THREADS_TABLE_END()
+
+
 
 
 

@@ -16,7 +16,7 @@
 
 const char hex[] = "0123456789ABCDEF";
 
-
+#define LOG_REPEAT_DELAY           10  // in seconds !
 #define ENTRY_SIZE_LINEAR_LOGS     64
 #define NB_PARAMETERS_LINEAR_LOGS  26
 #define SIZE_TIMESTAMPS            4
@@ -41,6 +41,7 @@ const char hex[] = "0123456789ABCDEF";
 
 SEMAPHORE_DECL(lockFlashAccess, 1);
 
+SST sst=SST(4);
 
 
 //Determine the position of the last logs in the memory for
@@ -63,12 +64,13 @@ void writeLog() {
   writeLog(0,0);
 }
 
+
+
 void writeLog(uint16_t event_number, uint16_t parameter_value) {
   if (!logActive) return;
 
   nilSemWait(&lockFlashAccess);
-  SST sst = SST(4);
-  setupMemory(sst);
+
 
   uint16_t param = 0;
   // test if it is the begining of one sector, and erase the sector of 4096 bytes if needed
@@ -78,8 +80,7 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
     Serial.print("ERASE sector: ");
     Serial.println(findSectorOfN());
 #endif
-
-    //    sst.flashSectorErase(findSectorOfN());
+    sst.flashSectorErase(findSectorOfN());
   }
 
   // Initialized the flash memory with the right address in the memory
@@ -94,14 +95,26 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
     // write the 2 bytes of the parameters in the memory using a mask
     sst.flashWriteNextInt16(param);
   }
+
   sst.flashWriteNextInt16(event_number);
   sst.flashWriteNextInt16(parameter_value);
 
   // finish the process of writing the data in memory
   sst.flashWriteFinish();
+
+  // we check if we can read the log ... if not we don't increment and we loose an entry. Maybe a conflict with ethernet
+
+  sst.flashReadInit(findAddressOfEntryN(nextEntryID));
+  long writtenID=sst.flashReadNextInt32();
+  sst.flashReadFinish();
+  if (writtenID==nextEntryID) {
+    //Update the value of the next event log position in the memory
+    nextEntryID++;
+  }
+
+
   nilSemSignal(&lockFlashAccess);
-  //Update the value of the next event log position in the memory
-  nextEntryID++;
+
 }
 
 
@@ -121,8 +134,7 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
  */
 uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
   nilSemWait(&lockFlashAccess);
-  SST sst = SST(4);
-  setupMemory(sst); 
+
 
   uint32_t addressOfEntryN = findAddressOfEntryN(entryN);
 
@@ -199,8 +211,7 @@ uint32_t findAddressOfEntryN(uint32_t entryN)
  */
 void recoverLastEntryN() 
 {
-  SST sst = SST(4);
-  setupMemory(sst); 
+
 
   uint32_t ID_temp = 0;
   uint32_t Time_temp = 0;
@@ -228,13 +239,24 @@ void recoverLastEntryN()
     Serial.println(nextEntryID);
 #endif
     // Test if first memory slot contains any information
-    if(ID_temp == 0xFFFFFFFF || ID_temp < nextEntryID)
+    if((ID_temp == 0xFFFFFFFF) || (ID_temp < nextEntryID))
     {
       break;
     }
     addressEntryN += ENTRY_SIZE_LINEAR_LOGS;
-    nextEntryID = ID_temp;
+    nextEntryID = ID_temp+1; // this will be the correct value in case of break
     setTime(Time_temp);
+
+    // we implement a quick advance
+    if (addressEntryN<(ADDRESS_LAST-128*ENTRY_SIZE_LINEAR_LOGS)) {
+      sst.flashReadInit(addressEntryN+(128*ENTRY_SIZE_LINEAR_LOGS));
+      ID_temp = sst.flashReadNextInt32();
+      sst.flashReadFinish(); 
+      if (ID_temp >= nextEntryID && ID_temp != 0xFFFFFFFF) {
+        addressEntryN+=127*ENTRY_SIZE_LINEAR_LOGS;
+      }
+    }
+
 
 #ifdef DEBUG_LOGS
     Serial.print("current nextEntryID:"); 
@@ -277,13 +299,23 @@ void printLogN(Print* output, uint32_t entryN) {
 
 NIL_WORKING_AREA(waThreadLogger, 100);
 NIL_THREAD(ThreadLogger, arg) {
-  nilThdSleepMilliseconds(1000);
+
+  setupMemory(sst); 
+
+  nilThdSleepMilliseconds(100);
   recoverLastEntryN();
+  nilThdSleepMilliseconds(100);
+  writeLog(CARD_BOOT,0);
   while(TRUE) {
+    nilThdSleepMilliseconds(LOG_REPEAT_DELAY*1000-millis()%1000+100); // seems by default the time is just to short, we add 100ms to be sure not to have rounding pro
     writeLog();
-    nilThdSleepMilliseconds(10000);
   }
 }
+
+
+
+
+
 
 
 

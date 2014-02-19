@@ -47,21 +47,6 @@ NIL_THREAD(ThreadEthernet, arg) {
 #endif
 
   while (TRUE) {
-
-
-    /****************************
-     * ERROR CHECKING % LOGGING
-     ****************************/
-
-    if(getParameter(FLAG_VECTOR) & EVENT_OCCURED){
-#ifdef THR_LINEAR_LOGS
-      //   writeLog(getParameter(PARAM_EVENT), getParameter(PARAM_EVENT_VALUE)); 
-#endif
-      setParameter(FLAG_VECTOR, getParameter(FLAG_VECTOR) & (~EVENT_OCCURED));
-    }
-
-
-
     /****************************
      * THREAD ETHERNET 
      * - Receive request from clients
@@ -82,6 +67,7 @@ NIL_THREAD(ThreadEthernet, arg) {
 
 
       while (client.available() && client.connected() && count<1000) {
+
         char c = client.read();
 
         //store characters to string           

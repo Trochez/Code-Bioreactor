@@ -1,6 +1,6 @@
 var http = require('http');
-var nano = require('nano')('http://128.179.167.109:5984');
-
+var nano = require('nano')('http://visualizer.epfl.ch');
+var dbName = "bioreactor";  // must be CREATED BEFORE and contains correct VIEW !!!!
 var counter=0;
 
 var arduinoIPs=["172.17.0.107"]
@@ -114,7 +114,6 @@ function get(host, options, callback) {
 }
 
 function parseResult(result, options) {
-  console.log("PARSE");
   var lines=result.split(/[\r\n]+/);
   for (var i=0; i<lines.length; i++) {
     var line=lines[i];
@@ -161,8 +160,8 @@ function parseResult(result, options) {
 }
 
 function getCouchDBLink() {
-  nano.db.create('bioreactor3');
-  return nano.db.use('bioreactor3');   
+  nano.db.create(dbName);
+  return nano.db.use(dbName);   
 }
 
 function getLastEntryID(host, callback) {

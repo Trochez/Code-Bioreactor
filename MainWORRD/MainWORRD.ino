@@ -9,6 +9,10 @@
 #include <SST.h>
 #include <SPI.h>
 
+
+#include <avr/wdt.h>
+
+
 //Ethernet libraries
 #include <Ethernet.h>
 
@@ -21,7 +25,7 @@
 // http://www.arduino.cc/playground/Code/Time
 #include <Time.h>
 
-//#define THR_MONITORING 13
+
 /*define the IN/OUT ports of the card*/
 
 /***********************
@@ -65,7 +69,7 @@
 #define LOG_INTERVAL        10
 
 //#define DEBUG_LOGS          1
-#define DEBUG_ETHERNET      1
+//#define DEBUG_ETHERNET      0
 #endif
 
 #define THR_ETHERNET          1
@@ -281,15 +285,16 @@
  *********/
 
 void setup() {
-  delay(5000);
+
   setupParameters();
   initParameterBioreactor();
-
   nilSysBegin();
+
 }
 
 void loop() {
 }
+
 
 
 

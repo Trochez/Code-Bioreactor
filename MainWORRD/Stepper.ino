@@ -29,7 +29,7 @@ NIL_THREAD(ThreadStepper, arg) {
   for (byte i=0; i<sizeof(STEPPER_TAB); i++) {
     pinMode(STEPPER_TAB[i], OUTPUT);    
   }
-  while (1) {
+  while (true) {
     
      //first a check is performed on the motor status
      if((getParameter(FLAG_VECTOR)&(FLAG_STEPPER_OFF))==false){
@@ -40,9 +40,7 @@ NIL_THREAD(ThreadStepper, arg) {
          forward = !forward;
        }
        count = (count + 1) % 40;
-     
     }
-     
      nilThdSleepMilliseconds(10);
   }
 }

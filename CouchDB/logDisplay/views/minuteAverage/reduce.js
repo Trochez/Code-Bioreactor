@@ -3,19 +3,7 @@ function(key, values, rereduce) {
   var servers={
     "172.17.0.106": {
       "temperature" : {
-        "A":"plate",
-        "B":"internal",
-        "C":"external"
-      },
-      "level": {
-        "D":"global"
-      }
-    },
-    "172.17.0.105": {
-       "temperature" : {
-         "A":"plateB",
-         "B":"internalB",
-         "C":"externalB"
+        "A":"plate"
       }
     }
   }
@@ -81,4 +69,3 @@ function(key, values, rereduce) {
   }
 
 }
-
