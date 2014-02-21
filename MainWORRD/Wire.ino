@@ -41,7 +41,7 @@ boolean wireFlagStatus(byte *aByte, byte address);
 byte numberI2CDevices=0;
 byte wireDeviceID[WIRE_MAX_DEVICES];
 
-NIL_WORKING_AREA(waThreadWire, 128);
+NIL_WORKING_AREA(waThreadWire, 64);
 NIL_THREAD(ThreadWire, arg) {
   
   

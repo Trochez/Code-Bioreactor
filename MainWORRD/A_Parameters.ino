@@ -23,6 +23,9 @@
 #define EEPROM_MIN_ADDR            0
 #define EEPROM_MAX_ADDR          511
 
+// value that should not be taken into account
+// in case of error the parameter is set to this value
+#define ERROR_VALUE  -32768
 
 int parameters[MAX_PARAM];
 

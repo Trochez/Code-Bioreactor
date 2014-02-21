@@ -63,13 +63,14 @@
  * THREADS AND PARAMETERS PRESENT IN EACH CARD 
  *******************************/
 
+
+
 #define THR_LINEAR_LOGS       1
 
 #ifdef THR_LINEAR_LOGS
-#define LOG_INTERVAL        10
-
-//#define DEBUG_LOGS          1
-//#define DEBUG_ETHERNET      0
+  #define LOG_INTERVAL        10  // define the interval in seconds between storing the log
+  //#define DEBUG_LOGS          1
+  //#define DEBUG_ETHERNET      0
 #endif
 
 #define THR_ETHERNET          1
@@ -82,7 +83,7 @@
 //#define GAS_CTRL       1
 //#define PH_CTRL        1
 //#define GAS_CTRL       1
-//#define STEPPER_CTRL   1
+#define STEPPER_CTRL   1
 
 
 /**********************
@@ -108,176 +109,157 @@
 #define IP {172, 17, 0 ,107}                          //pH
 #define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAD}      //pH
 
-#define ALIX {172,17,0,10} 
-
-#define NTP_UPDATE_TIME 7200
 
 /*******************************
  * CARD DEFINITION (HARD CODED)
  *******************************/
 
 #ifdef     TEMP_CTRL
+  // Input/Output
+  #define  TEMP_LIQ       IO1
+  #define  TEMP_PLATE     IO2
+  #define  TRANS_PID      PWM5
 
-// Input/Output
-#define  TEMP_LIQ       IO1
-#define  TEMP_PLATE     IO2
-#define  TRANS_PID      PWM5
 
-// Parameters stored in memory
-#ifdef TEMP_LIQ
-#define PARAM_TEMP_LIQ             0
+  #define PARAM_TEMP_LIQ             0
+  #define PARAM_TEMP_PLATE           1
+  #define PARAM_TARGET_LIQUID_TEMP   2
+  #define PARAM_TEMP_MAX             3
+
+  #ifdef TRANS_PID
+    #define  RELAY_PID      200
+    //for the regulation of temperature values btw 10 and 45 [s] are commun
+    #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
+  #endif
 #endif
 
-#ifdef TEMP_PLATE
-#define PARAM_TEMP_PLATE           1
-#endif
-
-#define PARAM_DESIRED_LIQUID_TEMP    9  
-#define PARAM_TEMP_MIN               10
-#define PARAM_TEMP_MAX               11
-
-#ifdef TRANS_PID
-#define  RELAY_PID      200
-//for the regulation of temperature values btw 10 and 45 [s] are commun
-#define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
-#endif
-#endif
-
-//*************************************
-
-#ifdef    PH_CTRL
-
-// Input/Output  
-
-//#define PH                     IO1
-#define PH                     I2C_PH            // #define  RELAY_PUMP                   I2C_RELAY
-#define TAP_ACID               I2C_RELAY_TAP
-#define TAP_BASE               I2C_RELAY_TAP
-#define TAP_FOOD               I2C_RELAY_TAP
-
-
-#if defined(TAP_ACID) || defined(TAP_BASE) || defined (TAP_FOOD)
-
-//same value as for PARAM_RELAY_PUMP but used with a bit shift >>8
-#define PARAM_RELAY_TAP    25       
-#endif
-
-#ifdef PH                                       //#ifdef RELAY_PUMP
-#define PARAM_DESIRED_PH     12               //#define PARAM_WAIT_TIME_PUMP_MOTOR   21
-#define PARAM_PH             2                //#define PARAM_RELAY_PUMP             25
-
-
-//not parameters, hard coded values, set the minimal delay between pH adjustements to 10 seconds
-#define PH_ADJUST_DELAY      10    //delay between acid or base supplies
-#define PH_OPENING_TIME      1     //1sec TAP opening when adjusting
-#define PH_TOLERANCE         10    //correspond to a pH variation of 0.1
-
-#endif
-
-#ifdef TAP_FOOD
-#define PARAM_FOOD_PERIOD     19   //time between openings
-
-//not a parameter, hard coded 1 sec opening time
-#define FOOD_OPENING_TIME     1 
-
-#endif
-
-#endif
-//*************************************
-
-#ifdef     GAS_CTRL
-
-// Input/Output
-#define ANEMOMETER_WRITE            I2C_FLUX
-#define ANEMOMETER_READ             I2C_FLUX
-// #define  TAP_GAS1                   PWM1
-// #define  TAP_GAS2                   PWM2
-#define  TAP_GAS3                   PWM3
-// #define  TAP_GAS4                   PWM4
-
-// Parameters stored in memory
-#ifdef TAP_GAS1  
-#define PARAM_FLUX_GAS1            3
-#define PARAM_DESIRED_FLUX_GAS1    13
-#endif
-
-#ifdef  TAP_GAS2
-#define PARAM_FLUX_GAS2            4
-#define PARAM_DESIRED_FLUX_GAS2    14
-#endif
-
-#ifdef  TAP_GAS3
-#define PARAM_FLUX_GAS3            5
-#define PARAM_DESIRED_FLUX_GAS3    15
-#endif
-
-#ifdef  TAP_GAS4
-#define PARAM_FLUX_GAS4            6
-#define PARAM_DESIRED_FLUX_GAS4    16
-#endif
-
-//few hard coded parameters for flux control
-#define FLUX_TOLERANCE             10    //define a tolerance of 1 cc/min
-#define FLUX_TIME_WINDOWS          10    //define a control windows of 10sec for the flux
-
-//#define DEBUG_GAZ                    1  
-#endif
 
 //*************************************
 
 #ifdef STEPPER_CTRL
 // Input/Output
 
-#define  WGHT                         IO1
-#define  STEPPER                      {IO5,PWM5}
-//#define  TEMP_STEPPER                 IO4
-#define  RELAY_PUMP                   I2C_RELAY
+//  #define  WGHT                         IO1
+  #define  STEPPER                      {IO5,PWM5}
+  #ifdef STEPPER
+    #define  TEMP_STEPPER                 IO4
+  #endif
+ // #define  RELAY_PUMP                   I2C_RELAY
 
+  #ifdef TEMP_STEPPER
+    #define PARAM_TEMP_STEPPER           4
+  #endif
+  
 // Parameters stored in memory
-#ifdef WGHT         
-#define PARAM_WGHT                   7
-#define PARAM_LVL_MAX_WATER          17        
-#define PARAM_LVL_MIN_WATER          18  
-#endif
+  #ifdef WGHT         
+    #define PARAM_WGHT                   5
+    #define PARAM_LVL_MAX_WATER          6        
+    #define PARAM_LVL_MIN_WATER          7  
+  #endif
 
-#ifdef TEMP_STEPPER
-#define PARAM_TEMP_STEPPER           8
-#endif
 
-#ifdef RELAY_PUMP
-#define PARAM_WAIT_TIME_PUMP_MOTOR   21
-#define PARAM_RELAY_PUMP             25
-#endif
+  #ifdef RELAY_PUMP
+    #define PARAM_WAIT_TIME_PUMP_MOTOR   8
+    #define PARAM_RELAY_PUMP             9
+  #endif
 
-#ifdef  STEPPER
-#define  PARAM_STEPPER_SPEED         20        
-#endif 
+  #ifdef  STEPPER
+    #define  PARAM_STEPPER_SPEED         10        
+  #endif 
 
 #endif  
 
 
+//*************************************
+
+#ifdef    PH_CTRL
+
+  // Input/Output  
+
+  //#define PH                     IO1
+  #define PH                     I2C_PH            // #define  RELAY_PUMP                   I2C_RELAY
+  #define TAP_ACID               I2C_RELAY_TAP
+  #define TAP_BASE               I2C_RELAY_TAP
+  #define TAP_FOOD               I2C_RELAY_TAP
+
+
+  #if defined(TAP_ACID) || defined(TAP_BASE) || defined (TAP_FOOD)
+    #define PARAM_RELAY_TAP     11       
+  #endif
+
+  #ifdef PH
+    #define PARAM_PH            12
+    #define PARAM_TARGET_PH     13
+
+    //not parameters, hard coded values, set the minimal delay between pH adjustements to 10 seconds
+    #define PH_ADJUST_DELAY      10    //delay between acid or base supplies
+    #define PH_OPENING_TIME      1     //1sec TAP opening when adjusting
+    #define PH_TOLERANCE         10    //correspond to a pH variation of 0.1
+  #endif
+
+  #ifdef TAP_FOOD
+    #define PARAM_FOOD_PERIOD     14   //time between openings
+
+    //not a parameter, hard coded 1 sec opening time
+    #define FOOD_OPENING_TIME     1 
+  #endif
+#endif
+
+
+//*************************************
+
+#ifdef     GAS_CTRL
+
+  // Input/Output
+  #define ANEMOMETER_WRITE            I2C_FLUX
+  #define ANEMOMETER_READ             I2C_FLUX
+  // #define  TAP_GAS1                   PWM1
+  // #define  TAP_GAS2                   PWM2
+  #define  TAP_GAS3                   PWM3
+  // #define  TAP_GAS4                   PWM4
+
+  // Parameters stored in memory
+  #ifdef TAP_GAS1  
+    #define PARAM_FLUX_GAS1            15
+    #define PARAM_DESIRED_FLUX_GAS1    16
+  #endif
+
+  #ifdef  TAP_GAS2
+    #define PARAM_FLUX_GAS2            17
+    #define PARAM_DESIRED_FLUX_GAS2    18
+  #endif
+
+  #ifdef  TAP_GAS3
+    #define PARAM_FLUX_GAS3            19
+    #define PARAM_DESIRED_FLUX_GAS3    20
+  #endif
+
+  #ifdef  TAP_GAS4
+    #define PARAM_FLUX_GAS4            21
+    #define PARAM_DESIRED_FLUX_GAS4    22
+  #endif
+
+  //few hard coded parameters for flux control
+  #define FLUX_TOLERANCE             10    //define a tolerance of 1 cc/min
+  #define FLUX_TIME_WINDOWS          10    //define a control windows of 10sec for the flux
+
+  //#define DEBUG_GAZ                    1  
+#endif
+
+
 /******************
- * ERROR DEFINITION
+ * FLAG DEFINITION
  ******************/
 
-#define PARAM_EVENT        22
-#define PARAM_EVENT_VALUE  24
-#define FLAG_VECTOR        23
+#define PARAM_STATUS       25
 
-/*related masks*/
 
-#define EVENT_OCCURED      (1<<0)
-#define FLAG_STEPPER_OFF   (1<<1)   //motor turned off
-#define FLAG_PUMPING       (1<<2)   //set the condition to disable targeted modules when pumping is performed
+#define FLAG_STEPPER_CONTROL     0   // the engine may not turn
+#define FLAG_PH_CONTROL          1   // set the condition to disable targeted modules when pumping is performed
+#define FLAG_GAZ_CONTROL         2
+#define FLAG_FOOD_CONTROL        3
 
-#define ERROR_SERVER_DWN   (1<<10)   //set the condition for individual data control (alert useless here)
-#define ERROR_PID          (1<<11)   //set the condition to stop temperature control + alert message
-#define ERROR_PH           (1<<12)   //set the condition to disable ph control       + alert message
-#define ERROR_WEIGHT       (1<<13)   //set the condition to disable pumping control  + alert message
-#define ERROR_MEMORY       (1<<14)   //set the condition to disable 
-#define MODE_STDBY         (1<<13)   //motor and temperature PID On only
-#define MODE_MANUAL        (1<<14)   //everything is set manually
-#define MODE_AUTO          (1<<15)   //reactor working by itself, log can be performed                                    
+
 
 
 /*********
@@ -285,8 +267,8 @@
  *********/
 
 void setup() {
-
   setupParameters();
+  
   initParameterBioreactor();
   nilSysBegin();
 

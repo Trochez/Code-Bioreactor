@@ -38,7 +38,7 @@ void pid_ctrl()
 {
   float exactPresentTime;
   heatingRegInput = getParameter(PARAM_TEMP_LIQ);
-  heatingRegSetpoint = getParameter(PARAM_DESIRED_LIQUID_TEMP);
+  heatingRegSetpoint = getParameter(PARAM_TARGET_LIQUID_TEMP);
   heatingRegPID.Compute();                                   // the computation takes only 30ms!
   // turn the output pin on/off based on pid output
   exactPresentTime = millis();

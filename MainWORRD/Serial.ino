@@ -4,11 +4,10 @@
 char serialBuffer[SERIAL_BUFFER_LENGTH];
 byte serialBufferPosition=0;
 
-NIL_WORKING_AREA(waThreadSerial, 300);
+NIL_WORKING_AREA(waThreadSerial, 220);
 NIL_THREAD(ThreadSerial, arg) {
 
   Serial.begin(9600);
-
   while(true) {
     while (Serial.available()) {
       // get the new byte:

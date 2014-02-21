@@ -14,15 +14,17 @@
 ******************************/
 
 //We define here the number of step executed during every call to the thread
+// Maximum 255 !!!!
 #define NB_STEP_CALL 60
 
 
 //Prototypes
-void executeStep(int numberSteps, boolean forward, byte port1, byte port2);
+void executeStep(uint8_t numberSteps, boolean forward, byte port1, byte port2);
 
 
-NIL_WORKING_AREA(waThreadStepper, 64);
+NIL_WORKING_AREA(waThreadStepper, 0);
 NIL_THREAD(ThreadStepper, arg) {
+    nilThdSleepMilliseconds(4000);
   byte STEPPER_TAB[]=STEPPER;
   boolean forward = true;
   uint8_t count = 0;
@@ -30,23 +32,24 @@ NIL_THREAD(ThreadStepper, arg) {
     pinMode(STEPPER_TAB[i], OUTPUT);    
   }
   while (true) {
-    
      //first a check is performed on the motor status
-     if((getParameter(FLAG_VECTOR)&(FLAG_STEPPER_OFF))==false){
+     if(bitRead(PARAM_STATUS, FLAG_STEPPER_CONTROL)==1){
      
        executeStep(NB_STEP_CALL, forward, STEPPER_TAB[1],STEPPER_TAB[0]);
        //The final delay has to be decided 
        if(!(count % 40)) {
          forward = !forward;
+            nilThdSleepMilliseconds(1000);
        }
        count = (count + 1) % 40;
     }
-     nilThdSleepMilliseconds(10);
+  
   }
 }
 
-void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
-  int counter=1000;
+void executeStep(uint8_t numberSteps, boolean forward, byte port1, byte port2) {
+  
+  uint8_t counter=0;
   while (numberSteps>0) {
     numberSteps--;
     if (forward) {
@@ -62,17 +65,17 @@ void executeStep(int numberSteps, boolean forward, byte port1, byte port2) {
         digitalWrite(port1, LOW);
         digitalWrite(port2,LOW);
         break;
-      case 2:
+      case 1:   // or 2
         //This is BLUE
         digitalWrite(port1, LOW);
         digitalWrite(port2,HIGH);
         break;
-      case 3:
+      case 2:   // or 3
       //This is Black
         digitalWrite(port1, HIGH);
         digitalWrite(port2,HIGH);
         break;
-      case 1:
+      case 3:   // or 1
       //This is Green
         digitalWrite(port1, HIGH);
         digitalWrite(port2,LOW);

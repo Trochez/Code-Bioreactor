@@ -16,7 +16,6 @@
 
 const char hex[] = "0123456789ABCDEF";
 
-#define LOG_REPEAT_DELAY           10  // in seconds !
 #define ENTRY_SIZE_LINEAR_LOGS     64
 #define NB_PARAMETERS_LINEAR_LOGS  26
 #define SIZE_TIMESTAMPS            4
@@ -135,7 +134,6 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
 uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
   nilSemWait(&lockFlashAccess);
 
-
   uint32_t addressOfEntryN = findAddressOfEntryN(entryN);
 
 #ifdef DEBUG_LOGS
@@ -146,9 +144,6 @@ uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
 #endif
 
   sst.flashReadInit(addressOfEntryN);
-
-
-
 
   byte checkDigit=0;
   for(int i = 0; i < ENTRY_SIZE_LINEAR_LOGS; i++) {
@@ -305,9 +300,9 @@ NIL_THREAD(ThreadLogger, arg) {
   nilThdSleepMilliseconds(100);
   recoverLastEntryN();
   nilThdSleepMilliseconds(100);
-  writeLog(CARD_BOOT,0);
+  writeLog(ARDUINO_BOOT,0);
   while(TRUE) {
-    nilThdSleepMilliseconds(LOG_REPEAT_DELAY*1000-millis()%1000+100); // seems by default the time is just to short, we add 100ms to be sure not to have rounding pro
+    nilThdSleepMilliseconds(LOG_INTERVAL*1000-millis()%1000+100); // seems by default the time is just to short, we add 100ms to be sure not to have rounding pro
     writeLog();
   }
 }

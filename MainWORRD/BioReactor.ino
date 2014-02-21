@@ -11,6 +11,9 @@ void setSafeConditions() {
 
 void initParameterBioreactor() {
 
+      // We turn off all the controls
+  setParameter(PARAM_STATUS,1);
+  
   /*
   * DEFAULT PARAMETERS SET
    *
@@ -18,9 +21,7 @@ void initParameterBioreactor() {
    *
    */
 
-  if(getParameter(FLAG_VECTOR) == MAX_INTEGER) {
-    setAndSaveParameter(FLAG_VECTOR,0);
-  }
+
 
 #ifdef RELAY_PUMP
   //default pump parameters
@@ -44,16 +45,12 @@ void initParameterBioreactor() {
 
 #ifdef TRANS_PID
   //Default Temperature parameters
-  if(getParameter(PARAM_DESIRED_LIQUID_TEMP) == MAX_INTEGER) {
-    setAndSaveParameter(PARAM_DESIRED_LIQUID_TEMP,30000);
-  }
-
-  if(getParameter(PARAM_TEMP_MIN) == MAX_INTEGER) {
-    setAndSaveParameter(PARAM_TEMP_MIN,28000);
+  if(getParameter(PARAM_TARGET_LIQUID_TEMP) == MAX_INTEGER) {
+    setAndSaveParameter(PARAM_TARGET_LIQUID_TEMP,3000);
   }
 
   if(getParameter(PARAM_TEMP_MAX) == MAX_INTEGER) {
-    setAndSaveParameter(PARAM_TEMP_MAX,32000);
+    setAndSaveParameter(PARAM_TEMP_MAX,3200);
   }
 #endif
 
@@ -94,18 +91,6 @@ void initParameterBioreactor() {
 #endif
 }
 
-//Return true if success, false otherwise
-boolean sendError(uint8_t event, uint8_t value){
-  if((getParameter(FLAG_VECTOR) | EVENT_OCCURED) != 0){
-    setParameter(FLAG_VECTOR, getParameter(FLAG_VECTOR) | EVENT_OCCURED);
-    setParameter(PARAM_EVENT, event);
-    setParameter(PARAM_EVENT_VALUE, value);
-    return true;
-  } 
-  else {
-    return false; 
-  }
-}
 
 
 

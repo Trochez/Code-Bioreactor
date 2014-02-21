@@ -37,12 +37,12 @@ NIL_THREAD(ThreadMonitoring, arg) {
 
 NIL_THREADS_TABLE_BEGIN()
 
-#ifdef THR_LINEAR_LOGS
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadLogger, NULL, waThreadLogger, sizeof(waThreadLogger))
-#endif
-
 #ifdef  STEPPER
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
+#endif
+
+#ifdef THR_LINEAR_LOGS
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadLogger, NULL, waThreadLogger, sizeof(waThreadLogger))
 #endif
 
 #ifdef PH_CTRL

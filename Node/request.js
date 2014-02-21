@@ -12,10 +12,14 @@ setInterval(function() {
 
     console.log("Getting update for: "+ip)
 
-    // we need to search for the last entryID for this specific IP address
-    getLastEntryID(ip, function(ip, lastID) {
-      fetchLog(ip, lastID+1);
-    })
+    try {
+      // we need to search for the last entryID for this specific IP address
+      getLastEntryID(ip, function(ip, lastID) {
+       	 fetchLog(ip, lastID+1);
+      });
+    } catch (err) {
+	console.log("Error: "+err);
+    }
   }
 },10000)
 
@@ -126,7 +130,9 @@ function parseResult(result, options) {
           entry.id=parseInt("0x"+line.substring(0,8));
           entry.epoch=parseInt("0x"+line.substring(8,16));
           for (var j=0; j<26; j++) {
-            entry[String.fromCharCode(65+j)]=convertSignedIntHexa(line.substring(16+(j*4),20+(j*4)));
+            var value=convertSignedIntHexa(line.substring(16+(j*4),20+(j*4)));
+            if (value==-32768) value=null;
+            entry[String.fromCharCode(65+j)]=value;
           }
           entry.event=parseInt("0x"+line.substring(120,124));
           entry.eventParameter=parseInt("0x"+line.substring(124,128));

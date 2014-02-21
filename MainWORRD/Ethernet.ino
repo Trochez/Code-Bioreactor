@@ -25,19 +25,20 @@ uint8_t ip[] = IP;
 uint8_t mac[] = MAC;
 
 
-EthernetServer server(80);
+
 
 
 /****************
  * Ethernet Thread
  *****************/
 
-NIL_WORKING_AREA(waThreadEthernet, 350); //change memoy allocation
+NIL_WORKING_AREA(waThreadEthernet, 300); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
 
   nilThdSleepMilliseconds(1000);
 
   Ethernet.begin(mac,ip);
+  EthernetServer server(80);
   server.begin();
 
 
@@ -96,12 +97,12 @@ NIL_THREAD(ThreadEthernet, arg) {
         printResult(request, &client);
 
         // give the web browser time to receive the data
-        nilThdSleepMilliseconds(100);
+        nilThdSleepMilliseconds(20);
         // close the connection:
         client.flush();
-         nilThdSleepMilliseconds(100);
-        client.stop();
+         nilThdSleepMilliseconds(1);
       }
+      client.stop();
 #ifdef DEBUG_ETHERNET
       Serial.println("Closed");
 #endif
@@ -109,17 +110,9 @@ NIL_THREAD(ThreadEthernet, arg) {
     } 
 #endif
 
-    nilThdSleepMilliseconds(200);
+    nilThdSleepMilliseconds(500);
   }
 }
 
 #endif
-
-
-
-
-
-
-
-
 

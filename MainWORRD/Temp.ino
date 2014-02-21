@@ -25,11 +25,13 @@
 
 #include <OneWire.h>
 
+byte oneWireAddress[8];
 
-void getTemperature(OneWire &ow, int parameter, byte * loggedErrorTemp, uint16_t logNumber);
+void getTemperature(OneWire &ow, int parameter, byte errorBit, byte failedEvent, byte recoverEvent);
   
+byte errorTemperature=0;
   
-NIL_WORKING_AREA(waThreadTemp, 150);
+NIL_WORKING_AREA(waThreadTemp, 80);
 NIL_THREAD(ThreadTemp, arg) {
   nilThdSleepMilliseconds(1000);
   #ifdef TEMP_CTRL
@@ -58,15 +60,15 @@ NIL_THREAD(ThreadTemp, arg) {
   
   while(true){
     #ifdef TEMP_LIQ
-      getTemperature(oneWire1, PARAM_TEMP_LIQ, &errorTempLiq, TEMP_LIQ_FAILED);
+      getTemperature(oneWire1, PARAM_TEMP_LIQ, 0, TEMP_LIQ_FAILED, TEMP_LIQ_RECOVER);
     #endif
   
     #ifdef TEMP_PLATE
-      getTemperature(oneWire2, PARAM_TEMP_PLATE, &errorTempPlate, TEMP_PLATE_FAILED);
+      getTemperature(oneWire2, PARAM_TEMP_PLATE, 1, TEMP_PLATE_FAILED, TEMP_PLATE_RECOVER);
     #endif
   
     #ifdef TEMP_STEPPER
-      getTemperature(oneWire3, PARAM_TEMP_STEPPER, &errorTempStepper, TEMP_STEPPER_FAILED); 
+      getTemperature(oneWire3, PARAM_TEMP_STEPPER, 1, TEMP_STEPPER_FAILED, TEMP_STEPPER_RECOVER);
     #endif
     
     nilThdSleepMilliseconds(5000);
@@ -74,33 +76,33 @@ NIL_THREAD(ThreadTemp, arg) {
 }
   
   
-void getTemperature(OneWire &ow, int parameter, byte * loggedErrorTemp, uint16_t logNumber){
+void getTemperature(OneWire &ow, int parameter, byte errorBit, byte failedEvent, byte recoverEvent) {
   byte data[2];
-  ow.reset();
+  byte present=ow.reset();
   ow.write(0xCC);
   ow.write(0x44);   
 
   //We use the return of the reset function to check if the device is present
-  byte present = ow.reset();
   // if(present == 0) => one error occured
   // if(*errorTemp) == false => The error has not been logged
-  
+
   //if error & non logged
   if (present == 0){
-    //We log the error if not done before
-    if((*loggedErrorTemp) == 0){
-      if(sendError(logNumber, 0)){
-        (*loggedErrorTemp) = 1; 
-      }
+    if (bitRead(errorTemperature, errorBit)!=1) {
+      bitSet(errorTemperature, errorBit);
+      writeLog(failedEvent,0);
+      setParameter(parameter, ERROR_VALUE);
     }
   }
   //no error
   else {
     //we can log new error again
-    if ((*loggedErrorTemp) == 1){
-     (*loggedErrorTemp) = 0; 
+    if (bitRead(errorTemperature, errorBit)==1) {
+      bitClear(errorTemperature, errorBit);
+      writeLog(recoverEvent,0);
     }
     //We get the new temperature
+    ow.reset();
     ow.write(0xCC);
     ow.write(0xBE);
     data[0] = ow.read();
@@ -110,6 +112,7 @@ void getTemperature(OneWire &ow, int parameter, byte * loggedErrorTemp, uint16_t
     setParameter(parameter, ((long)raw*625)/100);
   }
 }  
+
 
 
 #endif
