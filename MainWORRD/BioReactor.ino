@@ -7,14 +7,14 @@
 
 void setSafeConditions() {
   // we will first store all the current paramters permanently
-
+  writeLog(ARDUINO_SET_SAFE, 0);
 }
 
 void initParameterBioreactor() {
 
-      // We turn off all the controls
+  // We turn off all the controls
   setParameter(PARAM_STATUS,1);
-  
+
   /*
   * DEFAULT PARAMETERS SET
    *
@@ -91,6 +91,7 @@ void initParameterBioreactor() {
   }  
 #endif
 }
+
 
 
 

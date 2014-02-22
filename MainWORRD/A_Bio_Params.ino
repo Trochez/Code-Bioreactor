@@ -31,6 +31,7 @@
 
 
 //When parameters are set (and saved) an event is recorded (256-281 : A-Z)
+#define SAVE_ALL_PARAMETER     255
 #define PARAMETER_SET          256
 
 

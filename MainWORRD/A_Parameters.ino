@@ -44,8 +44,9 @@ void setParameter(byte number, int value) {
 
 void saveParameters() {
   for (byte i=0; i<MAX_PARAM; i++) {
-    setAndSaveParameter(i, getParameter(i));
+    eeprom_write_word((uint16_t*) EE_START_PARAM+i, parameters[i]);
   }
+  writeLog(SAVE_ALL_PARAMETER, 0);
 }
 
 /*

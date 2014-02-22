@@ -103,18 +103,23 @@ function fetchLog(host, lastID) {
 
 function get(host, options, callback) {
    var tmp = [];
-    http.get(options, function(res) {
-    res.setEncoding('utf8');
-    res.on('data', function(chunk) {
-      tmp.push(chunk);
-    });
-    res.on('end', function (e) {
+   var request= http.get(options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function(chunk) {
+        tmp.push(chunk);
+      });
+      res.on('end', function (e) {
        var body = tmp.join('');
        callback(body);
+      });
+    }).on('error', function(e) {
+      console.log('problem with request: ' + e.message);
+    })
+   request.setTimeout(3000, function() {
+     request.abort();
+      console.log("Request timeout");
     });
-  }).on('error', function(e) {
-    console.log('problem with request: ' + e.message);
-  });
+
 }
 
 function parseResult(result, options) {
