@@ -6,12 +6,13 @@
 NIL_WORKING_AREA(waThreadMonitoring, 0);
 NIL_THREAD(ThreadMonitoring, arg) {
   // we should not start the watchdog too quickly ...
-   nilThdSleepMilliseconds(30000);
-   
+  nilThdSleepMilliseconds(30000);
+
   // we activate the watchdog
   // we need to make a RESET all the time otherwise automatic reboot: wdt_reset();
   wdt_enable(WDTO_8S);
 
+  uint16_t autoreboot=0;
   boolean turnOn=true;
 #ifdef THR_MONITORING
   pinMode(THR_MONITORING, OUTPUT);   
@@ -27,9 +28,15 @@ NIL_THREAD(ThreadMonitoring, arg) {
       digitalWrite(THR_MONITORING,LOW);
     }
 #endif
-    nilThdSleepMilliseconds(100);
 
-    wdt_reset();
+    nilThdSleepMilliseconds(100);
+    autoreboot++;
+    if (autoreboot<18000) {
+      wdt_reset();
+    } 
+    else {
+      setSafeConditions();
+    }
   }
 }
 
@@ -83,6 +90,9 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadEthernet, NULL, waThreadEthernet, sizeof(waT
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadMonitoring, NULL, waThreadMonitoring, sizeof(waThreadMonitoring))
 
 NIL_THREADS_TABLE_END()
+
+
+
 
 
 

@@ -139,12 +139,12 @@
 #ifdef STEPPER_CTRL
 // Input/Output
 
-//  #define  WGHT                         IO1
+  #define  WGHT                         IO3 // SHOUD BE IO1 !!!!!!!!!!!
   #define  STEPPER                      {IO5,PWM5}
   #ifdef STEPPER
     #define  TEMP_STEPPER                 IO4
   #endif
- // #define  RELAY_PUMP                   I2C_RELAY
+//  #define  RELAY_PUMP                   I2C_RELAY
 
   #ifdef TEMP_STEPPER
     #define PARAM_TEMP_STEPPER           4

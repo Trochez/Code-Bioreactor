@@ -5,7 +5,7 @@
 //hard coded safety value, TO BE CHANGED ONCE THE SENSOR IS CALIBRATED and conversion performed automatically !!!!!!!!!
 #define MAX_ABSOLUTE_WGHT          600
 
-NIL_WORKING_AREA(waThreadWeight, 64);    
+NIL_WORKING_AREA(waThreadWeight, 0);    
 NIL_THREAD(ThreadWeight, arg) {
   
     int leaky_wght;

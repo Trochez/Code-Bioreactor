@@ -1,13 +1,18 @@
 
 // Definition of all events to be logged
 #define ARDUINO_BOOT           1
-#define PUMPING_START          2
-#define PUMPING_STOP           3
-#define MOTOR_START            4
-#define MOTOR_STOP             5
+#define ARDUINO_SET_SAFE       2
 
 
-#define PUMPING_FAILURE        9
+#define PUMPING_START          10
+#define PUMPING_STOP           11
+#define PUMPING_FAILURE        12
+
+#define MOTOR_START            15
+#define MOTOR_STOP             16
+
+
+
 
 
 #define TEMP_LIQ_FAILED        50

@@ -47,7 +47,10 @@ NIL_THREAD(ThreadEthernet, arg) {
   Serial.println(Ethernet.localIP());
 #endif
 
+int resetEthernet=0;
+
   while (TRUE) {
+    
     /****************************
      * THREAD ETHERNET 
      * - Receive request from clients
