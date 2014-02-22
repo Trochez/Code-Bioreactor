@@ -35,6 +35,7 @@ NIL_THREAD(ThreadMonitoring, arg) {
       wdt_reset();
     } 
     else {
+      saveParameters();
       setSafeConditions();
     }
   }

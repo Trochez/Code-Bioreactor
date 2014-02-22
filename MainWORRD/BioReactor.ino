@@ -7,9 +7,7 @@
 
 void setSafeConditions() {
   // we will first store all the current paramters permanently
-  for (byte i=0; i<MAX_PARAM; i++) {
-    setAndSaveParameter(byte i, getParameter(i));
-  }
+
 }
 
 void initParameterBioreactor() {

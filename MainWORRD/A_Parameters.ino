@@ -42,6 +42,12 @@ void setParameter(byte number, int value) {
   parameters[number]=value;
 }
 
+void saveParameters() {
+  for (byte i=0; i<MAX_PARAM; i++) {
+    setAndSaveParameter(i, getParameter(i));
+  }
+}
+
 /*
 This will take time, around 4 ms
  This will also use the EEPROM that is limited to 100000 writes
@@ -50,7 +56,7 @@ void setAndSaveParameter(byte number, int value) {
   parameters[number]=value;
   //The address of the parameter is given by : EE_START_PARAM+number*2
   eeprom_write_word((uint16_t*) EE_START_PARAM+number, value);
-  
+
   writeLog(PARAMETER_SET+number, value);
 }
 
@@ -68,4 +74,5 @@ void printParameters(Print* output) {
     printParameter(output, i);
   }
 }
+
 
