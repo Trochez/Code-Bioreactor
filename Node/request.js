@@ -23,22 +23,21 @@ setInterval(function() {
   }
 },10000)
 
-/*
 setEpoch();
 setTimeout(function() {
   setInterval(function() {
     setEpoch();
   },60*60*1000)
 },5000);
-*/
 
+/*
 getMemory();
 setTimeout(function() {
   setInterval(function() {
     getMemory();
   },10000)
 },5000);
-
+*/
 
 function setEpoch() {
   for (var i=0; i<arduinoIPs.length; i++) {
