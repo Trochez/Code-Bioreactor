@@ -37,9 +37,17 @@ NIL_THREAD(ThreadEthernet, arg) {
 
   nilThdSleepMilliseconds(1000);
 
+  // Change w5100 to add delay in init
+  //  writeMR(1<<RST);
+  // delay(100);
+  // writeTMSR(0x55);
+
+
   Ethernet.begin(mac,ip);
   EthernetServer server(80);
   server.begin();
+
+
 
 
 #ifdef DEBUG_ETHERNET
@@ -47,10 +55,18 @@ NIL_THREAD(ThreadEthernet, arg) {
   Serial.println(Ethernet.localIP());
 #endif
 
-int resetEthernet=0;
+  int resetEthernet=0;
 
   while (TRUE) {
-    
+
+    resetEthernet++;
+    if (resetEthernet==1000) {
+      writeLog(RESET_ETHERNET,0);
+      resetEthernet=0;
+      server.reset();
+    }
+
+
     /****************************
      * THREAD ETHERNET 
      * - Receive request from clients
@@ -62,7 +78,7 @@ int resetEthernet=0;
 #ifdef DEBUG_ETHERNET
       Serial.println("New client");
 #endif
-      // an http request ends with a blank line
+      // an http request ends with a blank line 
       boolean starting = true;
       //Count the number of byte of the answer
 
@@ -103,7 +119,7 @@ int resetEthernet=0;
         nilThdSleepMilliseconds(20);
         // close the connection:
         client.flush();
-         nilThdSleepMilliseconds(1);
+        nilThdSleepMilliseconds(1);
       }
       client.stop();
 #ifdef DEBUG_ETHERNET
@@ -118,4 +134,5 @@ int resetEthernet=0;
 }
 
 #endif
+
 

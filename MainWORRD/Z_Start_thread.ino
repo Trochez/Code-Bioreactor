@@ -13,7 +13,9 @@ NIL_THREAD(ThreadMonitoring, arg) {
   // we need to make a RESET all the time otherwise automatic reboot: wdt_reset();
   wdt_enable(WDTO_8S);
 
-  uint16_t autoreboot=0;
+  // uint16_t autoreboot=0;
+  
+  
   boolean turnOn=true;
 #ifdef THR_MONITORING
   pinMode(THR_MONITORING, OUTPUT);   
@@ -31,16 +33,20 @@ NIL_THREAD(ThreadMonitoring, arg) {
 #endif
 
     nilThdSleepMilliseconds(100);
-    autoreboot++;
-    if (autoreboot<AUTOREBOOT) {
+    
+
+   // autoreboot++;
+   //  if (autoreboot<AUTOREBOOT) {
       wdt_reset();
-    } 
+   /* } 
     else {
       if (autoreboot==AUTOREBOOT) {
         saveParameters();
         setSafeConditions();
       }
     }
+    */
+    
   }
 }
 

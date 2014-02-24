@@ -2,7 +2,7 @@
 // Definition of all events to be logged
 #define ARDUINO_BOOT           1
 #define ARDUINO_SET_SAFE       2
-
+#define RESET_ETHERNET         3
 
 #define PUMPING_START          10
 #define PUMPING_STOP           11

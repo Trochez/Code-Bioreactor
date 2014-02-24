@@ -26,6 +26,16 @@ void EthernetServer::begin()
   }  
 }
 
+void EthernetServer::reset()
+{
+  for (int sock = 0; sock < MAX_SOCK_NUM; sock++) {
+    EthernetClient client(sock);
+    if (client.status() != SnSR::CLOSED) {
+      client.stop();
+    }
+  }  
+}
+
 void EthernetServer::accept()
 {
   int listening = 0;

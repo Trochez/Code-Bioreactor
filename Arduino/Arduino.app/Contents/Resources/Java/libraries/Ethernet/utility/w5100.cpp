@@ -31,6 +31,7 @@ void W5100Class::init(void)
   initSS();
   
   writeMR(1<<RST);
+  delay(100);
   writeTMSR(0x55);
   writeRMSR(0x55);
 
