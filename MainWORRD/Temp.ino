@@ -68,7 +68,7 @@ NIL_THREAD(ThreadTemp, arg) {
 #endif
 
 #ifdef TEMP_STEPPER
-    getTemperature(oneWire3, PARAM_TEMP_STEPPER, 1, TEMP_STEPPER_FAILED, TEMP_STEPPER_RECOVER);
+    getTemperature(oneWire3, PARAM_TEMP_STEPPER, 2, TEMP_STEPPER_FAILED, TEMP_STEPPER_RECOVER);
 #endif
 
     nilThdSleepMilliseconds(5000);
