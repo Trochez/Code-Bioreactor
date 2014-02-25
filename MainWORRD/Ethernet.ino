@@ -60,7 +60,7 @@ NIL_THREAD(ThreadEthernet, arg) {
   while (TRUE) {
 
     resetEthernet++;
-    if (resetEthernet==1000) {
+    if (resetEthernet==10000) {
       writeLog(RESET_ETHERNET,0);
       resetEthernet=0;
       server.reset();
@@ -129,7 +129,7 @@ NIL_THREAD(ThreadEthernet, arg) {
     } 
 #endif
 
-    nilThdSleepMilliseconds(500);
+    nilThdSleepMilliseconds(100);
   }
 }
 
