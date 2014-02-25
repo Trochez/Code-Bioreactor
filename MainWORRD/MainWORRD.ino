@@ -15,6 +15,7 @@
 
 //Ethernet libraries
 #include <Ethernet.h>
+#include <EthernetUdp.h>
 
 
 // The normal serial takes 200 bytes more but is buffered
@@ -102,8 +103,8 @@ uint16_t autoreboot=0;
  * // Each different boards should have a different IP in the range 172.17.0.100 - 172.17.0.200
  * // and a different MAC address
  ***********************/
-#define IP {172, 17, 0 , 103}
-#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAB}
+//#define IP {172, 17, 0 , 103}
+//#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAB}
 //#define IP {172, 17, 0 , 104}
 //define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAA}
 //#define IP {172, 17, 0 , 105}
@@ -114,8 +115,8 @@ uint16_t autoreboot=0;
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEE}        
 //#define IP {172, 17, 0 ,104}                          //gas
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xDD}      //gas
-#define IP {172, 17, 0 ,107}                          //pH
-#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAD}      //pH
+#define IP {10, 0, 0 ,105}                          //pH
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}      //pH
 
 
 /*******************************
