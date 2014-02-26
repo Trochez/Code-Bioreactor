@@ -97,8 +97,7 @@ void getTemperature(OneWire &ow, int parameter, byte errorBit, byte failedEvent,
       setParameter(parameter, ERROR_VALUE);
     }
   }
-  //no error
-  else {
+  else {  //no error
     //we can log new error again
     if (bitRead(errorTemperature, errorBit)==1) {
       bitClear(errorTemperature, errorBit);

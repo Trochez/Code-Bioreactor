@@ -2,7 +2,6 @@
 // If the led is "stable" (blinks 500 times per seconds) it means there are not too
 // many activities on the microcontroler
 
-#define AUTOREBOOT 18000
 
 NIL_WORKING_AREA(waThreadMonitoring, 0);
 NIL_THREAD(ThreadMonitoring, arg) {
@@ -13,7 +12,7 @@ NIL_THREAD(ThreadMonitoring, arg) {
   // we need to make a RESET all the time otherwise automatic reboot: wdt_reset();
   wdt_enable(WDTO_8S);
 
-  // uint16_t autoreboot=0;
+ 
   
   
   boolean turnOn=true;
@@ -35,17 +34,17 @@ NIL_THREAD(ThreadMonitoring, arg) {
     nilThdSleepMilliseconds(100);
     
 
-   // autoreboot++;
-   //  if (autoreboot<AUTOREBOOT) {
+    autoreboot++;
+     if (autoreboot<AUTOREBOOT) {
       wdt_reset();
-   /* } 
+    } 
     else {
       if (autoreboot==AUTOREBOOT) {
         saveParameters();
         setSafeConditions();
       }
     }
-    */
+    
     
   }
 }

@@ -108,7 +108,11 @@ NIL_THREAD(ThreadEthernet, arg) {
       }
 
       if (client.connected()) {
-
+        
+        if (autoreboot>(AUTOREBOOT-AUTOREBOOT/10)) {
+          autoreboot= (AUTOREBOOT-AUTOREBOOT/10);
+        }
+        
         client.println(F("HTTP/1.1 200 OK"));
         client.println(F("Content-Type: text/html"));
         client.println(F("Connection: close"));  // the connection will be closed after completion of the response
@@ -134,5 +138,6 @@ NIL_THREAD(ThreadEthernet, arg) {
 }
 
 #endif
+
 
 
