@@ -6,6 +6,7 @@ function(head, req) {
     var first;
     
 	while(row = getRow()) {
+		row.key=row.key[row.key.length-1];
 		if (! first) {
 			first=row.value;
 		}
@@ -25,16 +26,22 @@ function(head, req) {
 	for (var type in first) {
 		types[type]={};
 		for (var field in first[type]) {
-			types[type][field]=true;
+			if (field.match(/.*Min/) || field.match(/.*Max/) || field.match(/.*Average/)) {
+				types[type][field]=true;
+			}
 		}
 	}
 
 
 	var result={};
 	for (var type in types) {
-		result[type]=createChart(type);
-		var data=result[type].value.data;
+		//result[type]=createChart(type);
+		//var data=result[type].value.data;
+		result[type]={};
 		for (var field in types[type]) {
+			result[type][field]=createChart(type);
+			var data=result[type][field].value.data;
+
 			var valueArray=[];
 			for (var i=0; i<rows.length; i++) {
 				valueArray.push(rows[i].value[type][field]);
@@ -47,7 +54,6 @@ function(head, req) {
 				serieLabel: field
 			});
 		}
-
 	}
 
 	function createChart(type) {

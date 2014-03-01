@@ -1,24 +1,23 @@
 function(key, values, rereduce) {
 
   var servers={
-    "172.17.0.106": {
+    "172.17.0.107": {
       "temperature" : {
         "A":"plate",
-        "B":"internal",
-        "C":"external"
-      },
-      "level": {
-        "D":"global"
+        "B":"reactor"
       }
     },
-    "172.17.0.105": {
-       "temperature" : {
-         "A":"plateB",
-         "B":"internalB",
-         "C":"externalB"
+    "10.0.0.105": {
+      "temperature" : {
+        "A":"plateB"
       }
     }
   }
+
+  var factors={
+    temperature : 0.01
+  }
+
 
   if (rereduce) {
     var toReturn=createResult(servers);
@@ -73,6 +72,7 @@ function(key, values, rereduce) {
   }
 
   function addKeys(result, type, key, value) {
+    if (factors[type]) value*=factors[type];
     result[type][key+"Min"]=Math.min(result[type][key+"Min"], value);
     result[type][key+"Max"]=Math.max(result[type][key+"Max"], value);
     result[type][key+"Total"]=result[type][key+"Total"]+value;
