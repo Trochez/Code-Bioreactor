@@ -142,8 +142,10 @@ function parseResult(result, options) {
           entry.eventParameter=parseInt("0x"+line.substring(124,128));
           entry.mac=line.substring(128,132);
           entry.host=options.host;
-          saveToCouchDB(entry);
+          if (entry.epoch<4294967295) {
+            saveToCouchDB(entry);
             console.log("Saving: "+(counter++));
+          }
         } else {
           console.log("Check digit error: "+line);
         }
