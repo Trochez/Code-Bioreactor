@@ -1,8 +1,8 @@
 var http = require('http');
 var nano = require('nano')('http://visualizer.epfl.ch');
-var dbName = "bioreactor";  // must be CREATED BEFORE and contains correct VIEW !!!!
+var dbName = "bioreactor2";  // must be CREATED BEFORE and contains correct VIEW !!!!
 
-
+var epochQuery=
 
 function getCouchDBLink() {
   try {
@@ -12,7 +12,6 @@ function getCouchDBLink() {
     console.log(err.description)
     return false;
   }
- 
 }
 
 function getLastEntryID(host, callback) {
