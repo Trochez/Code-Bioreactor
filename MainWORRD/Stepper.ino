@@ -33,7 +33,7 @@ NIL_THREAD(ThreadStepper, arg) {
   }
   while (true) {
      //first a check is performed on the motor status
-     if(bitRead(PARAM_STATUS, FLAG_STEPPER_CONTROL)==1){
+     if(bitRead(PARAM_STATUS, FLAG_STEPPER_CONTROL)==1) {
      
        executeStep(NB_STEP_CALL, forward, STEPPER_TAB[1],STEPPER_TAB[0]);
        //The final delay has to be decided 
@@ -65,17 +65,17 @@ void executeStep(uint8_t numberSteps, boolean forward, byte port1, byte port2) {
         digitalWrite(port1, LOW);
         digitalWrite(port2,LOW);
         break;
-      case 1:   // or 2
+      case 2:   // 1 or 2
         //This is BLUE
         digitalWrite(port1, LOW);
         digitalWrite(port2,HIGH);
         break;
-      case 2:   // or 3
+      case 3:   // 2 or 3
       //This is Black
         digitalWrite(port1, HIGH);
         digitalWrite(port2,HIGH);
         break;
-      case 3:   // or 1
+      case 1:   // 3 or 1
       //This is Green
         digitalWrite(port1, HIGH);
         digitalWrite(port2,LOW);

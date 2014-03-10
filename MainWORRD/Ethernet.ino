@@ -109,6 +109,7 @@ NIL_THREAD(ThreadEthernet, arg) {
 
       if (client.connected()) {
         
+        // we will not autoreboot because we ask correctly for the ethernet information
         if (autoreboot>(AUTOREBOOT-AUTOREBOOT/10)) {
           autoreboot= (AUTOREBOOT-AUTOREBOOT/10);
         }

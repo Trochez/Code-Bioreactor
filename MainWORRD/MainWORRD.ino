@@ -148,7 +148,7 @@ uint16_t autoreboot=0;
 #ifdef STEPPER_CTRL
 // Input/Output
 
-#define  WGHT                         IO3 // SHOUD BE IO1 !!!!!!!!!!!
+#define  WEIGHT                       IO3 // SHOUD BE IO1 !!!!!!!!!!!
 #define  STEPPER                      {IO5,PWM5}
 #ifdef STEPPER
 #define  TEMP_STEPPER                 IO4
@@ -160,21 +160,20 @@ uint16_t autoreboot=0;
 #endif
 
 // Parameters stored in memory
-#ifdef WGHT         
-#define PARAM_WGHT                   5
-#define PARAM_LVL_MAX_WATER          6        
-#define PARAM_LVL_MIN_WATER          7  
+#ifdef WEIGHT         
+#define PARAM_WEIGHT                 5
+#define PARAM_WEIGHT_MAX             6        
+#define PARAM_WEIGHT_MIN             7  
 #endif
-
 
 #ifdef RELAY_PUMP
 #define PARAM_WAIT_TIME_PUMP_MOTOR   8
-#define PARAM_RELAY_PUMP             9
+#define PARAM_MIN_FILLED_TIME        9 
+#define PARAM_RELAY_PUMP             10       
 #endif
 
-#ifdef  STEPPER
-#define  PARAM_STEPPER_SPEED         10        
-#endif 
+
+
 
 #endif  
 
@@ -267,7 +266,8 @@ uint16_t autoreboot=0;
 #define FLAG_PH_CONTROL          1   // set the condition to disable targeted modules when pumping is performed
 #define FLAG_GAZ_CONTROL         2
 #define FLAG_FOOD_CONTROL        3
-
+#define FLAG_FILLING             4
+#define FLAG_EMPTYING            5
 
 
 

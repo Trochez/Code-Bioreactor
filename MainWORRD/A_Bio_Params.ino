@@ -4,12 +4,19 @@
 #define ARDUINO_SET_SAFE       2
 #define RESET_ETHERNET         3
 
-#define PUMPING_START          10
-#define PUMPING_STOP           11
-#define PUMPING_FAILURE        12
+#define PUMPING_FILLING_START    10
+#define PUMPING_FILLING_STOP     11
+#define PUMPING_FILLING_FAILURE  12
 
-#define MOTOR_START            15
-#define MOTOR_STOP             16
+#define PUMPING_EMPTYING_START   13
+#define PUMPING_EMPTYING_STOP    14
+#define PUMPING_EMPTYING_FAILURE 15
+
+
+
+
+#define MOTOR_START            20
+#define MOTOR_STOP             21
 
 
 
@@ -23,8 +30,8 @@
 #define TEMP_STEPPER_RECOVER   55
 
 
-#define WGHT_FAILURE           129
-#define WGHT_BACK_TO_NORMAL    130
+#define WEIGHT_FAILURE           129
+#define WEIGHT_BACK_TO_NORMAL    130
 
 
 #define ERROR_NOT_FOUND_ENTRY_N  150
