@@ -10,7 +10,7 @@ NIL_THREAD(ThreadMonitoring, arg) {
 
   // we activate the watchdog
   // we need to make a RESET all the time otherwise automatic reboot: wdt_reset();
-  wdt_enable(WDTO_8S);
+ // wdt_enable(WDTO_8S);
 
  
   
@@ -82,7 +82,7 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThrea
 #endif
 
 #if defined(GAS_CTRL) || defined(I2C_LCD) || defined(PH_CTRL) || defined(RELAY_PUMP)
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
+ NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
 #endif
 
 #ifdef SERIAL

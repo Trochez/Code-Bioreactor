@@ -41,12 +41,14 @@ boolean wireFlagStatus(byte *aByte, byte address);
 byte numberI2CDevices=0;
 byte wireDeviceID[WIRE_MAX_DEVICES];
 #ifdef RELAY_PUMP
-  byte previousPumpRelayFlag=255;
+  byte previousPumpRelayFlag=127;
 #endif
 
 NIL_WORKING_AREA(waThreadWire, 64);
 NIL_THREAD(ThreadWire, arg) {
 
+  nilThdSleepMilliseconds(1000);
+  
   byte aByte=0;
   byte* wireFlag32=&aByte;
   unsigned int wireEventStatus=0;
@@ -60,19 +62,18 @@ NIL_THREAD(ThreadWire, arg) {
 
   while(true) {
 
-    wireEventStatus++;
-    if (wireEventStatus%25==5) {
+    if (wireEventStatus%25==0) {
       wireUpdateList();
     }
-
+  wireEventStatus++;
 
     /*********
      * RELAY
      *********/
     //
 #ifdef RELAY_PUMP
-    if (previousPumpRelayFlag=!PARAM_STATUS>>RELAY_PUMP_SHIFT & 15) {
-      previousPumpRelayFlag=PARAM_STATUS>>RELAY_PUMP_SHIFT & 15;
+    if (previousPumpRelayFlag!=((getParameter(PARAM_STATUS)>>RELAY_PUMP_SHIFT) & 15)) {
+      previousPumpRelayFlag=((getParameter(PARAM_STATUS)>>RELAY_PUMP_SHIFT) & 15);
       sendRelay(I2C_RELAY,previousPumpRelayFlag, wireFlag32);
     }
 #endif

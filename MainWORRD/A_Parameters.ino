@@ -39,15 +39,18 @@ int getParameter(byte number) {
 }
 
 void setParameterBit(byte number, byte bitToSet) {
-  bitSet(parameters[number], bitToSet);
+   bitSet(parameters[number], bitToSet);
+  // parameters[number]=parameters[number] | (1 << bitToSet);
 }
 
 void clearParameterBit(byte number, byte bitToClear) {
-  bitClear(parameters[number], bitToClear);
+   bitClear(parameters[number], bitToClear);
+  // parameters[number]=parameters[number] & ( ~ (1 << bitToClear));
 }
 
 byte readParameterBit(byte number, byte bitToRead) {
-  return bitRead(parameters[number], bitToRead);
+   return bitRead(parameters[number], bitToRead);
+  // return (parameters[number] >> bitToRead ) & 1;
 }
 
 void setParameter(byte number, int value) {

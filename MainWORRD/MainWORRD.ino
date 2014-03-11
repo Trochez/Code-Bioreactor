@@ -271,7 +271,7 @@ uint16_t autoreboot=0;
 #define FLAG_RELAY_BASE          13
 #define FLAG_RELAY_NOTUSED3      14
 #define FLAG_RELAY_NOTUSED4      15
-#define RELAY_PUMP_SHIFT         12 // We need to shift of 4 bits to get the value to send to relay board
+#define RELAY_TAP_SHIFT          12 // We need to shift of 4 bits to get the value to send to relay board
 
 
 /*********

@@ -16,7 +16,7 @@ unsigned long heatingRegWindowStartTime;
 PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000,15,300, DIRECT);
 
 
-NIL_WORKING_AREA(waThread_PID, 64);      
+NIL_WORKING_AREA(waThread_PID, 32);      
 NIL_THREAD(Thread_PID, arg) 
 {
   

@@ -12,6 +12,7 @@
 #define PUMPING_EMPTYING_STOP    14
 #define PUMPING_EMPTYING_FAILURE 15
 
+#define PUMPING_WAITING          16
 
 
 

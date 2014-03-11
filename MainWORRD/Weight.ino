@@ -10,7 +10,7 @@ int cycleCounter=0;
 #define PUMP_SLOWDOWN_RATIO          10  // this would open for 5s and then wait the ratio
 #endif
 
-NIL_WORKING_AREA(waThreadWeight, 0);    
+NIL_WORKING_AREA(waThreadWeight, 64);    // minimum of 32 !
 NIL_THREAD(ThreadWeight, arg) {
   nilThdSleepMilliseconds(5000);
   int previous_weight;
@@ -55,6 +55,8 @@ NIL_THREAD(ThreadWeight, arg) {
 
     setParameter(PARAM_WEIGHT, weight);      
 
+   // Serial.println(weight_status);
+
 #ifdef RELAY_PUMP
 
     switch (weight_status) {
@@ -62,6 +64,7 @@ NIL_THREAD(ThreadWeight, arg) {
       if((now()-lastEventTime)>=getParameter(PARAM_MIN_FILLED_TIME)){
         weight_status=WEIGHT_STATUS_WAITING;
         lastEventTime=now(); 
+        writeLog(PUMPING_WAITING, 0);
         // TURN OFF ROTATION
         writeLog(MOTOR_STOP, 0);
         clearParameterBit(PARAM_STATUS, FLAG_STEPPER_CONTROL);
@@ -73,22 +76,18 @@ NIL_THREAD(ThreadWeight, arg) {
         // START EMPTYING PUMP
         writeLog(PUMPING_EMPTYING_START, 0);
         setParameterBit(PARAM_STATUS, FLAG_RELAY_EMPTYING);
-
-
-        // TURN OFF ROTATION
-        writeLog(MOTOR_STOP, 0);
-        clearParameterBit(PARAM_STATUS, FLAG_STEPPER_CONTROL);
       }
       break;
     case WEIGHT_STATUS_EMPTYING:
       if (weight<=getParameter(PARAM_WEIGHT_MIN)) {
         // turn off the emptying pump
         writeLog(PUMPING_EMPTYING_STOP, 0);
-        clearParameterBit(PARAM_STATUS, FLAG_RELAY_FILLING);
+        clearParameterBit(PARAM_STATUS, FLAG_RELAY_EMPTYING);
 
         // TURN ON ROTATION
         writeLog(MOTOR_START, 0);
         setParameterBit(PARAM_STATUS, FLAG_STEPPER_CONTROL);
+
         // turn on filling pump
         writeLog(PUMPING_FILLING_START, 0);
         setParameterBit(PARAM_STATUS, FLAG_RELAY_FILLING);
@@ -107,8 +106,9 @@ NIL_THREAD(ThreadWeight, arg) {
         weight_status=WEIGHT_STATUS_NORMAL;
       }
       break;
-
-
+    case WEIGHT_STATUS_ERROR:
+      clearParameterBit(PARAM_STATUS, FLAG_RELAY_FILLING);
+      clearParameterBit(PARAM_STATUS, FLAG_RELAY_EMPTYING);
     }
 #endif
 
@@ -117,6 +117,7 @@ NIL_THREAD(ThreadWeight, arg) {
 }
 
 #endif
+
 
 
 
