@@ -80,7 +80,7 @@ uint16_t autoreboot=0;
 //#define DEBUG_ETHERNET      0
 #endif
 
-//#define THR_ETHERNET          1
+#define THR_ETHERNET          1
 
 /******************
  * DEFINE CARD TYPE
@@ -125,7 +125,7 @@ uint16_t autoreboot=0;
 // Input/Output
 #define  TEMP_LIQ       IO1  
 #define  TEMP_PLATE     IO2    
-// #define  TRANS_PID      PWM4
+#define  TRANS_PID      PWM4
 
 
 #define PARAM_TEMP_LIQ             0  // temperature of the solution

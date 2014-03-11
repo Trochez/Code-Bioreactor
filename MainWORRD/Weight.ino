@@ -10,9 +10,9 @@ int cycleCounter=0;
 #define PUMP_SLOWDOWN_RATIO          10  // this would open for 5s and then wait the ratio
 #endif
 
-NIL_WORKING_AREA(waThreadWeight, 6);    
+NIL_WORKING_AREA(waThreadWeight, 0);    
 NIL_THREAD(ThreadWeight, arg) {
-
+  nilThdSleepMilliseconds(5000);
   int previous_weight;
   int weight = analogRead(WEIGHT);
 
@@ -67,13 +67,13 @@ NIL_THREAD(ThreadWeight, arg) {
         clearParameterBit(PARAM_STATUS, FLAG_STEPPER_CONTROL);
       }
       break;
-       case WEIGHT_STATUS_WAITING:
+    case WEIGHT_STATUS_WAITING:
       if((now()-lastEventTime)>=getParameter(PARAM_WAIT_TIME_PUMP_MOTOR)){
         weight_status=WEIGHT_STATUS_EMPTYING;
         // START EMPTYING PUMP
         writeLog(PUMPING_EMPTYING_START, 0);
         setParameterBit(PARAM_STATUS, FLAG_RELAY_EMPTYING);
-   
+
 
         // TURN OFF ROTATION
         writeLog(MOTOR_STOP, 0);
@@ -84,14 +84,14 @@ NIL_THREAD(ThreadWeight, arg) {
       if (weight<=getParameter(PARAM_WEIGHT_MIN)) {
         // turn off the emptying pump
         writeLog(PUMPING_EMPTYING_STOP, 0);
-        bitClear(PARAM_STATUS, FLAG_FILLING);
+        clearParameterBit(PARAM_STATUS, FLAG_RELAY_FILLING);
 
         // TURN ON ROTATION
         writeLog(MOTOR_START, 0);
-        bitSet(PARAM_STATUS, FLAG_STEPPER_CONTROL);
+        setParameterBit(PARAM_STATUS, FLAG_STEPPER_CONTROL);
         // turn on filling pump
         writeLog(PUMPING_FILLING_START, 0);
-        bitSet(PARAM_STATUS, FLAG_FILLING);
+        setParameterBit(PARAM_STATUS, FLAG_RELAY_FILLING);
 
         weight_status=WEIGHT_STATUS_FILLING;
       }
@@ -100,7 +100,7 @@ NIL_THREAD(ThreadWeight, arg) {
       if (weight>=getParameter(PARAM_WEIGHT_MAX)) {
         // turn off the pump
         writeLog(PUMPING_FILLING_STOP, 0);
-        bitClear(PARAM_STATUS, FLAG_FILLING);
+        clearParameterBit(PARAM_STATUS, FLAG_RELAY_FILLING);
 
         // when finished we specialy the last cycle
         lastEventTime=now(); 
@@ -117,6 +117,7 @@ NIL_THREAD(ThreadWeight, arg) {
 }
 
 #endif
+
 
 
 
