@@ -8,12 +8,13 @@
 void setSafeConditions() {
   // we will first store all the current paramters permanently
   writeLog(ARDUINO_SET_SAFE, 0);
+  setParameter(PARAM_STATUS, 0);
 }
 
 void initParameterBioreactor() {
 
   // We turn off all the controls
-  setParameter(PARAM_STATUS,1);
+  setParameter(PARAM_STATUS,0);
 
   /*
   * DEFAULT PARAMETERS SET
@@ -21,6 +22,15 @@ void initParameterBioreactor() {
    * Set Initial value if not already defined
    *
    */
+#ifdef FLAG_FOOD_CONTROL
+setParameterBit(PARAM_STATUS, FLAG_FOOD_CONTROL);
+#endif
+
+#ifdef STEPPER
+setParameterBit(PARAM_STATUS, FLAG_STEPPER_CONTROL);
+#endif
+
+
 
 
 
@@ -29,20 +39,8 @@ void initParameterBioreactor() {
   if(getParameter(PARAM_WAIT_TIME_PUMP_MOTOR) == MAX_INTEGER){
     setAndSaveParameter(PARAM_WAIT_TIME_PUMP_MOTOR,10);    //wait time of 10 seconds, to be changed then
   }   
-  if(getParameter(PARAM_RELAY_PUMP) == MAX_INTEGER) {
-    setAndSaveParameter(PARAM_RELAY_PUMP,0);
-  }
 #endif
 
-#ifdef WGHT
-  if(getParameter(PARAM_LVL_MAX_WATER) == MAX_INTEGER) {    
-    setAndSaveParameter(PARAM_LVL_MAX_WATER,350);
-  }
-
-  if(getParameter(PARAM_LVL_MIN_WATER) == MAX_INTEGER) {    
-    setAndSaveParameter(PARAM_LVL_MIN_WATER,260); 
-  }  
-#endif
 
 #ifdef TRANS_PID
   //Default Temperature parameters

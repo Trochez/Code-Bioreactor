@@ -16,8 +16,8 @@ unsigned long heatingRegWindowStartTime;
 PID heatingRegPID(&heatingRegInput, &heatingRegOutput, &heatingRegSetpoint, 7000,15,300, DIRECT);
 
 
-NIL_WORKING_AREA(waThreadRelay_PID, 64);      
-NIL_THREAD(ThreadRelay_PID, arg) 
+NIL_WORKING_AREA(waThread_PID, 64);      
+NIL_THREAD(Thread_PID, arg) 
 {
   
   pinMode(TRANS_PID, OUTPUT);
@@ -50,14 +50,10 @@ void pid_ctrl()
 
   if(heatingRegOutput > exactPresentTime - heatingRegWindowStartTime) 
   {
-    //set relay ON, ensure the Wire thread makes the work then !!!
-    //setParameter(RELAY_PID,getParameter(RELAY_PID)&(~(1<<3)));
     digitalWrite(TRANS_PID, HIGH); 
   }  
   else 
   {
-    //set relay OFF, ensure the Wire thread makes the work then !!!
-    //setParameter(RELAY_PID,getParameter(RELAY_PID)||(1<<4));
     digitalWrite(TRANS_PID, LOW); 
   } 
 }

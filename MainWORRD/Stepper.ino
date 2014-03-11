@@ -33,7 +33,7 @@ NIL_THREAD(ThreadStepper, arg) {
   }
   while (true) {
      //first a check is performed on the motor status
-     if(bitRead(PARAM_STATUS, FLAG_STEPPER_CONTROL)==1) {
+     if(readParameterBit(PARAM_STATUS, FLAG_STEPPER_CONTROL)==1) {
      
        executeStep(NB_STEP_CALL, forward, STEPPER_TAB[1],STEPPER_TAB[0]);
        //The final delay has to be decided 

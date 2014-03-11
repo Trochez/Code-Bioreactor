@@ -9,9 +9,7 @@
 #include <SST.h>
 #include <SPI.h>
 
-
 #include <avr/wdt.h>
-
 
 //Ethernet libraries
 #include <Ethernet.h>
@@ -77,12 +75,12 @@ uint16_t autoreboot=0;
 #define THR_LINEAR_LOGS       1
 
 #ifdef THR_LINEAR_LOGS
-#define LOG_INTERVAL        10  // define the interval in seconds between storing the log
+#define LOG_INTERVAL          10  // define the interval in seconds between storing the log
 //#define DEBUG_LOGS          1
 //#define DEBUG_ETHERNET      0
 #endif
 
-#define THR_ETHERNET          1
+//#define THR_ETHERNET          1
 
 /******************
  * DEFINE CARD TYPE
@@ -125,20 +123,21 @@ uint16_t autoreboot=0;
 
 #ifdef     TEMP_CTRL
 // Input/Output
-#define  TEMP_LIQ       IO1
-#define  TEMP_PLATE     IO2
-#define  TRANS_PID      PWM5
+#define  TEMP_LIQ       IO1  
+#define  TEMP_PLATE     IO2    
+// #define  TRANS_PID      PWM4
 
 
-#define PARAM_TEMP_LIQ             0
-#define PARAM_TEMP_PLATE           1
-#define PARAM_TARGET_LIQUID_TEMP   2
-#define PARAM_TEMP_MAX             3
+#define PARAM_TEMP_LIQ             0  // temperature of the solution
+#define PARAM_TEMP_PLATE           1  // temperature of the heating plate
+#define PARAM_TARGET_LIQUID_TEMP   2  // target temperature of the liquid
+#define PARAM_TEMP_MAX             3  // maximal temperature
 
 #ifdef TRANS_PID
-#define  RELAY_PID      200
 //for the regulation of temperature values btw 10 and 45 [s] are commun
 #define HEATING_REGULATION_TIME_WINDOWS 5000 //in [ms] 
+#define MIN_TEMPERATURE          1000
+#define MAX_TEMPERATURE          4500
 #endif
 #endif
 
@@ -151,28 +150,30 @@ uint16_t autoreboot=0;
 #define  WEIGHT                       IO3 // SHOUD BE IO1 !!!!!!!!!!!
 #define  STEPPER                      {IO5,PWM5}
 #ifdef STEPPER
-#define  TEMP_STEPPER                 IO4
+//#define  TEMP_STEPPER                 IO4
 #endif
-//  #define  RELAY_PUMP                   I2C_RELAY
+
+#define  RELAY_PUMP                   I2C_RELAY
 
 #ifdef TEMP_STEPPER
-#define PARAM_TEMP_STEPPER           4
+#define PARAM_TEMP_STEPPER           4   // temperature of the stepper. Can be used for rotation error detection
 #endif
 
 // Parameters stored in memory
 #ifdef WEIGHT         
-#define PARAM_WEIGHT                 5
-#define PARAM_WEIGHT_MAX             6        
-#define PARAM_WEIGHT_MIN             7  
+#define PARAM_WEIGHT                 5   // weight of the bioreactor
+#define PARAM_WEIGHT_MAX             6   // minimal weight  
+#define PARAM_WEIGHT_MIN             7   // maximal weight
+//hard coded safety value, TO BE CHANGED ONCE THE SENSOR IS CALIBRATED and conversion performed automatically !!!!!!!!!
+#define MIN_ABSOLUTE_WEIGHT          150
+#define MAX_ABSOLUTE_WEIGHT          600
 #endif
 
 #ifdef RELAY_PUMP
-#define PARAM_WAIT_TIME_PUMP_MOTOR   8
-#define PARAM_MIN_FILLED_TIME        9 
-#define PARAM_RELAY_PUMP             10       
+#define PARAM_WAIT_TIME_PUMP_MOTOR   8   // number of seconds to wait without rotation before starting emptying
+#define PARAM_MIN_FILLED_TIME        9   // minimal time in seconds to stay in the filled status
+#define PARAM_FOOD_RATIO             10  // time between openings
 #endif
-
-
 
 
 #endif  
@@ -184,14 +185,12 @@ uint16_t autoreboot=0;
 
 // Input/Output  
 
-//#define PH                     IO1
-#define PH                     I2C_PH            // #define  RELAY_PUMP                   I2C_RELAY
+#define PH                     I2C_PH
 #define TAP_ACID               I2C_RELAY_TAP
 #define TAP_BASE               I2C_RELAY_TAP
-#define TAP_FOOD               I2C_RELAY_TAP
 
 
-#if defined(TAP_ACID) || defined(TAP_BASE) || defined (TAP_FOOD)
+#if defined(TAP_ACID) || defined(TAP_BASE)
 #define PARAM_RELAY_TAP     11       
 #endif
 
@@ -205,12 +204,7 @@ uint16_t autoreboot=0;
 #define PH_TOLERANCE         10    //correspond to a pH variation of 0.1
 #endif
 
-#ifdef TAP_FOOD
-#define PARAM_FOOD_PERIOD     14   //time between openings
 
-//not a parameter, hard coded 1 sec opening time
-#define FOOD_OPENING_TIME     1 
-#endif
 #endif
 
 
@@ -254,7 +248,6 @@ uint16_t autoreboot=0;
 //#define DEBUG_GAZ                    1  
 #endif
 
-
 /******************
  * FLAG DEFINITION
  ******************/
@@ -262,13 +255,23 @@ uint16_t autoreboot=0;
 #define PARAM_STATUS       25
 
 
-#define FLAG_STEPPER_CONTROL     0   // the engine may not turn
+#define FLAG_STEPPER_CONTROL     0   // need to be set to 1 for control of engine
 #define FLAG_PH_CONTROL          1   // set the condition to disable targeted modules when pumping is performed
 #define FLAG_GAZ_CONTROL         2
-#define FLAG_FOOD_CONTROL        3
-#define FLAG_FILLING             4
-#define FLAG_EMPTYING            5
+#define FLAG_FOOD_CONTROL        3   // need to be set to 1 for control of food
 
+
+#define FLAG_RELAY_FILLING       8
+#define FLAG_RELAY_EMPTYING      9
+#define FLAG_RELAY_NOTUSED1      10
+#define FLAG_RELAY_NOTUSED2      11
+#define RELAY_PUMP_SHIFT         8 // We need to shift of 4 bits to get the value to send to relay board
+
+#define FLAG_RELAY_ACID          12
+#define FLAG_RELAY_BASE          13
+#define FLAG_RELAY_NOTUSED3      14
+#define FLAG_RELAY_NOTUSED4      15
+#define RELAY_PUMP_SHIFT         12 // We need to shift of 4 bits to get the value to send to relay board
 
 
 /*********

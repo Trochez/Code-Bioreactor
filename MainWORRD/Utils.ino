@@ -75,8 +75,8 @@ void printResult(char* data, Print* output) {
       printHelp(output);
     }
     else if (inChar=='i') { // show i2c (wire) information
-#if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
-      //wireInfo(&Serial); TODO
+#if defined(GAS_CTRL) || defined(I2C_LCD) || defined(PH_CTRL) || defined(RELAY_PUMP)
+      wireInfo(output); 
 #else  //not elsif !!
       noThread(output);
 #endif

@@ -74,14 +74,14 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadTemp, NULL, waThreadTemp, sizeof(waThreadTem
 #endif
 
 #ifdef TRANS_PID
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadRelay_PID, NULL, waThreadRelay_PID, sizeof(waThreadRelay_PID))      
+NIL_THREADS_TABLE_ENTRY(NULL, Thread_PID, NULL, waThread_PID, sizeof(waThread_PID))      
 #endif
 
-#ifdef WGHT
+#ifdef WEIGHT
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
 #endif
 
-#if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD) || defined(PH_CTRL)
+#if defined(GAS_CTRL) || defined(I2C_LCD) || defined(PH_CTRL) || defined(RELAY_PUMP)
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
 #endif
 
