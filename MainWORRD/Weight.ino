@@ -10,9 +10,9 @@ int cycleCounter=0;
 #define PUMP_SLOWDOWN_RATIO          10  // this would open for 5s and then wait the ratio
 #endif
 
-NIL_WORKING_AREA(waThreadWeight, 16);    // minimum of 32 !
+NIL_WORKING_AREA(waThreadWeight, 32);    // minimum of 32 !
 NIL_THREAD(ThreadWeight, arg) {
-  nilThdSleepMilliseconds(5000);
+  nilThdSleepMilliseconds(500);
   int previous_weight;
   int weight = analogRead(WEIGHT);
 
@@ -23,11 +23,18 @@ NIL_THREAD(ThreadWeight, arg) {
 #define WEIGHT_STATUS_EMPTYING  2
 #define WEIGHT_STATUS_FILLING   3
 #define WEIGHT_STATUS_STANDBY   4
-#define WEIGHT_STATUS_ERROR     255
+#define WEIGHT_STATUS_ERROR     7
 
+  unsigned long sinceLastEvent=0; // when was the last food cycle
+  unsigned long lastCycleMillis=millis(); // when was the last food cycle
 
-
-  unsigned long lastEventTime=now(); // when was the last food cycle
+  if (getParameter(PARAM_WEIGHT_STATUS)!=-1) {
+    weight_status=(((uint16_t)getParameter(PARAM_WEIGHT_STATUS)) >> 13);
+Serial.println(weight_status);
+    
+    sinceLastEvent=(((uint16_t)getParameter(PARAM_WEIGHT_STATUS))&0b0001111111111111)*60000;
+    Serial.println(sinceLastEvent);
+  }
 
   while(true){ 
     //sensor read 
@@ -53,17 +60,17 @@ NIL_THREAD(ThreadWeight, arg) {
       }
     }
 
-    setParameter(PARAM_WEIGHT, weight);      
 
-   // Serial.println(weight_status);
+    setParameter(PARAM_WEIGHT, weight);      
+    setParameter(PARAM_WEIGHT_STATUS, (((uint16_t)(sinceLastEvent/60000)) | ((uint16_t)(weight_status<<13))));
 
 #ifdef RELAY_PUMP
 
     switch (weight_status) {
     case WEIGHT_STATUS_NORMAL:
-      if((now()-lastEventTime)>=getParameter(PARAM_MIN_FILLED_TIME)){
+      if(( (uint16_t)(sinceLastEvent/60000))>=getParameter(PARAM_MIN_FILLED_TIME)){
         weight_status=WEIGHT_STATUS_WAITING;
-        lastEventTime=now(); 
+        sinceLastEvent=0; 
         writeLog(PUMPING_WAITING, 0);
         // TURN OFF ROTATION
         writeLog(MOTOR_STOP, 0);
@@ -71,11 +78,12 @@ NIL_THREAD(ThreadWeight, arg) {
       }
       break;
     case WEIGHT_STATUS_WAITING:
-      if((now()-lastEventTime)>=getParameter(PARAM_WAIT_TIME_PUMP_MOTOR)){
+      if(( (uint16_t)(sinceLastEvent/60000))>=getParameter(PARAM_SEDIMENTATION_TIME)){
         weight_status=WEIGHT_STATUS_EMPTYING;
         // START EMPTYING PUMP
         writeLog(PUMPING_EMPTYING_START, 0);
         setParameterBit(PARAM_STATUS, FLAG_RELAY_EMPTYING);
+         sinceLastEvent=0; 
       }
       break;
     case WEIGHT_STATUS_EMPTYING:
@@ -93,6 +101,7 @@ NIL_THREAD(ThreadWeight, arg) {
         setParameterBit(PARAM_STATUS, FLAG_RELAY_FILLING);
 
         weight_status=WEIGHT_STATUS_FILLING;
+         sinceLastEvent=0; 
       }
       break;
     case WEIGHT_STATUS_FILLING:
@@ -102,7 +111,7 @@ NIL_THREAD(ThreadWeight, arg) {
         clearParameterBit(PARAM_STATUS, FLAG_RELAY_FILLING);
 
         // when finished we specialy the last cycle
-        lastEventTime=now(); 
+        sinceLastEvent=0; 
         weight_status=WEIGHT_STATUS_NORMAL;
       }
       break;
@@ -113,10 +122,15 @@ NIL_THREAD(ThreadWeight, arg) {
 #endif
 
     nilThdSleepMilliseconds(500);  //refresh every second
+
+    sinceLastEvent+=millis()-lastCycleMillis;
+    lastCycleMillis=millis();
   }
 }
 
 #endif
+
+
 
 
 

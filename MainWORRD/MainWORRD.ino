@@ -159,20 +159,21 @@ uint16_t autoreboot=0;
 #define PARAM_TEMP_STEPPER           4   // temperature of the stepper. Can be used for rotation error detection
 #endif
 
-// Parameters stored in memory
 #ifdef WEIGHT         
 #define PARAM_WEIGHT                 5   // weight of the bioreactor
-#define PARAM_WEIGHT_MAX             6   // minimal weight  
-#define PARAM_WEIGHT_MIN             7   // maximal weight
+#define PARAM_WEIGHT_MIN             6   // minimal weight  
+#define PARAM_WEIGHT_MAX             7   // maximal weight
 //hard coded safety value, TO BE CHANGED ONCE THE SENSOR IS CALIBRATED and conversion performed automatically !!!!!!!!!
 #define MIN_ABSOLUTE_WEIGHT          170
 #define MAX_ABSOLUTE_WEIGHT          300
 #endif
 
 #ifdef RELAY_PUMP
-#define PARAM_WAIT_TIME_PUMP_MOTOR   8   // number of seconds to wait without rotation before starting emptying
-#define PARAM_MIN_FILLED_TIME        9   // minimal time in seconds to stay in the filled status
-#define PARAM_FOOD_RATIO             10  // time between openings
+#define PARAM_SEDIMENTATION_TIME     8   // number of MINUTES to wait without rotation before starting emptying
+#define PARAM_MIN_FILLED_TIME        9   // minimal time in MINUTES to stay in the filled status
+#define PARAM_FOOD_RATIO             10  // ratio between openings
+#define PARAM_WEIGHT_STATUS          11  // current STATUS // BBBAAAAA AAAAAAAA : A = wait time in minutes, B = status
+
 #endif
 
 
@@ -191,12 +192,14 @@ uint16_t autoreboot=0;
 
 
 #if defined(TAP_ACID) || defined(TAP_BASE)
-#define PARAM_RELAY_TAP     11       
+#define PARAM_RELAY_TAP     XXXX       // Should DISAPPEAR !!! CONTROLLED DIRECTLY (tap connected to output) or via PARAM_STATUS
 #endif
 
 #ifdef PH
 #define PARAM_PH            12
 #define PARAM_TARGET_PH     13
+#define PARAM_PH_FACTOR_A   14
+#define PARAM_PH_FACTOR_B   15
 
 //not parameters, hard coded values, set the minimal delay between pH adjustements to 10 seconds
 #define PH_ADJUST_DELAY      10    //delay between acid or base supplies
@@ -222,23 +225,23 @@ uint16_t autoreboot=0;
 
 // Parameters stored in memory
 #ifdef TAP_GAS1  
-#define PARAM_FLUX_GAS1            15
-#define PARAM_DESIRED_FLUX_GAS1    16
+#define PARAM_FLUX_GAS1            16
+#define PARAM_DESIRED_FLUX_GAS1    17
 #endif
 
 #ifdef  TAP_GAS2
-#define PARAM_FLUX_GAS2            17
-#define PARAM_DESIRED_FLUX_GAS2    18
+#define PARAM_FLUX_GAS2            18
+#define PARAM_DESIRED_FLUX_GAS2    19
 #endif
 
 #ifdef  TAP_GAS3
-#define PARAM_FLUX_GAS3            19
-#define PARAM_DESIRED_FLUX_GAS3    20
+#define PARAM_FLUX_GAS3            20
+#define PARAM_DESIRED_FLUX_GAS3    21
 #endif
 
 #ifdef  TAP_GAS4
-#define PARAM_FLUX_GAS4            21
-#define PARAM_DESIRED_FLUX_GAS4    22
+#define PARAM_FLUX_GAS4            22
+#define PARAM_DESIRED_FLUX_GAS4    23
 #endif
 
 //few hard coded parameters for flux control
@@ -279,16 +282,25 @@ uint16_t autoreboot=0;
  *********/
 
 void setup() {
+  delay(5000);
+Serial.begin(9600);
   setupParameters();
 
-  initParameterBioreactor();
+#ifdef THR_LINEAR_LOGS
+  setupMemory(); 
+  recoverLastEntryN();
+  loadLastEntryToParameters();
+#endif
+
+  setSafeConditions();
   nilSysBegin();
 
 }
 
 void loop() {
-
 }
+
+
 
 
 

@@ -33,7 +33,7 @@ byte errorTemperature=0;
 
 NIL_WORKING_AREA(waThreadTemp, 80);  // should be 80 without Serial.println
 NIL_THREAD(ThreadTemp, arg) {
-  nilThdSleepMilliseconds(1000);
+  nilThdSleepMilliseconds(200);
 #ifdef TEMP_CTRL
 
 #ifdef TEMP_LIQ

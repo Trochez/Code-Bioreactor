@@ -66,6 +66,9 @@ void writeLog() {
 
 
 void writeLog(uint16_t event_number, uint16_t parameter_value) {
+  #if ! defined ( THR_LINEAR_LOGS )
+  return;
+  #endif
   if (!logActive) return;
 
   nilSemWait(&lockFlashAccess);
@@ -111,9 +114,7 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
     nextEntryID++;
   }
 
-
   nilSemSignal(&lockFlashAccess);
-
 }
 
 
@@ -162,13 +163,23 @@ uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
   result[ENTRY_SIZE_LINEAR_LOGS*2+5]=hex[checkDigit&15];
   result[ENTRY_SIZE_LINEAR_LOGS*2+6]='\n';
 
-
-
   sst.flashReadFinish();
   nilSemSignal(&lockFlashAccess);
 }
 
 
+uint8_t loadLastEntryToParameters() {
+  nilSemWait(&lockFlashAccess);
+  uint32_t addressOfEntryN = findAddressOfEntryN(nextEntryID-1);
+  sst.flashReadInit(addressOfEntryN+8); // we skip entryID and epoch
+
+  for(int i = 0; i < MAX_PARAM; i++) {
+    setParameter(i,sst.flashReadNextInt16());
+  }
+ 
+  sst.flashReadFinish();
+  nilSemSignal(&lockFlashAccess);
+}
 
 
 
@@ -206,7 +217,6 @@ uint32_t findAddressOfEntryN(uint32_t entryN)
  */
 void recoverLastEntryN() 
 {
-
 
   uint32_t ID_temp = 0;
   uint32_t Time_temp = 0;
@@ -273,7 +283,7 @@ void recoverLastEntryN()
  ---------------------------*/
 //Setup the memory for future use
 //Need to be used only onced at startup
-void setupMemory(SST sst){
+void setupMemory(){
   SPI.begin();
   SPI.setDataMode(SPI_MODE0);
   SPI.setBitOrder(MSBFIRST);
@@ -289,17 +299,18 @@ void printLogN(Print* output, uint32_t entryN) {
   readEntryN(record, entryN);
 
   output->write(record, ENTRY_SIZE_LINEAR_LOGS*2+7);
-
 } 
+
 
 NIL_WORKING_AREA(waThreadLogger, 100);
 NIL_THREAD(ThreadLogger, arg) {
 
-  setupMemory(sst); 
-
+  /*
+  setupMemory(); 
   nilThdSleepMilliseconds(100);
   recoverLastEntryN();
   nilThdSleepMilliseconds(100);
+  */
   writeLog(ARDUINO_BOOT,0);
   while(TRUE) {
     nilThdSleepMilliseconds(LOG_INTERVAL*1000-millis()%1000+100); // seems by default the time is just to short, we add 100ms to be sure not to have rounding pro

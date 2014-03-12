@@ -5,7 +5,7 @@
    MCP23008 (DEFAULT RELAY):
  - B00100XXX - Start address(32)
  relay box
- - B00100100 - First relay box
+ - B00100100 - First relay boxPARAM_PH
  - B00100101 - Second relay box
  LCD display
  - B00100111 - 2 x 16 LCD display
@@ -248,11 +248,13 @@ NIL_THREAD(ThreadWire, arg) {
           delay (6);
 
           factora = ((300*20) / (phquatremoy - phseptmoy ));
+          setParameter(PARAM_PH_FACTOR_A, factora);
           Serial.print("facteur a :");
           Serial.println(factora);
           delay (6);
 
           factorb = (((phseptmoy*factora)/20) + 700 );
+          setParameter(PARAM_PH_FACTOR_B, factorb);
           Serial.print("facteur b :");
           Serial.println(factorb);
           delay (6);
