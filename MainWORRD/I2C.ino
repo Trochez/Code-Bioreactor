@@ -158,7 +158,6 @@ NIL_THREAD(ThreadWire, arg) {
 
 #ifdef PARAM_PH
 
-
     Serial.print("valeur du PARAM_PH ");     
     Serial.println(getParameter(PARAM_PH));
     delay (6);

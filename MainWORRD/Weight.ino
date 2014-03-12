@@ -10,7 +10,7 @@ int cycleCounter=0;
 #define PUMP_SLOWDOWN_RATIO          10  // this would open for 5s and then wait the ratio
 #endif
 
-NIL_WORKING_AREA(waThreadWeight, 64);    // minimum of 32 !
+NIL_WORKING_AREA(waThreadWeight, 16);    // minimum of 32 !
 NIL_THREAD(ThreadWeight, arg) {
   nilThdSleepMilliseconds(5000);
   int previous_weight;

@@ -1,12 +1,14 @@
 #define MAX_MULTI_LOG 20
 
-void printHardCodedParameters(Print* output){
+void printGeneralParameters(Print* output){
   output->print(F("IP:"));
   printIP(output, ip, 4, DEC);
   output->print(F("MAC:"));
   printIP(output, mac, 6, HEX);
   output->print(F("EPOCH:"));
   output->println(now());
+  output->print(F("millis:"));
+  output->println(millis());
 #ifdef RELAY_PUMP
   output->print(F("I2C relay:"));
   output->println(I2C_RELAY); 
@@ -69,7 +71,7 @@ void printResult(char* data, Print* output) {
     i++;
     if (inChar=='\0' || i==SERIAL_BUFFER_LENGTH) theEnd=true;
     if (inChar=='p') { // show settings
-      printHardCodedParameters(output);
+      printGeneralParameters(output);
     } 
     else if (inChar=='h') {
       printHelp(output);
@@ -152,7 +154,8 @@ void printResult(char* data, Print* output) {
             byte endValue=MAX_MULTI_LOG;
             if (currentValueLong > nextEntryID) {
               endValue=0;
-            } else if (( nextEntryID - currentValueLong ) < MAX_MULTI_LOG) {
+            } 
+            else if (( nextEntryID - currentValueLong ) < MAX_MULTI_LOG) {
               endValue= nextEntryID - currentValueLong;
             }
             for (byte i=0; i<endValue; i++) {
@@ -201,6 +204,7 @@ static void printFreeMemory(Print* output)
 {
   nilPrintUnusedStack(output);
 }
+
 
 
 

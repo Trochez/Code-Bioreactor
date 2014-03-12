@@ -111,10 +111,10 @@ uint16_t autoreboot=0;
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}      //stepper
 //#define IP {172, 17, 0 ,103}                             
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEE}        
-//#define IP {172, 17, 0 ,104}                          //gas
-//#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xDD}      //gas
-#define IP {10, 0, 0 ,105}                          //pH
-#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}      //pH
+#define IP {172, 17, 0 ,104}                          //bertha 104
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAC}      //bertha 104
+//#define IP {10, 0, 0 ,105}                          //pH
+//#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}      //pH
 
 
 /*******************************
@@ -165,8 +165,8 @@ uint16_t autoreboot=0;
 #define PARAM_WEIGHT_MAX             6   // minimal weight  
 #define PARAM_WEIGHT_MIN             7   // maximal weight
 //hard coded safety value, TO BE CHANGED ONCE THE SENSOR IS CALIBRATED and conversion performed automatically !!!!!!!!!
-#define MIN_ABSOLUTE_WEIGHT          150
-#define MAX_ABSOLUTE_WEIGHT          600
+#define MIN_ABSOLUTE_WEIGHT          170
+#define MAX_ABSOLUTE_WEIGHT          300
 #endif
 
 #ifdef RELAY_PUMP

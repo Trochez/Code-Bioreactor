@@ -16,12 +16,7 @@ void initParameterBioreactor() {
   // We turn off all the controls
   setParameter(PARAM_STATUS,0);
 
-  /*
-  * DEFAULT PARAMETERS SET
-   *
-   * Set Initial value if not already defined
-   *
-   */
+
 #ifdef FLAG_FOOD_CONTROL
 setParameterBit(PARAM_STATUS, FLAG_FOOD_CONTROL);
 #endif

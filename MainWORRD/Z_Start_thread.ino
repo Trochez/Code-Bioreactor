@@ -10,7 +10,7 @@ NIL_THREAD(ThreadMonitoring, arg) {
 
   // we activate the watchdog
   // we need to make a RESET all the time otherwise automatic reboot: wdt_reset();
- // wdt_enable(WDTO_8S);
+  wdt_enable(WDTO_8S);
 
  
   
