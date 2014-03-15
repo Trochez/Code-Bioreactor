@@ -115,6 +115,9 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
   }
 
   nilSemSignal(&lockFlashAccess);
+  
+  nilThdSleepMilliseconds(5); // be sure it is saved ...
+  
 }
 
 
