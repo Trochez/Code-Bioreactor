@@ -5,7 +5,7 @@ var counter=0;
 
 var arduinoIPs=["172.17.0.107"]
 
-
+/*
 setInterval(function() {
   for (var i=0; i<arduinoIPs.length; i++) {
     var ip=arduinoIPs[i];
@@ -22,11 +22,12 @@ setInterval(function() {
     }
   }
 },10000)
+*/
 
-setEpoch();
+setEpochFromYAHOO();
 setTimeout(function() {
   setInterval(function() {
-    setEpoch();
+    setEpochFromYAHOO();
   },60*60*1000)
 },5000);
 
@@ -40,6 +41,7 @@ setTimeout(function() {
 */
 
 function setEpoch() {
+
   for (var i=0; i<arduinoIPs.length; i++) {
     var host=arduinoIPs[i];
     var epoch=(new Date()).getTime()/1000>>0;
@@ -52,6 +54,29 @@ function setEpoch() {
       console.log("Clock update on: " + host +" : "+body);
     });
   }
+}
+
+function setEpochFromYAHOO() {
+  var ntpServerURL="http://developer.yahooapis.com/TimeService/V1/getTime?output=json&appid=Byel0vTV34F55ooU81X69GRGDybRJ_fmylM3KFGNOZ0liXKXZe_0GKGhVcUylQ--";
+
+  get(ntpServerURL,ntpServerURL, function(result) {
+    var epoch=JSON.parse(result).Result.Timestamp;
+    for (var i=0; i<arduinoIPs.length; i++) {
+      var host=arduinoIPs[i];
+      var options={
+        host: host,
+        path: "/e"+epoch
+      };
+
+      var result=get(host, options, function(body) {
+        console.log("Clock update on: " + host +" : "+body);
+      });
+    }
+
+  });
+
+
+ 
 }
 
 function getVariables() {
@@ -76,7 +101,7 @@ function getMemory() {
         path: "/f"
       };
 
-      var result=get(host, options,function(body) {
+      var result=get(host, options, function(body) {
         console.log("Memory status on: " + host+" - "+body);
       });
       if (result) {
