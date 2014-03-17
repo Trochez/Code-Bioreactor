@@ -41,7 +41,7 @@ NIL_THREAD(ThreadMonitoring, arg) {
     else {
       if (autoreboot==AUTOREBOOT) {
         saveParameters();
-        setSafeConditions();
+        setSafeConditions(true);
       }
     }
     
