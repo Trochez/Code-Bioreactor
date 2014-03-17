@@ -5,7 +5,7 @@ var counter=0;
 
 var arduinoIPs=["172.17.0.107"]
 
-/*
+
 setInterval(function() {
   for (var i=0; i<arduinoIPs.length; i++) {
     var ip=arduinoIPs[i];
@@ -22,7 +22,7 @@ setInterval(function() {
     }
   }
 },10000)
-*/
+
 
 setEpochFromYAHOO();
 setTimeout(function() {
@@ -244,8 +244,7 @@ function getLastEntryID(host, callback) {
 function saveToCouchDB(entry) {
   var bioreactor =getCouchDBLink();
   bioreactor.insert( entry, function(err, body, header) {
-
-    if (err) throw console.log(err);
+    if (err) console.log(err);
     // console.log(header);
   });
 }
