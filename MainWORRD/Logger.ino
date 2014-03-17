@@ -114,9 +114,13 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
     nextEntryID++;
   }
 
+ delay(2); // be sure it is saved ...
+// a thread delay crash the system !!!!!!!!!!!!!!
+
+
   nilSemSignal(&lockFlashAccess);
   
-  nilThdSleepMilliseconds(5); // be sure it is saved ...
+ 
   
 }
 
@@ -314,7 +318,7 @@ NIL_THREAD(ThreadLogger, arg) {
   recoverLastEntryN();
   nilThdSleepMilliseconds(100);
   */
-  writeLog(ARDUINO_BOOT,0);
+ // writeLog(ARDUINO_BOOT,0);
   while(TRUE) {
     nilThdSleepMilliseconds(LOG_INTERVAL*1000-millis()%1000+100); // seems by default the time is just to short, we add 100ms to be sure not to have rounding pro
     writeLog();
