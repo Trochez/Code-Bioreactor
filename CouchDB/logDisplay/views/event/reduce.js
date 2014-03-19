@@ -1,8 +1,9 @@
 function(key, values, rereduce) {
 
   var servers={
-    "172.17.0.107": "Temperature controller",
-    "10.0.0.105": "Julien office"
+    "172.17.0.107": "Luc's office",
+    "10.0.0.105": "Julien's office",
+    "172.17.0.104": "Microbio master"
   }
 
   var result={

@@ -1,3 +1,3 @@
 function(doc) {
-  	emit(doc.epoch, null);
+  	emit([doc.host, doc.id, doc.epoch], null);
 }

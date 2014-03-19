@@ -45,28 +45,76 @@ function(head, req) {
         result.eventDescription="Reset ethernet";
         result.color="#66FFFF";
         break;
+
+
+      case 10:
+        result.eventDescription="Filling pumping START";
+        result.color="#66FF66";
+        break;
+      case 11:
+        result.eventDescription="Filling pumping STOP";
+        result.color="#66FF66";
+       break;
+      case 12:
+        result.eventDescription="Filling pumping FAILURE";
+        result.color="#FF66CC";
+        break;
+      case 13:
+        result.eventDescription="Emptying pumping START";
+        result.color="#66FF66";
+        break;
+      case 14:
+        result.eventDescription="Emptying pumping STOP";
+        result.color="#66FF66";
+        break;
+      case 15:
+        result.eventDescription="Emptying pumping FAILURE";
+        result.color="#FF66CC";
+        break;
+      case 16:
+        result.eventDescription="Pumping WAITING";
+        result.color="#66FF66";
+        break;
+      case 20:
+        result.eventDescription="Motor START";
+        result.color="#66FFFF";
+        break;
+      case 21:
+        result.eventDescription="Motor STOP";
+        result.color="#66FFFF";
+        break;
+
+
       case 50:
-        result.eventDescription="Temperature liquid failed";
+        result.eventDescription="Temperature liquid FAILURE";
         result.color="#FF66CC";
         break;
       case 51:
-        result.eventDescription="Temperature liquid recover";
+        result.eventDescription="Temperature liquid RECOVER";
         result.color="#66FF66";
         break;
       case 52:
-        result.eventDescription="Temperature plate failed";
+        result.eventDescription="Temperature plate FAILURE";
         result.color="#FF66CC";
         break;
       case 53:
-        result.eventDescription="Temperature plate recover";
+        result.eventDescription="Temperature plate RECOVER";
         result.color="#66FF66";
         break;
       case 54:
-        result.eventDescription="Temperature stepper failed";
+        result.eventDescription="Temperature stepper FAILURE";
         result.color="#FF66CC";
         break;
       case 55:
-        result.eventDescription="Temperature stepper recover";
+        result.eventDescription="Temperature stepper RECOVER";
+        result.color="#66FF66";
+        break;
+      case 129:
+        result.eventDescription="Weight FAILURE";
+        result.color="#FF66CC";
+        break;
+      case 130:
+        result.eventDescription="Weight RECOVER";
         result.color="#66FF66";
         break;
       case 255:
