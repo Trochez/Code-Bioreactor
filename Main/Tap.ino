@@ -67,29 +67,7 @@ NIL_THREAD(ThreadTap, arg) {
     
   
   while(true){  
-        
-    /***********
-     FOOD SUPPLY
-    ************/
-
-    #ifdef TAP_FOOD
-    
-      if( ((now()-timer_food) >= FOOD_OPENING_TIME) && (food_state==OPEN))
-      {
-        setParameter(PARAM_RELAY_TAP,(getParameter(PARAM_RELAY_TAP)&~(8<<8))); //close the tap
-        timer_food=now();
-        food_state=CLOSE;
-      }
-    
-      else if( ((now()-timer_food) >= getParameter(PARAM_FOOD_PERIOD)) && (food_state==CLOSE))
-      {
-        setParameter(PARAM_RELAY_TAP,(getParameter(PARAM_RELAY_TAP)|(8<<8))); //open the tap
-        timer_food=now();
-        food_state=OPEN;   
-      }    
-
-    #endif
-        
+         
     /**************
      PH REGULATION
     ***************/

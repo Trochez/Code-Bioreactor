@@ -1,153 +1,46 @@
 #ifdef SERIAL
-//This code is kept for debugging. It will not be present in the final version of the code for the bioreactor
 
+#define SERIAL_BUFFER_LENGTH 32
+char serialBuffer[SERIAL_BUFFER_LENGTH];
+byte serialBufferPosition=0;
 
-// The maximal length of a parameter value. It is a int so the value must be between -32768 to 32767
-#define MAX_PARAM_VALUE_LENGTH 10
-
-
-//Prototypes
-static void printFreeMemory(Print* output);
-void serialReset();
-
-
-char paramSerialValue[MAX_PARAM_VALUE_LENGTH];
-byte paramSerialValuePosition=0;
-byte paramCurrent=0; // Which parameter are we defining
-
-
-NIL_WORKING_AREA(waThreadSerial, 96);
+NIL_WORKING_AREA(waThreadSerial, 220);
 NIL_THREAD(ThreadSerial, arg) {
 
-  Serial.begin(115200);
-
-  /*
-  SerialEvent occurs whenever a new data comes in the
-   hardware serial RX.  This routine is run between each
-   time loop() runs, so using delay inside loop can delay
-   response.  Multiple bytes of data may be available.
-   
-   This method will mainly set/read the parameters:
-   Uppercase + number + CR ((-) and 1 to 5 digit) store a parameter (0 to 25 depending the letter)
-   example: A100, A-1
-   -> Many parameters may be set at once
-   example: C10,20,30,40,50
-   Uppercase + CR read the parameter
-   example: A
-   -> Many parameters may be read at once
-   example: A,B,C,D
-   s : read all the parameters
-   h : help
-   l : show the log file
-   */
-
+  Serial.begin(9600);
   while(true) {
     while (Serial.available()) {
       // get the new byte:
       char inChar = (char)Serial.read(); 
-      if (inChar=='f') { // show settings
-        printHardCodedParameters(&Serial);
-        serialReset();
-      } 
-      else if (inChar=='p') {
-        printHelp(&Serial);
-        serialReset();
-      }
-      else if (inChar=='l') {
-         #ifdef THR_LINEAR_LOGS
-          printIndexes(&Serial); 
-         #else
-          noThread(&Serial);
-         #endif
-         serialReset();
-      }
-      else if (inChar=='i') { // show i2c (wire) information
-        #if defined(GAS_CTRL) || defined(STEPPER_CTRL) || defined(I2C_LCD)
-          //wireInfo(&Serial); TODO
-          serialReset();
-        #else  //not elsif !!
-          Serial.println("I2C Thread not activated");
-        #endif
-      } 
-      
-      else if (inChar=='o') { // show oneWire information
-        #if defined(TEMP_LIQ) || defined(TEMP_PLATE) || defined(TEMP_STEPPER)
-          //oneWireInfo(&Serial); TODO
-        #else
-          noThread(&Serial);
-        #endif
-        serialReset();
-      } 
-      else if (inChar=='g') { // show settings
-        printParameters(&Serial);
-        serialReset();
-      } 
-      else if (inChar==',') { // store value and increment
-        if (paramCurrent>0) {
-          if (paramSerialValuePosition>0) {
-            setAndSaveParameter(paramCurrent-1,atof(paramSerialValue));
-          } 
-          else {
-            Serial.println(parameters[paramCurrent-1]);
-          }
-          if (paramCurrent<=MAX_PARAM) {
-            paramCurrent++;
-            paramSerialValuePosition=0;
-            paramSerialValue[0]='\0';
-          } 
-          else {
-            //debugger(1,inChar);
-            serialReset();
-          }
-        }
-      }
-      else if (inChar==13 || inChar==10) {
+
+      if (inChar==13 || inChar==10) {
         // this is a carriage return;
-        if (paramCurrent>0) {
-          if (paramSerialValuePosition>0) {
-            setAndSaveParameter(paramCurrent-1,atof(paramSerialValue));
-          } 
-          else {
-            Serial.println(parameters[paramCurrent-1]);
-          }
-        }
-        serialReset();
-      } 
-      else if ((inChar>47 && inChar<58) || inChar=='-') {
-        if (paramSerialValuePosition<MAX_PARAM_VALUE_LENGTH) {
-          paramSerialValue[paramSerialValuePosition]=inChar;
-          paramSerialValuePosition++;
-          if (paramSerialValuePosition<MAX_PARAM_VALUE_LENGTH) {
-            paramSerialValue[paramSerialValuePosition]='\0';
-          }
+        if (serialBufferPosition>0) {
+          printResult(serialBuffer, &Serial);
         } 
-        else {
-          //debugger(1,inChar);
-          serialReset();
-        }
+        serialBufferPosition=0;
+        serialBuffer[0]='\0';
       } 
-      else if (inChar>64 && inChar<(66+MAX_PARAM)) { // a character so we define the field
-        paramCurrent=inChar-64;
-      }
       else {
-        //debugger(1,inChar);
-        serialReset();
-      }
+        if (serialBufferPosition<SERIAL_BUFFER_LENGTH) {
+          serialBuffer[serialBufferPosition]=inChar;
+          serialBufferPosition++;
+          if (serialBufferPosition<SERIAL_BUFFER_LENGTH) {
+            serialBuffer[serialBufferPosition]='\0';
+          }
+        }
+      }  
     }
     nilThdSleepMilliseconds(1);
   }
 }
 
-static void printFreeMemory(Print* output)
-{
-  nilPrintUnusedStack(output);
-}
-
-void serialReset() {
-  paramCurrent=0;
-  paramSerialValuePosition=0;
-  paramSerialValue[0]='\0';
+void noThread(Print* output){
+  output->println(F("No Thread"));
 }
 
 
 #endif
+
+
+
