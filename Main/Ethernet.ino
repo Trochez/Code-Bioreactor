@@ -1,4 +1,8 @@
-#if defined(THR_ETHERNET) || defined(THR_LINEAR_LOGS)
+#ifdef THR_ETHERNET
+
+//Ethernet libraries
+#include <Ethernet.h>
+#include <EthernetUdp.h>
 
 /****************************************************************
  *   THREAD ETHERNET & LOG EVENT + DATA
@@ -35,6 +39,8 @@ uint8_t mac[] = MAC;
 NIL_WORKING_AREA(waThreadEthernet, 300); //change memoy allocation
 NIL_THREAD(ThreadEthernet, arg) {
 
+  
+  
   nilThdSleepMilliseconds(1000);
 
   // Change w5100 to add delay in init

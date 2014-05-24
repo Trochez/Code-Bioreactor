@@ -11,9 +11,8 @@
 
 #include <avr/wdt.h>
 
-//Ethernet libraries
-#include <Ethernet.h>
-#include <EthernetUdp.h>
+
+
 
 
 // The normal serial takes 200 bytes more but is buffered
@@ -40,6 +39,9 @@ uint16_t autoreboot=0;
  ************************/
 
 #define SERIAL 1
+
+#define CARD_ID1 0xFE
+#define CARD_ID2 0xAC
 
 /********************
  * PIN&ADRESS MAPPING
@@ -91,7 +93,8 @@ uint16_t autoreboot=0;
 //#define DEBUG_ETHERNET      0
 #endif
 
-#define THR_ETHERNET          1
+#define THR_ZIGBEE            1
+// #define THR_ETHERNET          1
 
 /******************
  * DEFINE CARD TYPE
@@ -123,7 +126,7 @@ uint16_t autoreboot=0;
 //#define IP {172, 17, 0 ,103}                             
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEE}        
 #define IP {172, 17, 0 ,104}                          //bertha 104
-#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xAC}      //bertha 104
+#define MAC {0xDE, 0xAD, 0xBE, 0xEF, CARD_ID1, CARD_ID2}      //bertha 104
 //#define IP {10, 0, 0 ,105}                          //pH
 //#define MAC {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}      //pH
 
@@ -294,7 +297,7 @@ uint16_t autoreboot=0;
 
 void setup() {
   delay(5000);
-Serial.begin(9600);
+  Serial.begin(9600);
   setupParameters();
 
 #ifdef THR_LINEAR_LOGS
@@ -310,9 +313,6 @@ Serial.begin(9600);
 
 void loop() {
 }
-
-
-
 
 
 

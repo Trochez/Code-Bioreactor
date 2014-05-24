@@ -160,12 +160,12 @@ uint8_t readEntryN(uint8_t* result, uint32_t entryN) {
     result[i*2] = hex[oneByte>>4];
     result[i*2+1] = hex[oneByte&15];
   }
-  result[ENTRY_SIZE_LINEAR_LOGS*2]=hex[mac[4]>>4];
-  result[ENTRY_SIZE_LINEAR_LOGS*2+1]=hex[mac[4]&15];
-  checkDigit^=mac[4];
-  result[ENTRY_SIZE_LINEAR_LOGS*2+2]=hex[mac[5]>>4];
-  result[ENTRY_SIZE_LINEAR_LOGS*2+3]=hex[mac[5]&15];
-  checkDigit^=mac[5];
+  result[ENTRY_SIZE_LINEAR_LOGS*2]=hex[CARD_ID1>>4];
+  result[ENTRY_SIZE_LINEAR_LOGS*2+1]=hex[CARD_ID1&15];
+  checkDigit^=CARD_ID1;
+  result[ENTRY_SIZE_LINEAR_LOGS*2+2]=hex[CARD_ID2>>4];
+  result[ENTRY_SIZE_LINEAR_LOGS*2+3]=hex[CARD_ID2&15];
+  checkDigit^=CARD_ID2;
   result[ENTRY_SIZE_LINEAR_LOGS*2+4]=hex[checkDigit>>4];
   result[ENTRY_SIZE_LINEAR_LOGS*2+5]=hex[checkDigit&15];
   result[ENTRY_SIZE_LINEAR_LOGS*2+6]='\n';

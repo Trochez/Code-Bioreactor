@@ -1,10 +1,12 @@
 #define MAX_MULTI_LOG 20
 
 void printGeneralParameters(Print* output){
+  #ifdef THR_ETHERNET
   output->print(F("IP:"));
   printIP(output, ip, 4, DEC);
   output->print(F("MAC:"));
   printIP(output, mac, 6, HEX);
+  #endif
   output->print(F("EPOCH:"));
   output->println(now());
   output->print(F("millis:"));
