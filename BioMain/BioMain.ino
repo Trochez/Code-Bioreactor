@@ -6,7 +6,7 @@
 #include <NilRTOS.h>
 
 //Memory Lib
-#include <SST.h>
+
 #include <SPI.h>
 
 #include <avr/wdt.h>
@@ -85,7 +85,7 @@ uint16_t autoreboot=0;
 
 
 
-#define THR_LINEAR_LOGS       1
+// #define THR_LINEAR_LOGS       1
 
 #ifdef THR_LINEAR_LOGS
 #define LOG_INTERVAL          10  // define the interval in seconds between storing the log
@@ -93,7 +93,7 @@ uint16_t autoreboot=0;
 //#define DEBUG_ETHERNET      0
 #endif
 
-#define THR_ZIGBEE            1
+// #define THR_ZIGBEE            1
 // #define THR_ETHERNET          1
 
 /******************
@@ -298,6 +298,8 @@ uint16_t autoreboot=0;
 void setup() {
   delay(5000);
   Serial.begin(9600);
+  Serial.println("Hello");
+  delay(5000);
   setupParameters();
 
 #ifdef THR_LINEAR_LOGS

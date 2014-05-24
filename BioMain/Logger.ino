@@ -2,14 +2,11 @@
   This thread will take care of the logs and manage the time and its synchronisation 
  The thread write the logs at a definite fixed interval of time in the SST25VF064 chip of the main boards
  The time synchronization works through the NTP protocol and our server
- 
- 	// TODO: change the time now() in global?
- */
+  */
 
 
-//Log libraries TODO: should be completed and corrected, still problem with the C/C++ compiler
-//#include <Log.h>
 
+#include <SST.h>
 
 
 // the different types of logs
@@ -115,13 +112,8 @@ void writeLog(uint16_t event_number, uint16_t parameter_value) {
     //Update the value of the next event log position in the memory
     nextEntryID++;
   }
-
   nilThdSleepMilliseconds(5);
-  
   nilSemSignal(&lockFlashAccess);
-  
- 
-  
 }
 
 
