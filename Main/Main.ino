@@ -45,6 +45,8 @@ uint16_t autoreboot=0;
  * PIN&ADRESS MAPPING
  *********************/
 
+#define MODEL_ZIGBEE  1  // either MODEL_ZIGBEE or MODEL_ETHERNET 
+
 #define PWM1    6//D6 OC4D
 #define PWM2    8//D8 PCINT4
 #define PWM3    9//D9 OC4B, OC1A, PCINT5
@@ -55,6 +57,15 @@ uint16_t autoreboot=0;
 #define IO3     19//A1
 #define IO4     22//A4
 #define IO5     18//A0
+
+#ifdef MODEL_ZIGBEE
+#define PWM6    10
+#define IO6     23
+#define RED1    12
+#define GREEN1  7
+#define BLUE1   13
+#endif
+
 
 #define I2C_RELAY         32 //B00100000
 #define I2C_RELAY_TAP     36 //B00100100
