@@ -12,9 +12,6 @@
 #include <avr/wdt.h>
 
 
-
-
-
 // The normal serial takes 200 bytes more but is buffered
 // And if we send a String for parameters it can not be understand ...
 // #include <NilSerial.h>
@@ -47,7 +44,7 @@ uint16_t autoreboot=0;
  * PIN&ADRESS MAPPING
  *********************/
 
-#define MODEL_ETHERNET  1  // either MODEL_ZIGBEE or MODEL_ETHERNET 
+#define MODEL_ZIGBEE  1  // either MODEL_ZIGBEE or MODEL_ETHERNET 
 
 
 #define PWM1    6//D6 OC4D
@@ -86,7 +83,7 @@ uint16_t autoreboot=0;
 
 
 
-#define THR_LINEAR_LOGS       1
+// #define THR_LINEAR_LOGS       1
 
 #ifdef THR_LINEAR_LOGS
 #define LOG_INTERVAL          10  // define the interval in seconds between storing the log
@@ -95,7 +92,7 @@ uint16_t autoreboot=0;
 #endif
 
 // #define THR_ZIGBEE            1
-#define THR_ETHERNET          1
+// #define THR_ETHERNET          1
 
 /******************
  * DEFINE CARD TYPE
@@ -297,10 +294,9 @@ uint16_t autoreboot=0;
  *********/
 
 void setup() {
-  delay(5000);
+  delay(2000);
   Serial.begin(9600);
-  Serial.println("Hello");
-  delay(5000);
+  delay(1000);
   setupParameters();
 
 #ifdef THR_LINEAR_LOGS

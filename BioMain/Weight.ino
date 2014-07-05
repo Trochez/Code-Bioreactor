@@ -10,7 +10,7 @@ int cycleCounter=0;
 #define PUMP_SLOWDOWN_RATIO          10  // this would open for 5s and then wait the ratio
 #endif
 
-NIL_WORKING_AREA(waThreadWeight, 32);    // minimum of 32 !
+NIL_WORKING_AREA(waThreadWeight, 64);    // minimum of 32 !
 NIL_THREAD(ThreadWeight, arg) {
   nilThdSleepMilliseconds(500);
   int previous_weight;
@@ -30,7 +30,6 @@ NIL_THREAD(ThreadWeight, arg) {
 
   if (getParameter(PARAM_WEIGHT_STATUS)!=-1) {
     weight_status=(((uint16_t)getParameter(PARAM_WEIGHT_STATUS)) >> 13);
-Serial.println(weight_status);
     
     sinceLastEvent=(((uint16_t)getParameter(PARAM_WEIGHT_STATUS))&0b0001111111111111)*60000;
     Serial.println(sinceLastEvent);

@@ -53,49 +53,10 @@ NIL_THREAD(ThreadMonitoring, arg) {
 
 NIL_THREADS_TABLE_BEGIN()
 
-#ifdef  STEPPER
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadStepper, NULL, waThreadStepper, sizeof(waThreadStepper))
-#endif
-
-#ifdef THR_LINEAR_LOGS
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadLogger, NULL, waThreadLogger, sizeof(waThreadLogger))
-#endif
-
-#ifdef PH_CTRL
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadPH, NULL, waThreadPH, sizeof(waThreadPH))
-#endif
-
-#ifdef  GAS_CTRL 
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadTap, NULL, waThreadTap, sizeof(waThreadTap))
-#endif  
-
-#if defined(TEMP_LIQ) || defined(TEMP_PLATE) || defined(TEMP_STEPPER)
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadTemp, NULL, waThreadTemp, sizeof(waThreadTemp))                        
-#endif
-
-#ifdef TRANS_PID
-NIL_THREADS_TABLE_ENTRY(NULL, Thread_PID, NULL, waThread_PID, sizeof(waThread_PID))      
-#endif
-
-#ifdef WEIGHT
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadWeight, NULL, waThreadWeight, sizeof(waThreadWeight))
-#endif
-
-#if defined(GAS_CTRL) || defined(I2C_LCD) || defined(PH_CTRL) || defined(RELAY_PUMP)
- NIL_THREADS_TABLE_ENTRY(NULL, ThreadWire, NULL, waThreadWire, sizeof(waThreadWire))
-#endif
-
 #ifdef SERIAL
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThreadSerial))
 #endif
 
-#ifdef THR_ZIGBEE
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadZigbee, NULL, waThreadZigbee, sizeof(waThreadZigbee))
-#endif
-
-#ifdef THR_ETHERNET
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadEthernet, NULL, waThreadEthernet, sizeof(waThreadEthernet))
-#endif
 
 
 // This thread is mandatory and check that nothing is currently blocking the arduino

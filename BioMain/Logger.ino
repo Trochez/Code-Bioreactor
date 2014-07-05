@@ -5,7 +5,6 @@
   */
 
 
-
 #include <SST.h>
 
 
@@ -300,6 +299,7 @@ void printLogN(Print* output, uint32_t entryN) {
   output->write(record, ENTRY_SIZE_LINEAR_LOGS*2+7);
 } 
 
+#ifdef LOG_INTERVAL
 
 NIL_WORKING_AREA(waThreadLogger, 100);
 NIL_THREAD(ThreadLogger, arg) {
@@ -317,8 +317,7 @@ NIL_THREAD(ThreadLogger, arg) {
   }
 }
 
-
-
+#endif
 
 
 
