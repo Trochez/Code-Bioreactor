@@ -1,11 +1,8 @@
-#define WITH_DNS 1
-
 #ifdef THR_ETHERNET
 
 //Ethernet libraries
 #include <Ethernet.h>
-
-
+#include <EthernetUdp.h>
 
 /****************************************************************
  *   THREAD ETHERNET & LOG EVENT + DATA

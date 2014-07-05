@@ -47,7 +47,8 @@ uint16_t autoreboot=0;
  * PIN&ADRESS MAPPING
  *********************/
 
-#define MODEL_ZIGBEE  1  // either MODEL_ZIGBEE or MODEL_ETHERNET 
+#define MODEL_ETHERNET  1  // either MODEL_ZIGBEE or MODEL_ETHERNET 
+
 
 #define PWM1    6//D6 OC4D
 #define PWM2    8//D8 PCINT4
@@ -94,7 +95,7 @@ uint16_t autoreboot=0;
 #endif
 
 // #define THR_ZIGBEE            1
-// #define THR_ETHERNET          1
+#define THR_ETHERNET          1
 
 /******************
  * DEFINE CARD TYPE
