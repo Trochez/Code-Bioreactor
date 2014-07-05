@@ -1,7 +1,7 @@
 #include <PinChangeInt.h>
 
-#define D0Pin 5			// Arduino Pin 2 Hardware interrupt
-#define D1Pin 6			// Arduino Pin 3 Hardware interrupt
+#define D0Pin 0			// Arduino Pin 2 Hardware interrupt
+#define D1Pin 1			// Arduino Pin 3 Hardware interrupt
 
 
 class WIEGAND {

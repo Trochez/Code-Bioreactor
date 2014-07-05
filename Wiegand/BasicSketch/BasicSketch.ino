@@ -44,6 +44,7 @@
 #define DATA1_4  16
 #define IO_4     18
 
+#define THR_MONITORING  23  // a led that will blink to show the system is working correctly
 
 byte O12V[] = { O12V_0, O12V_1, O12V_2, O12V_3, O12V_4 };
 byte DATA0[] = { DATA0_0, DATA0_1, DATA0_2, DATA0_3, DATA0_4 };

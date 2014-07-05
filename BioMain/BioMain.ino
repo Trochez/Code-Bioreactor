@@ -85,7 +85,7 @@ uint16_t autoreboot=0;
 
 
 
-// #define THR_LINEAR_LOGS       1
+#define THR_LINEAR_LOGS       1
 
 #ifdef THR_LINEAR_LOGS
 #define LOG_INTERVAL          10  // define the interval in seconds between storing the log

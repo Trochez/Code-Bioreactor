@@ -21,6 +21,11 @@ void printResult(char* data, Print* output) {
     if (inChar=='\0' || i==SERIAL_BUFFER_LENGTH) theEnd=true;
     if (inChar=='p') { // show settings
       printGeneralParameters(output);
+    }
+    else if (inChar=='d') { // show settings
+      for (byte i=0; i<sizeof(DOORS); i++) {
+        output->println(DOORS[i]); 
+      }
     } 
     else if (inChar=='h') {
       printHelp(output);
@@ -36,12 +41,10 @@ void printResult(char* data, Print* output) {
         else {
           output->println(now());
         }
-
       }
       else if (data[0]=='i') {
         if (paramValuePosition>0) {
-          output->println("Need to implement procedure to add ID");
-          // NEED TO ADD an ID !
+          pushID(atol(paramValue));
         } 
         else {
           printIDs(output);
@@ -51,31 +54,12 @@ void printResult(char* data, Print* output) {
         printLogs(output);
       }
       else if (data[0]=='m') {
-#ifdef THR_LINEAR_LOGS
         if (paramValuePosition>0) {
-          long currentValueLong=atol(paramValue);
-          if (( currentValueLong - nextEntryID ) < 0) {
-            printLogN(output,currentValueLong);
-          } 
-          else {
-            byte endValue=MAX_MULTI_LOG;
-            if (currentValueLong > nextEntryID) {
-              endValue=0;
-            } 
-            else if (( nextEntryID - currentValueLong ) < MAX_MULTI_LOG) {
-              endValue= nextEntryID - currentValueLong;
-            }
-            for (byte i=0; i<endValue; i++) {
-              printLogN(output,currentValueLong+i);
-            }
-          }
-        } 
-        else {
-          output->println(nextEntryID-1);
+          getLogAfter(atol(paramValue), output);
         }
-#else
-        noThread(output);
-#endif
+        else {
+          output->println("LAST LOG EPOCH");
+        }
       }
     }
     else if ((inChar>47 && inChar<58) || inChar=='-') {
@@ -92,6 +76,7 @@ void printResult(char* data, Print* output) {
 
 void printHelp(Print* output) {
   //return the menu
+  output->println(F("(d)oors list"));
   output->println(F("(e)poch"));
   output->println(F("(f)ree"));
   output->println(F("(h)elp"));
@@ -106,6 +91,7 @@ static void printFreeMemory(Print* output)
 {
   nilPrintUnusedStack(output);
 }
+
 
 
 

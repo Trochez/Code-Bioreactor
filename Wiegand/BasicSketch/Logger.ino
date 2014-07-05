@@ -11,14 +11,59 @@ EEPROM is devided in 2 parts
  512 -> 1023 : logs
  
  
+ // epoch can be retried using: now()
+ 
  */
 
-void initLogger() {
+/*
+  The ID contains
+ 8 bits with the doors that can be open
+ 24 bits with the key value
+ 
+ If no doors are allowed: delete the entry
+ */
+boolean pushID ( uint32_t id ) {
 
+  return true;
+}
+
+void getLogAfter(uint32_t time, Print* output) {
+  // need to check if there is any new record
+  // send the log record
+  // NEED TO TAKE CARE THAT THERE ARE NEVER 2 LOGS AT THE SAME TIME
+
+  // just an example
+  printLogLine(14, output);
 
 }
 
+void printLogLine(int line, Print* output) {
+  byte tmpByte;
+  int start=line*8;
+  int end=line*8+8;
+  byte checkDigit=0;
+  for (int i=start; i<end; i++) {
+    EXROM.read(i, &tmpByte);
+    printByte(tmpByte, output);
+    checkDigit^=tmpByte;
+  }
+  printByte(checkDigit, output);
+  output->println("");
+}
 
+void printByte(byte value, Print* output) {
+  if (value<16) {
+   output->print(0, HEX);
+  }
+  output->print(value, HEX);
+}
+
+void initLogger() {
+  // we should get the last log event written
+  // setTime(lastFoundEpoch);
+  // lastFoundEpoch must be smaller than 0xFFFFFFFF
+  // we need to get the last position of the log in which the last epoch was found
+}
 
 void printIDs(Print* output) {
   uint32_t currentID;
@@ -53,6 +98,7 @@ void printLogs(Print* output) {
     output->println(id);
   }
 }
+
 
 
 

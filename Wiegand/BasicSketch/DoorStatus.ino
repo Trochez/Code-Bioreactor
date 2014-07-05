@@ -7,7 +7,6 @@ NIL_THREAD(ThreadDoorStatus, arg) {
     // There is a limit of 15s for example before buzzer turns out
 
 
-
     nilThdSleepMilliseconds(1);
   }
 }
