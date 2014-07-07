@@ -208,8 +208,8 @@ uint16_t autoreboot=0;
 #endif
 
 #ifdef PH
-#define PARAM_PH            12
-#define PARAM_TARGET_PH     13
+#define PARAM_PH            12   // current pH
+#define PARAM_TARGET_PH     13   // desired pH
 #define PARAM_PH_FACTOR_A   14
 #define PARAM_PH_FACTOR_B   15
 
