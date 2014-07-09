@@ -49,7 +49,7 @@ NIL_THREADS_TABLE_ENTRY(NULL, ThreadSerial, NULL, waThreadSerial, sizeof(waThrea
 
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadWiegand, NULL, waThreadWiegand, sizeof(waThreadWiegand))
 
-NIL_THREADS_TABLE_ENTRY(NULL, ThreadWiegand, NULL, waThreadDoorStatus, sizeof(waThreadDoorStatus))
+NIL_THREADS_TABLE_ENTRY(NULL, ThreadDoorStatus, NULL, waThreadDoorStatus, sizeof(waThreadDoorStatus))
 
 #ifdef THR_ZIGBEE
 NIL_THREADS_TABLE_ENTRY(NULL, ThreadZigbee, NULL, waThreadZigbee, sizeof(waThreadZigbee))
